@@ -1,0 +1,14 @@
+[
+    {
+        "code": "Asociation",
+        "descrip": "Asociation"
+    },
+    {
+        "code": "Aggregation",
+        "descrip": "Aggregation"
+    },
+    {
+        "code": "Composition",
+        "descrip": "Composition"
+    }
+]

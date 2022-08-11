@@ -1,0 +1,69 @@
+.element-root {
+    fill: none;
+    overflow: hidden;
+
+    &>text {
+        fill: white;
+        font-size: .6rem;
+    }
+}
+
+.element-root-header-body {
+    fill: #222;
+    stroke: none;
+    cursor: pointer;
+}
+
+.element-root-header-text {
+    cursor: pointer;
+
+}
+
+.element-type {
+    font-size: .5rem;
+}
+
+.element-root-body {
+    stroke-width: 1;
+    filter: drop-shadow(4px 4px 1.5px rgb(0 0 0 / .5));
+    stroke: #aaa;
+    fill: rgba(#777, .5);
+
+}
+
+.element-root-inner-body {
+    //fill: #445;
+    stroke-width: 1;
+    stroke: #333;
+    fill: rgba(#000, 1);
+
+}
+
+
+$elem-opacity: .2;
+
+.Block {
+    fill: rgba(#337, $elem-opacity);
+}
+
+.Component {
+    fill: rgba(#a5a, $elem-opacity);
+}
+
+.Class {
+    fill: rgba(#f75, $elem-opacity);
+}
+
+.Interface {
+    fill: rgba(#aa5, $elem-opacity);
+    stroke-dasharray: 4 2;
+    stroke-width: 1;
+//    stroke: purple;
+}
+.header-Interface {
+    fill: rgba(#aaa, $elem-opacity);
+}
+
+.Enum {
+    fill: rgba(#55a, $elem-opacity);
+}

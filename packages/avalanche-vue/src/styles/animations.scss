@@ -1,0 +1,63 @@
+$hard-rotate-left: -.25deg;
+$hard-rotate-right: .25deg;
+$soft-rotate-left: -.125deg;
+$soft-rotate-right: .125deg;
+
+$hard-left: -.12rem;
+$hard-right: .12rem;
+$soft-left: -.06rem;
+$soft-right: .06rem;
+$top: -.12rem;
+$bottom: .12;
+$center: 0;
+
+@keyframes background-shake {
+    0% {
+        background-position: $hard-left, $bottom;
+    }
+
+    25% {
+        background-position: $hard-right, $center;
+    }
+
+    50% {
+        background-position: $soft-left, $top;
+    }
+
+    75% {
+        background-position: $soft-right, $center;
+    }
+
+    100% {
+        background-position: $center, $center;
+    }
+}
+
+@keyframes object-shake {
+    0% {
+        transform: translate3d($hard-left, $bottom, 0) rotate3d(0, 0, 1, $hard-rotate-left);
+        transform-origin: center center;
+        background-origin: 0 0;
+    }
+
+    25% {
+        transform: translate3d($hard-right, $center, 0) rotate3d(0, 0, 1, $hard-rotate-right);
+        transform-origin: center center;
+    }
+
+    50% {
+        transform: translate3d($soft-left, $top, 0) rotate3d(0, 0, 1, $soft-rotate-left);
+        transform-origin: center center;
+    }
+
+    75% {
+        transform: translate3d($soft-right, $center, 0) rotate3d(0, 0, 1, $soft-rotate-left);
+        transform-origin: center center;
+    }
+
+    100% {
+        transform: translate3d($center, $center, 0) rotate3d(0, 0, 1, $center);
+        transform-origin: center center;
+        background-origin: 156rem 10rem;
+    }
+}

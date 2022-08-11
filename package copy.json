@@ -1,0 +1,24 @@
+{
+    "name": "avalanche",
+    "private": true,
+    "workspaces": [
+        "packages/avalanche-core",
+        "packages/avalanche-vue"
+    ],
+    "version": "1.0.0",
+    "description": "Plan as you glide",
+    "main": "index.js",
+    "scripts": {
+        "core": "npm run --workspace=@avalanche/avalanche-core",
+        "vue": "npm run --workspace=@avalanche/avalanche-vue",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Adrian Nuske",
+    "license": "ISC",
+    "dependencies": {
+        "fluentvalidation-ts": "^2.2.2"
+    },
+    "devDependencies": {
+        "vite": "^3.0.0"
+    }
+}
