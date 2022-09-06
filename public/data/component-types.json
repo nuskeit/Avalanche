@@ -1,0 +1,18 @@
+[
+    {
+        "code": "Block",
+        "descrip": "Block"
+    },
+    {
+        "code": "Class",
+        "descrip": "Class"
+    },
+    {
+        "code": "Interface",
+        "descrip": "Interface"
+    },
+    {
+        "code": "Enum",
+        "descrip": "Enum"
+    }
+]

@@ -1,0 +1,43 @@
+@use 'animations.scss';
+
+$component-color1: rgb(130, 130, 110);
+$class-color1: rgb(170, 170, 170);
+$block-color1: rgb(120, 140, 150);
+
+
+svg.checkers-generic {
+    transform-origin: center center;
+    animation: object-shake .2s linear 0s 1;
+    animation-timing-function: steps(1, end);
+
+    .diagram-shake {
+        animation: object-shake .2s linear 0s 1;
+        animation-timing-function: steps(1, end);
+    }
+
+}
+
+
+
+//Component Diagram
+svg.checkers-component {
+    @extend .checkers-generic;
+    background-color: $component-color1;;
+}
+
+
+
+//Class Diagram
+svg.checkers-class {
+    @extend .checkers-generic;
+    background-color: $class-color1;
+}
+
+
+//Block Diagram
+svg.checkers-block {
+    @extend .checkers-generic;
+    background-color: $block-color1;
+}
+
+

@@ -1,0 +1,14 @@
+[
+    {
+        "code": "Property",
+        "descrip": "Property"
+    },
+    {
+        "code": "Event",
+        "descrip": "Event"
+    },
+    {
+        "code": "Method",
+        "descrip": "Method"
+    }
+]
