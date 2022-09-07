@@ -1,12 +1,13 @@
-import * as g from "../../../../../general";
-import * as elem from "../../element";
+import { HashTable } from "../../../../../general/domain";
+import { I_Element, I_ElementsStore } from "../domain";
 
 
-export class ElementsStore implements elem.domain.I_ElementsStore {
-	elements: g.domain.HashTable<elem.domain.I_Element> = {}
+export class ElementsStore implements I_ElementsStore {
+	elements: HashTable<I_Element> = {}
 
-	addElement(key: string, element: elem.domain.I_Element) {
+	addElement(key: string, element: I_Element) {
 		this.elements[key] = element
+		this.elements = { ...this.elements }
 	}
 
 	toJSON() {

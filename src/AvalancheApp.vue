@@ -4,6 +4,7 @@ import { provide, reactive } from 'vue';
 import { AppPresenter } from "./app-presenter";
 import RootDiagramUI from './components/RootDiagramUI.vue';
 import { AvalancheApp } from './core/avalanche-app/application';
+import { I_ElementsStore } from './core/avalanche-app/root-diagram/diagram/element/domain';
 
 const avalancheApp = new AvalancheApp()
 
@@ -16,7 +17,8 @@ provide("avalanche-app", avalancheApp)
 
 await avalancheApp.loadRootPlanAsync("rd1")
 
-provide("elements-store", avalancheApp.rootDiagram.elementsStore)
+// provide("elements-store", avalancheApp.rootDiagram.elementsStore)
+provide("elements-store", reactive<I_ElementsStore>(avalancheApp.rootDiagram.elementsStore))
 
 </script>
 

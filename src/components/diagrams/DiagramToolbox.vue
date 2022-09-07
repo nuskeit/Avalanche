@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
+import { AvalancheApp } from '../../core/avalanche-app/application';
 import { I_Diagram } from '../../core/avalanche-app/root-diagram/diagram/domain';
 import { BlockEntity, ClassEntity, ComponentEntity, EnumEntity, GenericEntity, InterfaceEntity } from '../../core/avalanche-app/root-diagram/diagram/element/application';
-import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
+import { I_Element, I_ElementsStore } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
 import { ElementType } from '../../core/general/domain';
 import { DiagramToolbox } from '../../core/toolbox/domain';
 import BoxedText from '../controls/svg/BoxedText.vue';
@@ -28,7 +29,7 @@ const diagramToolbox: DiagramToolbox = new DiagramToolbox()
 const addComponent = (el: I_Element): void => {
 	el.name = `${el.elementType} ${el.key}`
 	el.visible = true
-	diagram.value.addElement(el)
+	diagram.value.createElement(el)
 }
 
 function addComponentHandler() {

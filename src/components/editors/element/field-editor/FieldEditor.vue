@@ -6,6 +6,7 @@ import { FieldType } from "../../../../core/general/domain";
 import TextBox from '../../../controls/TextBox.vue';
 import { FieldEditorPresenter } from "./field-editor-presenter";
 import ParametersEditor from "./parameters-editor/ParametersEditor.vue";
+import TypeDefEditor from "./parameters-editor/type-def-editor/TypeDefEditor.vue";
 
 const props = defineProps<{ modelValue: I_Field }>()
 
@@ -37,7 +38,7 @@ const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => 
 
 			<div class="cell toggle-btn">
 				<img :class="`drop-down-btn ${presenter.expand ? 'flip' : ''}`"
-					src="./../../../assets/drop-down-ico.png" @pointerdown="presenter.eventsHandler.toggleExpand">
+					src="./../../../../assets/drop-down-ico.png" @pointerdown="presenter.eventsHandler.toggleExpand">
 			</div>
 
 		</div>
@@ -53,6 +54,7 @@ const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => 
 					<td class="details-cell">
 						<!-- <label :for="`text-${field.id.toString()}`">Text:</label> -->
 						<TextBox :id="field.key" v-model="field.text" :className="'regular-input'" />
+						<TypeDefEditor v-model="field.dataTypeDef" />
 					</td>
 				</tr>
 
