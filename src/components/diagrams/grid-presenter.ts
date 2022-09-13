@@ -1,42 +1,41 @@
-import { I_Presenter, ViewBox, ViewPort } from "../../core/general/presenter"
 import { I_Grid, I_GridColumn, I_GridRow } from "../../core/avalanche-app/root-diagram/diagram/grid/domain"
+import { I_ViewBox, I_ViewPort } from "../../core/general/domain"
+import { I_Presenter } from "../../core/general/presenter"
 
 export class GridPresenter implements I_Presenter<Grid>{
-	grid: I_Grid
-
 	readonly gridLabelsPosition = {
 		columns: { dx: 5, dy: 0 },
 		rows: { dx: 0, dy: 20 },
 	}
 
-	constructor(grid: I_Grid) {
-		this.grid = grid
+	constructor(proxies: Proxies) {
+		this.proxies = proxies
 	}
 
+	proxies: Proxies
+	get presenterProxy(): GridPresenter { return this.proxies.presenterProxy() }
+	get gridProxy(): I_Grid { return this.proxies.gridProxy() }
 
-
-
-
-
-
-
-	proxy: Function = () => { }
-	delegates: {} = {}
-	eventsHandler: {} = {}
-
-
+	delegates: {} | undefined
+	eventsHandler: {} | undefined
 
 }
+
+type Proxies = {
+	presenterProxy(): GridPresenter
+	gridProxy(): I_Grid
+}
+
 
 export class Grid implements I_Grid {
 	readonly cols: GridColumn[]
 	readonly rows: GridRow[]
-	readonly viewBox: ViewBox
-	readonly viewPort: ViewPort
+	readonly viewBox: I_ViewBox
+	readonly viewPort: I_ViewPort
 
 	constructor(
-		viewBox: ViewBox,
-		viewPort: ViewPort
+		viewBox: I_ViewBox,
+		viewPort: I_ViewPort
 	) {
 		this.viewBox = viewBox
 		this.viewPort = viewPort

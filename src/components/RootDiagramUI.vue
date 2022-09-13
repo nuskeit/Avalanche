@@ -6,16 +6,19 @@ import TabsStrip from './TabsStrip.vue';
 import { AvalancheApp } from '../core/avalanche-app/application';
 import { RootDiagramPresenter } from "./root-diagram-presenter";
 
-const user = inject("user") as AvalancheApp
-
-// Create object model representative/reference (OMR)
+// Create object model reference (OMR)
 const avalancheApp = inject("avalanche-app") as AvalancheApp
 
-// Create presenter, make it reactive and inject the OMR
-const rootDiagramPresenter = reactive<RootDiagramPresenter>(
+/**
+ * Create presenter, make it reactive and inject the OMR Proxy accesor, along with the
+ * accesor for the presenter proxy itself
+*/
+const rootDiagramPresenter: RootDiagramPresenter = reactive<RootDiagramPresenter>(
 	new RootDiagramPresenter(
-		() => rootDiagramPresenter,
-		avalancheApp.rootDiagram))
+		{
+			presenterProxy: () => rootDiagramPresenter,
+			rootDiagramProxy: () => avalancheApp.rootDiagram
+		}))
 
 onMounted(() => {
 	window.addEventListener("keydown", rootDiagramPresenter.eventsHandler.handleKeyDown)
@@ -31,16 +34,16 @@ onUnmounted(() => {
 	<Suspense>
 		<div class="root-diagram">
 			<div class="root-diagram-title">
-				<div>{{ rootDiagramPresenter.rootDiagram?.name }} </div>
+				<div>{{ rootDiagramPresenter.rootDiagramProxy?.name }} </div>
 			</div>
 			<div class="layout-main">
 				<div class="root-diagram_tab-strip">
 					<TabsStrip v-model="rootDiagramPresenter.selectedDiagramIndex"
-						:diagrams="rootDiagramPresenter.rootDiagram.diagrams" />
+						:diagrams="rootDiagramPresenter.rootDiagramProxy.diagrams" />
 				</div>
-				<div class="root-diagram_tab-main" v-if="rootDiagramPresenter.rootDiagram.diagrams.length > 0">
+				<div class="root-diagram_tab-main" v-if="rootDiagramPresenter.rootDiagramProxy.diagrams.length > 0">
 					<DiagramUI
-						v-model="rootDiagramPresenter.rootDiagram.diagrams[rootDiagramPresenter.selectedDiagramIndex]"
+						v-model="rootDiagramPresenter.rootDiagramProxy.diagrams[rootDiagramPresenter.selectedDiagramIndex]"
 						:key="rootDiagramPresenter.selectedDiagramIndex" />
 				</div>
 			</div>

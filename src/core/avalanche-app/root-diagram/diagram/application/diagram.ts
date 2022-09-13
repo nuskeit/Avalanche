@@ -1,14 +1,15 @@
-import * as drag from "../../../../drag"
-import * as g from "../../../../general"
-import * as relationships from "../../../../relationships"
-import * as diag from "../../diagram"
-import * as elem from "../element"
+import { Draggable, Dragger } from "../../../../drag/application"
+import { I_Draggable } from "../../../../drag/domain"
+import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, Nullable, Vector } from "../../../../general/domain"
+import { I_RelationshipsStore } from "../../../../relationships/domain"
+import { I_Diagram } from "../domain"
+import { I_Element, I_ElementsStore } from "../element/domain"
 
-export class Diagram implements diag.domain.I_Diagram {
-	constructor(name: string, diagramType: g.domain.DiagramType,
-		elementsStore: elem.domain.I_ElementsStore, relationshipsStore: relationships.domain.I_RelationsStore,
-		viewBox: g.preseter.ViewBox, viewPort: g.preseter.ViewPort) {
-		this._key = g.domain.GlobalKey.getNewGlobalKey()
+export class Diagram implements I_Diagram {
+	constructor(name: string, diagramType: DiagramType,
+		elementsStore: I_ElementsStore, relationshipsStore: I_RelationshipsStore,
+		viewBox: I_ViewBox, viewPort: I_ViewPort) {
+		this._key = GlobalKey.getNewGlobalKey()
 		this.name = name
 		this._diagramType = diagramType
 		this._elements = {}
@@ -18,42 +19,42 @@ export class Diagram implements diag.domain.I_Diagram {
 		this.viewBox = viewBox
 		this.viewPort = viewPort
 	}
-	viewBox: g.preseter.ViewBox
-	viewPort: g.preseter.ViewPort
+	viewBox: I_ViewBox
+	viewPort: I_ViewPort
 
-	private _elementsStore: elem.domain.I_ElementsStore
-	private _relationshipsStore: relationships.domain.I_RelationsStore
+	private _elementsStore: I_ElementsStore
+	private _relationshipsStore: I_RelationshipsStore
 
 	private _key: string
 	public get key(): string { return this._key }
 	public name: string
 
-	private _diagramType: g.domain.DiagramType
-	public get diagramType(): g.domain.DiagramType { return this._diagramType }
+	private _diagramType: DiagramType
+	public get diagramType(): DiagramType { return this._diagramType }
 	public visible: boolean
 
-	private _elements: g.domain.HashTable<drag.domain.I_Draggable<elem.domain.I_Element>>
-	public get elements(): g.domain.HashTable<drag.domain.I_Draggable<elem.domain.I_Element>> { return this._elements }
+	private _elements: HashTable<I_Draggable<I_Element>>
+	public get elements(): HashTable<I_Draggable<I_Element>> { return this._elements }
 
-	public get rootElements(): g.domain.HashTable<elem.domain.I_Element> { return this._elementsStore.elements }
+	public get rootElements(): HashTable<I_Element> { return this._elementsStore.elements }
 
-	public get elementsStore(): elem.domain.I_ElementsStore { return this._elementsStore }
-	public get relationshipsStore(): relationships.domain.I_RelationsStore { return this._relationshipsStore }
+	public get elementsStore(): I_ElementsStore { return this._elementsStore }
+	public get relationshipsStore(): I_RelationshipsStore { return this._relationshipsStore }
 
-	addElement(element: elem.domain.I_Element, x: g.domain.Nullable<number> = null,
-		y: g.domain.Nullable<number> = null, width: number = 180): void {
+	addElement(element: I_Element, x: Nullable<number> = null,
+		y: Nullable<number> = null, width: number = 180): void {
 		let _x: number, _y: number
-		if (x == null) _x = g.domain.getRandomPosition(300, 50); else _x = x
-		if (y == null) _y = g.domain.getRandomPosition(200, 50); else _y = y
-		this.elements[element.key] = new drag.application.Draggable<elem.domain.I_Element>(element,
-			new drag.application.Dragger(element.key,
-				new g.domain.Vector(_x, _y),
-				new g.domain.Vector(_x, _y))
+		if (x == null) _x = getRandomPosition(300, 50); else _x = x
+		if (y == null) _y = getRandomPosition(200, 50); else _y = y
+		this.elements[element.key] = new Draggable<I_Element>(element,
+			new Dragger(element.key,
+				new Vector(_x, _y),
+				new Vector(_x, _y))
 		)
 	}
 
-	createElement(element: elem.domain.I_Element, x: g.domain.Nullable<number> = null,
-		y: g.domain.Nullable<number> = null): void {
+	createElement(element: I_Element, x: Nullable<number> = null,
+		y: Nullable<number> = null): void {
 		this._elementsStore.addElement(element.key, element)
 		this.addElement(element, x, y)
 	}

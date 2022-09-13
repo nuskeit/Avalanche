@@ -1,11 +1,11 @@
-import * as g from "../../../../../../general"
-import * as fieldDomainNS from "../../Field/domain"
-import * as typeDef from "../type-def"
+import { FieldType } from "../../../../../../general/domain"
+import { Field } from "../domain"
+import { I_TypeDef } from "../type-def/domain"
 
-export class PropertyField extends fieldDomainNS.Field {
+export class PropertyField extends Field {
 
-	constructor(name: string, dataTypeDef: g.domain.Nullable<typeDef.domain.I_TypeDef>, key: string = "") {
-		super(name, g.domain.FieldType.Property, dataTypeDef, key)
+	constructor(name: string, dataTypeDef: I_TypeDef, key?: string) {
+		super(name, FieldType.Property, dataTypeDef, key)
 	}
 
 	toJSON() {

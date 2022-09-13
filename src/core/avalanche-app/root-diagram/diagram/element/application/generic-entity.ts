@@ -1,11 +1,11 @@
-import * as g from "../../../../../general"
-import { I_Serializable } from "../../../../../general/domain"
-import * as elementDomainNS from "../domain"
+import { ElementType, I_Serializable } from "../../../../../general/domain"
+import { I_RelationshipsStore } from "../../../../../relationships/domain"
+import { Element } from "../domain"
 
-export class GenericEntity extends elementDomainNS.Element implements I_Serializable {
+export class GenericEntity extends Element implements I_Serializable {
 
-	constructor(key: string = "") {
-		super(g.domain.ElementType.Entity, key)
+	constructor(relationshipStore: I_RelationshipsStore, key?: string) {
+		super(ElementType.GenericEntity, relationshipStore, key)
 	}
 
 	toJSON(): any {

@@ -1,4 +1,4 @@
-import { I_RelationsStore } from '../../../relationships/domain'
+import { I_RelationshipsStore } from '../../../relationships/domain'
 import { I_Diagram } from '../diagram/domain'
 import { I_ElementsStore } from '../diagram/element/domain'
 
@@ -8,7 +8,7 @@ export interface I_RootDiagram {
 	name: string
 	diagrams: I_Diagram[]
 	elementsStore: I_ElementsStore
-	relationshipsStore: I_RelationsStore
+	relationshipsStore: I_RelationshipsStore
 
 	addDiagram(p: I_Diagram): void
 }

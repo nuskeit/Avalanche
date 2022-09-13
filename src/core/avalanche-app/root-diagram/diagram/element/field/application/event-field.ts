@@ -1,10 +1,17 @@
-import * as g from "../../../../../../general"
-import * as fieldDomainNS from "../../Field/domain"
-import * as typeDef from "../type-def"
+import { FieldType, Nullable } from "../../../../../../general/domain"
+import { Field, I_Parameter } from "../domain"
+import { I_TypeDef } from "../type-def/domain"
 
-export class EventField extends fieldDomainNS.Field {
-	constructor(name: string, dataTypeDef: g.domain.Nullable<typeDef.domain.I_TypeDef>, key: string = "") {
-		super(name, g.domain.FieldType.Event, dataTypeDef, key)
+export class EventField extends Field {
+
+	readonly parameters: I_Parameter[]
+
+   constructor(name: string, dataTypeDef: I_TypeDef, parameters: Nullable<I_Parameter[]>, key?: string) {
+		super(name, FieldType.Event, dataTypeDef, key)
+		if (parameters == null)
+			this.parameters = []
+		else
+			this.parameters = parameters
 	}
 
 	toJSON() {
@@ -14,5 +21,5 @@ export class EventField extends fieldDomainNS.Field {
 		}
 	}
 
-	
+
 }

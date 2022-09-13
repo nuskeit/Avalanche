@@ -1,10 +1,8 @@
-import * as relationshipNS from "../../relationships"
+import { I_ElementsRelationship } from "./elements-relationship"
 
-export interface I_RelationsStore {
-	relationships: relationshipNS.domain.I_ElementsRelationship[]
+export interface I_RelationshipsStore {
+	relationships: I_ElementsRelationship[]
 
-	addRelation(rel: relationshipNS.domain.I_ElementsRelationship): void
-	getAllRelations(elementKey: string): relationshipNS.domain.I_ElementsRelationship[]
-	getInboundRelations(elementKey: string): relationshipNS.domain.I_ElementsRelationship[]
-	getOutboundRelations(elementKey: string): relationshipNS.domain.I_ElementsRelationship[]
+	addRelationship(rel: I_ElementsRelationship): void
+	getAllRelations(elementKey: string): I_ElementsRelationship[]
 }

@@ -5,16 +5,29 @@ import { I_TypeDef } from "../domain";
 
 export class TypeDef implements I_TypeDef, I_Serializable {
 	fallbackDataType: DataType
-	/**
-	 * Reference to dynamic elemnts that will become virtual DataType of the elements's field
-	 */
-	refElement: Nullable<I_Element>
+
+	//@ts-ignore, "_refElement" is set throught it's setter "refElement" in the constructor 
+	private _refElement: Nullable<I_Element>
 
 	key: string
 
+	event_refElement_changed?: Function
+
 	get name(): string { return this.getName() }
 
-	private getName(): string {
+	get refElement(): Nullable<I_Element> { return this._refElement }
+	set refElement(value: Nullable<I_Element>) {
+		const oldValue = this._refElement
+		this._refElement = value;
+	
+		//console.log('event_refElement_changed', this.event_refElement_changed);
+	
+		if (this.event_refElement_changed)
+			this.event_refElement_changed(oldValue, value)
+	}
+
+
+	private getName(): string { 
 		if (this.refElement != null) {
 			return this.refElement.name
 		}

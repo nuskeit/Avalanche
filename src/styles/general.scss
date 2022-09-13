@@ -1,8 +1,42 @@
 div {
-    user-select: none
+	user-select: none
 }
 
 button {
-    border-radius: .15rem;
-    border: solid .1rem #666;
-  }
+	border-radius: .15rem;
+	border: solid .1rem #0f0;
+}
+
+input {
+	border: none;
+	outline: none;
+}
+
+.form {
+	
+	
+	input {
+		color: #ff0;
+		outline: none;
+		background-color: transparent;
+	}
+
+	select {
+		outline: none;
+		background-color: transparent;
+		color: #ddd;
+		// &>* {
+		// 	background-color: transparent
+		// }
+	}
+
+	option {
+		background-color: #444
+	}
+
+	button {
+		border-radius: .15rem;
+		border: solid .1rem #666;
+	}
+	
+}

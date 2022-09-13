@@ -9,13 +9,13 @@ export class RootDiagram implements rootDiag.domain.I_RootDiagram {
 	name: string
 	diagrams: diag.application.Diagram[]
 	elementsStore: elem.data.ElementsStore
-	relationshipsStore: rela.data.RelationsStore
+	relationshipsStore: rela.data.RelationshipsStore
 
 	constructor(key: g.domain.Nullable<string> = null) {
 		this.name = "New Root Diagram"
 		this.diagrams = []
 		this.elementsStore = new elem.data.ElementsStore()
-		this.relationshipsStore = new rela.data.RelationsStore()
+		this.relationshipsStore = new rela.data.RelationshipsStore()
 		if (key == null) {
 			this.key = g.domain.GlobalKey.getNewGlobalKey()
 		} else {

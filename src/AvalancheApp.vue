@@ -5,20 +5,20 @@ import { AppPresenter } from "./app-presenter";
 import RootDiagramUI from './components/RootDiagramUI.vue';
 import { AvalancheApp } from './core/avalanche-app/application';
 import { I_ElementsStore } from './core/avalanche-app/root-diagram/diagram/element/domain';
+import { GeneralFactory } from './core/factories/application';
+import { I_RelationshipsStore } from './core/relationships/domain';
 
 const avalancheApp = new AvalancheApp()
 
 const appPresenter = reactive<AppPresenter>(new AppPresenter(avalancheApp))
 
-provide("user", "Hardcoded User Name")
-
 provide("avalanche-app", avalancheApp)
-
 
 await avalancheApp.loadRootPlanAsync("rd1")
 
-// provide("elements-store", avalancheApp.rootDiagram.elementsStore)
 provide("elements-store", reactive<I_ElementsStore>(avalancheApp.rootDiagram.elementsStore))
+provide<GeneralFactory>("general-factory", avalancheApp.generalFactory)
+provide("relationships-store", reactive<I_RelationshipsStore>(avalancheApp.rootDiagram.relationshipsStore))
 
 </script>
 

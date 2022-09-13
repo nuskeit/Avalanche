@@ -1,65 +1,90 @@
 <script setup lang="ts">
-import { computed, inject } from "vue";
-import { AvalancheApp } from "../../../core/avalanche-app/application";
+import { computed, inject, reactive, ref, watchEffect } from "vue";
 import { I_Element } from "../../../core/avalanche-app/root-diagram/diagram/element/domain";
+import { GeneralFactory } from "../../../core/factories/application";
 import TextBox from '../../controls/TextBox.vue';
 import { ElementEditorPresenter } from "./element-editor-presenter";
 import FieldEditor from "./field-editor/FieldEditor.vue";
 
-const props = defineProps<{ element: I_Element }>()
+const props = defineProps<{
+	modelValue: I_Element
+}>()
 
 const emit = defineEmits<{
 	(e: "addNewPropertyField"): void,
 	(e: "addNewMethodField"): void,
 	(e: "addNewEventField"): void,
-	(e: "update:element", payload: I_Element): void
+	(e: "update:modelValue", payload: I_Element): void
 }>()
 
-const avalancheApp = inject("avalanche-app") as AvalancheApp
+// watchEffect(() => {
+// 	console.log('watch effect element', props.modelValue);
+
+// 	// setTimeout(() => {
+// 	// presenter.element = props.element
+// 	// }, 0);
+// })
+
 
 const element = computed<I_Element>({
-	get: (): I_Element => props.element,
-	set: (value: I_Element) => emit("update:element", value)
+	get: (): I_Element => {
+		console.log('element getter');
+		return props.modelValue
+	},
+	set: (value: I_Element) => {
+		console.log('element setter');
+		emit("update:modelValue", value)
+	}
 })
 
-const presenter: ElementEditorPresenter = new ElementEditorPresenter(() => presenter, element.value)
+const generalFactory = inject("general-factory") as GeneralFactory
+// const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new ElementEditorPresenter(() => presenter, element.value, generalFactory))
+const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new ElementEditorPresenter(
+	{
+		elementProxy: () => element.value
+	},
+	generalFactory))
 
 
 // const handleClose = async () => {
 // 	emit("close")
 // }
 
-const handleAddNewField = async () => {
-	//emit("update:element", element)
-}
-
 </script>
 
 <template>
-	<div class="element-editor_root">
+	<div class="element-editor_root form">
 		<div class="header">
 			<div class="element-name">
-				<TextBox :id="`${element.key}`" v-model="element.name" :style="{ color: '#fff' }" />
+				<TextBox :id="`${element.key}`" v-model="element.name" />
 			</div>
 			<div class="element-type">
 				{{ element.elementType }}
 			</div>
-
 		</div>
 
-		<div class="element-editor_row" v-for="field, i in element.fields" :key="field.key">
-
-			<FieldEditor v-model="element.fields[i]" />
-
+		<div class="element-editor_row" v-for="field, i in presenter.listProperties" :key="field.key">
+			<FieldEditor v-model="presenter.listProperties[i]" />
 		</div>
-
-
 		<div class="element-editor_row">
+			<FieldEditor v-model="presenter.newPropertyField" />
+			<button @click="presenter.eventsHandler.handleAddNewProperyField">+</button>
+		</div>
 
-			<div class="buttons">
-				<button @click="handleAddNewField">Add Field</button>
-			</div>
+		<div class="element-editor_row" v-for="field, i in presenter.listMethods" :key="field.key">
+			<FieldEditor v-model="presenter.listMethods[i]" />
+		</div>
+		<div class="element-editor_row">
+			<FieldEditor v-model="presenter.newMethodField" />
+			<button @click="presenter.eventsHandler.handleAddNewMethodField">+</button>
+		</div>
 
+		<div class="element-editor_row" v-for="field, i in presenter.listEvents" :key="field.key">
+			<FieldEditor v-model="presenter.listEvents[i]" />
+		</div>
+		<div class="element-editor_row">
+			<FieldEditor v-model="presenter.newEventField" />
+			<button @click="presenter.eventsHandler.handleAddNewEventField">+</button>
 		</div>
 
 	</div>
@@ -78,6 +103,7 @@ const handleAddNewField = async () => {
 		flex-direction: row;
 		background-color: #444;
 		align-items: center;
+
 		.element-name {
 			text-align: left;
 			white-space: nowrap;
@@ -97,6 +123,11 @@ const handleAddNewField = async () => {
 		border-top: solid #555 .01rem;
 		white-space: nowrap;
 		overflow: hidden;
+
+		button {
+			background-color: #555;
+			color: #5af;
+		}
 	}
 
 	// 	&:nth-last-child(1) {

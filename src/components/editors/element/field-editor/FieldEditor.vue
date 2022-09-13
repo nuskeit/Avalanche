@@ -19,7 +19,7 @@ const field = computed<I_Field>({
 	set: (value: I_Field) => emit("update:modelValue", value)
 })
 
-const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => presenter, field.value))
+const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter({ presenterProxy: () => presenter, fieldProxy: () => field.value }))
 
 </script>
 
@@ -54,16 +54,26 @@ const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => 
 					<td class="details-cell">
 						<!-- <label :for="`text-${field.id.toString()}`">Text:</label> -->
 						<TextBox :id="field.key" v-model="field.text" :className="'regular-input'" />
-						<TypeDefEditor v-model="field.dataTypeDef" />
 					</td>
 				</tr>
 
-				<tr class="details-row" v-if="presenter.field.fieldType == FieldType.Method">
+				<tr class="details-row">
 					<td class="details-cell">
-						Parameters
+						DataType
 					</td>
-					<td class="details-row field-type">
-						<ParametersEditor v-model="(presenter.field as MethodField).parameters" />
+					<td class="details-cell">
+						<TypeDefEditor v-model="field.dataTypeDef" />
+					</td>
+					<td v-if="field.fieldType == FieldType.Method">
+						<div>
+							<div class="details-cell">
+								Parameters
+							</div>
+							<div class="details-row field-type">
+								<ParametersEditor v-model="(presenter.fieldProxy as MethodField).parameters" />
+							</div>
+						</div>
+
 					</td>
 				</tr>
 
@@ -82,6 +92,7 @@ const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => 
 	white-space: nowrap;
 	overflow: hidden;
 	width: 100%;
+	position: relative;
 
 	&:nth-last-child(1) {
 		border: none
@@ -100,7 +111,7 @@ const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => 
 			flex: 1 1 auto;
 		}
 
-		.toggle-btn{
+		.toggle-btn {
 			flex: 0 0 1rem;
 		}
 
@@ -125,11 +136,12 @@ const presenter = reactive<FieldEditorPresenter>(new FieldEditorPresenter(() => 
 		border-collapse: collapse;
 
 		.details-row {
-//border:solid 1px red;
-padding: 0;
+			//border:solid 1px red;
+			padding: 0;
+
 			.details-cell {
 				padding: 0;
-//				border:solid 1px blue;
+				//				border:solid 1px blue;
 				text-align: left;
 				vertical-align: top;
 
@@ -160,10 +172,10 @@ padding: 0;
 	// border: solid white 1px;
 }
 
-input {
-	background-color: #5f55;
-	color: #ddd;
-}
+// input {
+// 	background-color: #5f55;
+// 	color: #ddd;
+// }
 
 
 .regular-input {
@@ -172,5 +184,10 @@ input {
 
 .shy-input {
 	background-color: #0000;
+}
+
+.floating-local {
+	position: absolute;
+	// left: 15rem;
 }
 </style>

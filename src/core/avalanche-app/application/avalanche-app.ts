@@ -5,10 +5,11 @@ import * as repository from "../../repository";
 import * as repo from "../../repository";
 import * as rootDiag from "../root-diagram";
 import { I_RootDiagram } from "../root-diagram/domain";
+import { RootDiagram } from "../root-diagram/application";
 
 export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
-	// @ts-ignore
-	rootDiagram: I_RootDiagram
+	_rootDiagram: I_RootDiagram
+	get rootDiagram(): I_RootDiagram {return this._rootDiagram}
 
 	repository: repository.domain.I_Repository<rootDiag.domain.I_RootDiagram>
 
@@ -27,8 +28,10 @@ export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
 
 		this.repository = new rootDiag.data.RootDiagramRepo(this.httpInPort)
 
+		this._rootDiagram = new RootDiagram()
+
 		// create Repository dependency to inject
-		this.generalFactory = new factories.application.GeneralFactory()
+		this.generalFactory = new factories.application.GeneralFactory(this.rootDiagram.relationshipsStore)
 
 	}
 
@@ -48,7 +51,7 @@ export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
 	 * Method-setter is used to avoid unintentional assignments
 	*/
 	setRootDiagram(rd: rootDiag.domain.I_RootDiagram) {
-		this.rootDiagram = rd
+		this._rootDiagram = rd
 	}
 
 	/**
@@ -60,7 +63,7 @@ export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
 	async loadRootPlanAsync(key: string, alternateRepo?: repo.domain.I_Repository<rootDiag.domain.I_RootDiagram>): Promise<AvalancheApp> {
 		if (this.repository != undefined) {
 			if (g.domain.isUndefOrNull(alternateRepo)) {
-				this.rootDiagram = await this.repository.getDataAsync(key)
+				this._rootDiagram = await this.repository.getDataAsync(key)
 			} else {
 				// @ts-ignore undefined checked
 				this.rootDiagram = await alternateRepo.getDataAsync(key)

@@ -25,7 +25,7 @@ const parameters = computed<I_Parameter[]>({
 			<tbody>
 				<tr class="details-row" v-for="p in parameters" :key="Math.random()">
 					<td class="details-cell">
-						<TextBox v-model="p.name" :id="p.name" class-name="input" />
+						<TextBox v-model="p.name" :id="p.name" />
 					</td>
 					<td class="details-cell">
 						<ValTypeSelector :id="`val-type-${p.key}`" v-model="p.dataTypeDef.fallbackDataType" />
@@ -56,17 +56,10 @@ const parameters = computed<I_Parameter[]>({
 				//		border: solid 1px yellow;
 				text-align: left;
 				vertical-align: top;
-
-				&>input {
-					border: none;
-					background-color: #444;
-				}
 			}
 		}
 	}
 }
 
-.input {
-	color: #ddd;
-}
+
 </style>

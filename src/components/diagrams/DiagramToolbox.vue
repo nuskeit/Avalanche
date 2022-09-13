@@ -4,6 +4,7 @@ import { AvalancheApp } from '../../core/avalanche-app/application';
 import { I_Diagram } from '../../core/avalanche-app/root-diagram/diagram/domain';
 import { BlockEntity, ClassEntity, ComponentEntity, EnumEntity, GenericEntity, InterfaceEntity } from '../../core/avalanche-app/root-diagram/diagram/element/application';
 import { I_Element, I_ElementsStore } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
+import { GeneralFactory } from '../../core/factories/application';
 import { ElementType } from '../../core/general/domain';
 import { DiagramToolbox } from '../../core/toolbox/domain';
 import BoxedText from '../controls/svg/BoxedText.vue';
@@ -24,6 +25,8 @@ const diagram = computed<I_Diagram>({
 	set(value: I_Diagram) { emit('update:modelValue', value) }
 })
 
+const avalancheApp = inject("avalanche-app") as AvalancheApp
+
 const diagramToolbox: DiagramToolbox = new DiagramToolbox()
 
 const addComponent = (el: I_Element): void => {
@@ -33,38 +36,37 @@ const addComponent = (el: I_Element): void => {
 }
 
 function addComponentHandler() {
-	const pe: I_Element = new ComponentEntity()
+	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Component, undefined)
 	addComponent(pe)
 }
 
 function addBlockHandler() {
-	const pe: I_Element = new BlockEntity()
+	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Block, undefined)
 	addComponent(pe)
 }
 
 function addClassHandler() {
-	const pe: I_Element = new ClassEntity()
+	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Class, undefined)
 	addComponent(pe)
 }
 
 function addInterfaceHandler() {
-	const pe: I_Element = new InterfaceEntity()
+	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Interface, undefined)
 	addComponent(pe)
 }
 
 function addEnumHandler() {
-	const pe: I_Element = new EnumEntity()
+	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Enum, undefined)
 	addComponent(pe)
 }
 
 
 function addGenericEntityHandler() {
-	const pe: I_Element = new GenericEntity()
+	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.GenericEntity, undefined)
 	addComponent(pe)
 }
 
 function addCommandHandler(e: ElementType) {
-	const pe: I_Element = new EnumEntity()
 	switch (e) {
 		case ElementType.Component:
 			addComponentHandler()

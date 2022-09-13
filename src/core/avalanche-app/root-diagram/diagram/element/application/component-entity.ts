@@ -1,18 +1,18 @@
-import * as g from "../../../../../general"
-import { I_Serializable } from "../../../../../general/domain"
-import * as elementDomainNS from "../../element/domain"
-import * as fieldAppNS from "../field/application"
+import { ElementType, I_Serializable } from "../../../../../general/domain"
+import { I_RelationshipsStore } from "../../../../../relationships/domain"
+import { Element } from "../domain"
+import { EventField } from "../field/application"
 
-export class ComponentEntity extends elementDomainNS.Element implements I_Serializable {
+export class ComponentEntity extends Element implements I_Serializable {
 
-	constructor(key: string = "") {
-		super(g.domain.ElementType.Class, key)
+	constructor(relationshipStore: I_RelationshipsStore, key?: string) {
+		super(ElementType.Class, relationshipStore, key)
 		this.props = []
 		this.events = []
 	}
 
 	props: string[]
-	events: fieldAppNS.EventField[]
+	events: EventField[]
 
 	toJSON(): any {
 		return {

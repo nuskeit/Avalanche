@@ -3,6 +3,9 @@ import { computed } from "vue";
 import { I_TypeDef } from "../../../../../../core/avalanche-app/root-diagram/diagram/element/Field/type-def/domain";
 import ValTypeSelector from "../../../../../controls/ValTypeSelector.vue";
 import RefTypeSelector from "../../../../../controls/RefTypeSelector.vue";
+import { TypeDef } from "../../../../../../core/avalanche-app/root-diagram/diagram/element/field/type-def/application";
+import { I_Element } from "../../../../../../core/avalanche-app/root-diagram/diagram/element/domain";
+import { DataType } from "../../../../../../core/general/domain";
 
 const props = defineProps<{ modelValue: I_TypeDef }>()
 
@@ -12,7 +15,17 @@ const emit = defineEmits<{
 
 const typeDef = computed<I_TypeDef>({
 	get: (): I_TypeDef => props.modelValue,
-	set: (value: I_TypeDef) => emit("update:modelValue", value)
+	set: (value: I_TypeDef) => {
+		console.log('typeDef change');
+		const _value= new TypeDef(value.key, value.fallbackDataType, value.refElement)
+		emit("update:modelValue", _value)}
+})
+
+const fallbackDataType = computed<DataType>({
+	get: (): DataType => props.modelValue.fallbackDataType,
+	set: (value: DataType) => {
+		console.log('typeDef change');
+		emit("update:modelValue", new TypeDef(typeDef.value.key, value, typeDef.value.refElement))}
 })
 
 </script>
@@ -24,7 +37,7 @@ const typeDef = computed<I_TypeDef>({
 			<tbody>
 				<tr class="details-row">
 					<td class="details-cell">
-						<ValTypeSelector :id="`val-type-${typeDef.key}`" v-model="typeDef.fallbackDataType" />
+						<ValTypeSelector :id="`val-type-${typeDef.key}`" v-model="fallbackDataType" />
 					</td>
 					<td class="details-cell">
 						<RefTypeSelector :id="`reg-type-${typeDef.key}`" v-model="typeDef.refElement" />

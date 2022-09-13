@@ -23,14 +23,10 @@ const refTypeValue = computed<Nullable<string>>({
 </script>
 
 <template>
-	<div>
-		<div>
-			<select :id="props.id" v-model="refTypeValue">
-				<option :value="null"></option>
-				<option v-for="x, i in elementsStore?.elements" key="i" :value="x.key">
-					{{ x.name }} ({{ x.elementType.substring(0, 1) }})
-				</option>
-			</select>
-		</div>
-	</div>
+	<select :id="props.id" v-model="refTypeValue">
+		<option :value="null"></option>
+		<option v-for="x, i in elementsStore?.elements" key="i" :value="x.key">
+			{{ x.name }} ({{ x.elementType.substring(0, 1) }})
+		</option>
+	</select>
 </template>

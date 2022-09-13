@@ -1,14 +1,14 @@
-import * as g from "../../../../../../general"
-import * as fieldDomainNS from "../../Field/domain"
-import * as typeDef from "../type-def"
+import { FieldType, Nullable } from "../../../../../../general/domain"
+import { Field, I_Parameter } from "../domain"
+import { I_TypeDef } from "../type-def/domain"
 
-export class MethodField extends fieldDomainNS.Field {
+export class MethodField extends Field {
 
-	readonly parameters: fieldDomainNS.I_Parameter[]
+	readonly parameters: I_Parameter[]
 
-	constructor(name: string, dataTypeDef: g.domain.Nullable<typeDef.domain.I_TypeDef>,
-		parameters: g.domain.Nullable<fieldDomainNS.I_Parameter[]>, key: string = "") {
-		super(name, g.domain.FieldType.Method, dataTypeDef, key)
+	constructor(name: string, dataTypeDef: I_TypeDef,
+		parameters: Nullable<I_Parameter[]>, key?: string) {
+		super(name, FieldType.Method, dataTypeDef, key)
 		if (parameters == null)
 			this.parameters = []
 		else
@@ -18,7 +18,7 @@ export class MethodField extends fieldDomainNS.Field {
 	toJSON() {
 		return {
 			__type: "MethodField",
-            ...super.toJSON()
+			...super.toJSON()
 		}
 	}
 }

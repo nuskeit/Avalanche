@@ -1,25 +1,28 @@
-import * as dts from "../../../data-transformation-services"
-import * as repo from "../../../repository"
-import * as rootDiag from "../../root-diagram"
+import { Reviver } from "../../../data-transformation-services/application"
+import { Repository } from "../../../repository/application"
+import { I_HttpInPort, I_Repository, I_Response } from "../../../repository/domain"
+import { RootDiagram } from "../application"
+import { I_RootDiagram } from "../domain"
+import { RootDiagram_DTO } from "./root-diagram-dto"
 
-export class RootDiagramRepo extends repo.application.Repository implements repo.domain.I_Repository<rootDiag.domain.I_RootDiagram> {
+export class RootDiagramRepo extends Repository implements I_Repository<I_RootDiagram> {
 
-	constructor(httpInPort: repo.domain.I_HttpInPort) {
+	constructor(httpInPort: I_HttpInPort) {
 		super(httpInPort)
 	}
 
-	async getDataAsync(key: string): Promise<rootDiag.domain.I_RootDiagram> {
-		const response = await this.getDataByKey<rootDiag.data.RootDiagram_DTO>(key) //JSON.parse(PersistentData)
-		const rootDiagDto: rootDiag.data.RootDiagram_DTO = response.data
-		const rootDiagram = dts.application.Reviver.createRootDiagram(rootDiagDto)
+	async getDataAsync(key: string): Promise<I_RootDiagram> {
+		const response = await this.getDataByKey<RootDiagram_DTO>(key) //JSON.parse(PersistentData)
+		const rootDiagDto: RootDiagram_DTO = response.data
+		const rootDiagram = (new Reviver()).createRootDiagram(rootDiagDto)
 
-		if (rootDiagram instanceof rootDiag.application.RootDiagram)
+		if (rootDiagram instanceof RootDiagram)
 			return rootDiagram
 		else
 			throw new Error("ERROR: getDataAsync: Type mismatch.")
 	}
 
-	async getDataByKey<T>(key: string): Promise<repo.domain.I_Response<T>> {
+	async getDataByKey<T>(key: string): Promise<I_Response<T>> {
 		return await this.httpInPort.getAsync<T>(`root-diagram/${key}`)
 	}
 

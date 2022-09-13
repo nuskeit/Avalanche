@@ -6,55 +6,54 @@ export class NavigationControlPresenter implements I_Presenter<void> {
 
 	sideSize = 63
 
-	constructor(emit: Function) {
+	constructor(naigationDelegate: Function) {
 		this.lastPressed = ""
-		this.delegates = { emit }
+		this.delegates = { naigationDelegate }
 	}
 
-	// @ts-ignore REVIEW!!
-	proxy: Function
+	readonly proxies: {} | undefined
 
-	delegates: {
-		emit: Function
+	readonly delegates: {
+		naigationDelegate: Function
 	}
 
 	diagFactor = 0.707
-	eventsHandler = {
+	readonly eventsHandler = {
 		emitUL: () => {
 			this.lastPressed = 'ul';
-			this.delegates.emit('navigate', { x: -this.diagFactor, y: -this.diagFactor })
+			this.delegates.naigationDelegate({ x: -this.diagFactor, y: -this.diagFactor })
 		},
 		emitU: () => {
 			this.lastPressed = 'u';
-			this.delegates.emit('navigate', { x: 0, y: -1 })
+			this.delegates.naigationDelegate({ x: 0, y: -1 })
 		},
 		emitUR: () => {
 			this.lastPressed = 'ur';
-			this.delegates.emit('navigate', { x: this.diagFactor, y: -this.diagFactor })
+			this.delegates.naigationDelegate({ x: this.diagFactor, y: -this.diagFactor })
 		},
 		emitL: () => {
 			this.lastPressed = 'l';
-			this.delegates.emit('navigate', { x: -1, y: 0 })
+			this.delegates.naigationDelegate({ x: -1, y: 0 })
 		},
 		emitC: () => {
 			this.lastPressed = 'c';
-			this.delegates.emit('navigate', { x: 0, y: 0 })
+			this.delegates.naigationDelegate({ x: 0, y: 0 })
 		},
 		emitR: () => {
 			this.lastPressed = 'r';
-			this.delegates.emit('navigate', { x: 1, y: 0 })
+			this.delegates.naigationDelegate({ x: 1, y: 0 })
 		},
 		emitDL: () => {
 			this.lastPressed = 'dl';
-			this.delegates.emit('navigate', { x: -this.diagFactor, y: this.diagFactor })
+			this.delegates.naigationDelegate({ x: -this.diagFactor, y: this.diagFactor })
 		},
 		emitD: () => {
 			this.lastPressed = 'd';
-			this.delegates.emit('navigate', { x: 0, y: 1 })
+			this.delegates.naigationDelegate({ x: 0, y: 1 })
 		},
 		emitDR: () => {
 			this.lastPressed = 'dr';
-			this.delegates.emit('navigate', { x: this.diagFactor, y: this.diagFactor })
+			this.delegates.naigationDelegate({ x: this.diagFactor, y: this.diagFactor })
 		},
 	}
 }

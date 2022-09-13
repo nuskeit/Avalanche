@@ -3,23 +3,23 @@ import { I_Presenter } from "../core/general/presenter";
 
 export class RootDiagramPresenter implements I_Presenter<I_RootDiagram>{
 
-	rootDiagram: I_RootDiagram
-	proxy: Function
-
 	selectedDiagramIndex: number
 
-	constructor(proxy: Function, rootDiagram: I_RootDiagram) {
-		this.proxy = proxy
-		this.rootDiagram = rootDiagram
+	constructor(proxies: Proxies) {
+		this.proxies = proxies
 		this.selectedDiagramIndex = 0
 	}
 
 	selectElement(key: string, altKey: boolean) {
-		if ((key >= "1" && key <= this.rootDiagram.diagrams.length.toString()) && altKey)
-			this.proxy().selectedDiagramIndex = Number(key) - 1
+		if ((key >= "1" && key <= this.rootDiagramProxy.diagrams.length.toString()) && altKey)
+			this.presenterProxy.selectedDiagramIndex = Number(key) - 1
 	}
 
-	delegates = {}
+	proxies: Proxies
+	get presenterProxy(): RootDiagramPresenter { return this.proxies.presenterProxy() }
+	get rootDiagramProxy(): I_RootDiagram { return this.proxies.rootDiagramProxy() }
+
+	delegates: {} | undefined // Placeholder for delegates
 
 	eventsHandler = {
 		handleKeyDown: (e: KeyboardEvent) => {
@@ -27,3 +27,9 @@ export class RootDiagramPresenter implements I_Presenter<I_RootDiagram>{
 		}
 	}
 }
+
+type Proxies = {
+	presenterProxy(): RootDiagramPresenter
+	rootDiagramProxy(): I_RootDiagram
+}
+
