@@ -1,5 +1,5 @@
-import * as factories from "../../factories"
 import * as repo from "../../repository"
+import { AvalancheApp } from "../application"
 import * as rootDiag from "../root-diagram"
 
 export interface I_AvalancheApp {
@@ -10,14 +10,11 @@ export interface I_AvalancheApp {
 	rootDiagram: rootDiag.domain.I_RootDiagram
 
 	/**
-	 * provides all factory methods that are not specific or specially treated
-	*/
-	generalFactory: factories.domain.I_GeneralFactory
-
-	/**
 	 * provides port to consume from the web api
 	*/
 	httpInPort: repo.domain.I_HttpInPort
-	
+
+
+	loadRootPlanAsync(key: string, alternateRepo?: repo.domain.I_Repository<rootDiag.domain.I_RootDiagram>): Promise<AvalancheApp>
 
 }

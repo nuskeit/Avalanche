@@ -1,17 +1,14 @@
 import { I_Diagram } from '../../core/avalanche-app/root-diagram/diagram/domain'
 import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element/domain'
 import { I_Grid } from '../../core/avalanche-app/root-diagram/diagram/grid/domain'
-import { Draggable, Dragger } from '../../core/drag/application'
 import { I_Draggable } from '../../core/drag/domain'
-import { GeneralFactory } from '../../core/factories/application'
-import { DraggableObjectType, I_Vector, Nullable, travelStep, Vector } from '../../core/general/domain'
+import { AppFactory } from '../../core/factories/app-factory/application'
+import { DraggableObjectType, I_Vector, Nullable, travelStep } from '../../core/general/domain'
 import { DraggableHelper, I_Presenter, Throttle } from '../../core/general/presenter'
 import { Grid } from './grid-presenter'
 const t = new Throttle()
 
 export class DiagramPresenter implements I_Presenter<I_Diagram> {
-
-	factory: GeneralFactory
 
 	draggableElement: I_Draggable<I_Element> | undefined
 	draggableViewBox: I_Draggable<I_Vector> | undefined
@@ -19,7 +16,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 
 	dragType: DraggableObjectType | undefined
 
-	interval: number | undefined
+	interval: any
 	keyboardNavFlag: boolean = false
 
 	draggable: any
@@ -34,7 +31,20 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 
 
 
-	editElement: Nullable<I_Element> = null
+	_prevEditElementKey: Nullable<string> = null
+	_editElement: Nullable<I_Element> = null
+	get editElement(): Nullable<I_Element> { return this._editElement }
+	set editElement(value: Nullable<I_Element>) {
+		this._editElement = value
+		if (value == null && this._prevEditElementKey != null) {
+			this._prevEditElementKey = null
+			this.diagramProxy.detectRelationshipsChanges()
+		} else if (value != null && this._prevEditElementKey != value.key) {
+			this._prevEditElementKey = value.key
+			this.diagramProxy.detectRelationshipsChanges()
+		}
+	}
+
 	selectedElement: Nullable<I_Element> = null
 
 	get elementEditorVisible(): boolean { return this.editElement != null }
@@ -57,12 +67,10 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 
 
 
-	constructor(factory: GeneralFactory,
-		proxies: Proxies,
+	constructor(proxies: Proxies,
 		diagramSvgAccessor: Function,
 		diagramSvgPointAccessor: Function
 	) {
-		this.factory = factory
 		this.proxies = proxies
 		this.draggable = new DraggableHelper(this.toLocalVector)
 		this.grid = new Grid(this.diagramProxy.viewBox, this.diagramProxy.viewPort)
@@ -92,8 +100,8 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		if (this.draggableElement == undefined) {
 			let loc = this.toLocalVector(e.clientX, e.clientY)
 			this.dragType = DraggableObjectType.viewBox
-			this.draggableViewBox = new Draggable<I_Vector>(this.diagramProxy.viewBox,
-				new Dragger("draggableViewBox", loc, new Vector(e.clientX, e.clientY)))
+			this.draggableViewBox = AppFactory.getSingleton().createDraggable<I_Vector>(this.diagramProxy.viewBox,
+				AppFactory.getSingleton().createDragger("draggableViewBox", loc, AppFactory.getSingleton().createVector(e.clientX, e.clientY)))
 		} else
 			this.draggable.StartDrag(this.draggableElement)
 
@@ -150,7 +158,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 					clearInterval(this.interval)
 					return
 				}
-				const navVector: Vector = new Vector(20 * v.x, 20 * v.y)
+				const navVector: I_Vector = AppFactory.getSingleton().createVector(20 * v.x, 20 * v.y)
 				if (v.x === 0 && v.y === 0) { // center
 					this.travelToOrigin()
 				} else { // navigate
@@ -160,7 +168,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	}
 
 	keyboardInteraction(key: string) {
-		const moveVec: I_Vector = new Vector(0, 0)
+		const moveVec: I_Vector = AppFactory.getSingleton().createVector(0, 0)
 
 		// if (key == "+") {
 		// 	console.log('MAS');
@@ -248,24 +256,14 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		},
 
 		selectElementHandler: (element: Nullable<I_Element>) => {
-			console.log('presenter editElement', this.presenterProxy.editElement?.key, element?.key);
 			this.presenterProxy.selectedElement = element
 			this.presenterProxy.editElement = element
-			// const edel = this.factory.createElement(element?.elementType, element?.key)
-			// Object.assign(edel, element)
-			// this.presenterProxy.editElement = edel
-
-			// const edel = this.factory.createElement(element.elementType, element.key)
-			// Object.assign(edel, JSON.parse(JSON.stringify(element)))
-			// this.presenterProxy.editElement = edel
 		},
 
-		// openElementEditorHandler: (element: I_Element) => {
-		// 	this.presenterProxy.editElement = element
-		// },
-
 		closeElementEditorHandler: () => {
+			console.log('CLOSE EDITOR');
 			this.presenterProxy.editElement = null
+			this.presenterProxy.diagramProxy.relationships = { ...this.presenterProxy.diagramProxy.relationships }
 		},
 
 		updateElementHandler: (e: I_Element) => {

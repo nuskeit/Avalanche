@@ -12,3 +12,5 @@ Typing:
 Make sub-elements to have Primary type (composed of standard type and custom type) and fallback type (must be standard: value or ref type)
 
 Create associations when a custom type is used inside an element.
+
+

@@ -1,4 +1,4 @@
-import { I_HttpInPort } from '..';
+import { I_HttpInPort } from "../domain"
 
 export abstract class Repository {
 	readonly httpInPort: I_HttpInPort

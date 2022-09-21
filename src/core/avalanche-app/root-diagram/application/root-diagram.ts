@@ -1,29 +1,29 @@
-import * as g from "../../../general"
-import * as rela from "../../../relationships"
-import * as rootDiag from "../../root-diagram"
-import * as diag from "../diagram"
-import * as elem from "../diagram/element"
+import { GlobalKey, Nullable } from "../../../general/domain"
+import { RelationshipsStore } from "../../../relationships/data"
+import { Diagram } from "../diagram/application"
+import { ElementsStore } from "../diagram/element/data"
+import { I_RootDiagram } from "../domain"
 
-export class RootDiagram implements rootDiag.domain.I_RootDiagram {
+export class RootDiagram implements I_RootDiagram {
 	readonly key: string
 	name: string
-	diagrams: diag.application.Diagram[]
-	elementsStore: elem.data.ElementsStore
-	relationshipsStore: rela.data.RelationshipsStore
+	diagrams: Diagram[]
+	elementsStore: ElementsStore
+	relationshipsStore: RelationshipsStore
 
-	constructor(key: g.domain.Nullable<string> = null) {
+	constructor(key?: string) {
 		this.name = "New Root Diagram"
 		this.diagrams = []
-		this.elementsStore = new elem.data.ElementsStore()
-		this.relationshipsStore = new rela.data.RelationshipsStore()
-		if (key == null) {
-			this.key = g.domain.GlobalKey.getNewGlobalKey()
+		this.elementsStore = new ElementsStore()
+		this.relationshipsStore = new RelationshipsStore()
+		if (!key) {
+			this.key = GlobalKey.getNewGlobalKey()
 		} else {
 			this.key = key
 		}
 	}
 
-	public addDiagram(p: diag.application.Diagram): void {
+	public addDiagram(p: Diagram): void {
 		this.diagrams.push(p)
 	}
 

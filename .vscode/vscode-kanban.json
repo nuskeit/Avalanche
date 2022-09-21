@@ -1,0 +1,36 @@
+{
+  "todo": [
+    {
+      "assignedTo": {
+        "name": "Adrian Nuske"
+      },
+      "category": "Events",
+      "creation_time": "2022-09-20T13:34:09.341Z",
+      "description": {
+        "content": "Make sure that allways the Events parámeters' direction is \"IN\"",
+        "mime": "text/markdown"
+      },
+      "id": "1",
+      "references": [],
+      "title": "Events Parameters always \"In\" direction"
+    }
+  ],
+  "in-progress": [
+    {
+      "assignedTo": {
+        "name": "Adrian Nuske"
+      },
+      "category": "Parameters",
+      "creation_time": "2022-09-20T13:55:39.636Z",
+      "description": {
+        "content": "Add new parameter to Methods and Events",
+        "mime": "text/markdown"
+      },
+      "id": "2",
+      "references": [],
+      "title": "Add New Parameter"
+    }
+  ],
+  "testing": [],
+  "done": []
+}

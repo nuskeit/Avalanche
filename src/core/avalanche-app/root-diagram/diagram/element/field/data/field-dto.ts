@@ -8,7 +8,7 @@ export interface I_Field_DTO {
 	text: string
 	fieldType: FieldType
 	dataTypeDef: Nullable<TypeDef_DTO>
-	parameters?: Nullable<Parameter_DTO[]>
+	parameters?: Parameter_DTO[]
 }
 
 export abstract class Field_DTO {
@@ -17,14 +17,14 @@ export abstract class Field_DTO {
 	text: string
 	fieldType: FieldType
 	dataTypeDef: TypeDef_DTO
-	parameters?: Nullable<Parameter_DTO[]>
+	parameters?: Parameter_DTO[]
 
 	constructor(key: string,
 		name: string,
 		text: string,
 		fieldType: FieldType,
 		dataTypeDef: TypeDef_DTO,
-		parameters?: Nullable<Parameter_DTO[]>
+		parameters?: Parameter_DTO[]
 	) {
 		this.key = key
 		this.name = name

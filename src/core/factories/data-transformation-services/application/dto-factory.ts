@@ -1,12 +1,12 @@
-import * as diagramNS from "../../avalanche-app/root-diagram/diagram";
-import * as elemNS from "../../avalanche-app/root-diagram/diagram/element";
-import * as fieldNS from "../../avalanche-app/root-diagram/diagram/element/field";
-import * as g from "../../general";
-import * as relationshipsNS from "../../relationships";
-import * as rootDiagramNS from "../../avalanche-app/root-diagram"
-import * as dtoNS from "../../data-transformation-services"
-import * as  typeDefNS from "../../avalanche-app/root-diagram/diagram/element/field/type-def";
-import * as dragNS from "../../drag";
+import * as diagramNS from "../../../avalanche-app/root-diagram/diagram";
+import * as elemNS from "../../../avalanche-app/root-diagram/diagram/element";
+import * as fieldNS from "../../../avalanche-app/root-diagram/diagram/element/field";
+import * as g from "../../../general";
+import * as relationshipsNS from "../../../relationships";
+import * as rootDiagramNS from "../../../avalanche-app/root-diagram"
+import * as dtoNS from ".."
+import * as  typeDefNS from "../../../avalanche-app/root-diagram/diagram/element/field/type-def";
+import * as dragNS from "../../../drag";
 
 export class DtoFactory implements dtoNS.domain.I_DtoFactory {
 

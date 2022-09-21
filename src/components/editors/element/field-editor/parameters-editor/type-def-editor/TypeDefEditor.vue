@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { I_TypeDef } from "../../../../../../core/avalanche-app/root-diagram/diagram/element/Field/type-def/domain";
-import ValTypeSelector from "../../../../../controls/ValTypeSelector.vue";
-import RefTypeSelector from "../../../../../controls/RefTypeSelector.vue";
-import { TypeDef } from "../../../../../../core/avalanche-app/root-diagram/diagram/element/field/type-def/application";
-import { I_Element } from "../../../../../../core/avalanche-app/root-diagram/diagram/element/domain";
+import { AppFactory } from "../../../../../../core/factories/app-factory/application";
 import { DataType } from "../../../../../../core/general/domain";
+import RefTypeSelector from "../../../../../controls/RefTypeSelector.vue";
+import ValTypeSelector from "../../../../../controls/ValTypeSelector.vue";
 
 const props = defineProps<{ modelValue: I_TypeDef }>()
 
@@ -16,16 +15,16 @@ const emit = defineEmits<{
 const typeDef = computed<I_TypeDef>({
 	get: (): I_TypeDef => props.modelValue,
 	set: (value: I_TypeDef) => {
-		console.log('typeDef change');
-		const _value= new TypeDef(value.key, value.fallbackDataType, value.refElement)
-		emit("update:modelValue", _value)}
+		const _value = AppFactory.getSingleton().createTypeDef(value.fallbackDataType, value.refElement, value.key)
+		emit("update:modelValue", _value)
+	}
 })
 
 const fallbackDataType = computed<DataType>({
 	get: (): DataType => props.modelValue.fallbackDataType,
 	set: (value: DataType) => {
-		console.log('typeDef change');
-		emit("update:modelValue", new TypeDef(typeDef.value.key, value, typeDef.value.refElement))}
+		emit("update:modelValue", AppFactory.getSingleton().createTypeDef(value, typeDef.value.refElement, typeDef.value.key))
+	}
 })
 
 </script>
@@ -53,8 +52,9 @@ const fallbackDataType = computed<DataType>({
 .typedef-editor_root {
 
 	.details-table {
-		background-color: #555;
+		background-color: #0002;
 		border-collapse: collapse;
+		border: solid 1px red;
 
 		.details-row {
 			//			border: solid 1px green;

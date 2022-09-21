@@ -24,7 +24,7 @@ export class HttpInPort implements repositoryNS.domain.I_HttpInPort {
 
 
 	async getAsync<P>(url: string, data?: P): Promise<repositoryNS.domain.I_Response<P>> {
-		const response = await this._axios.get(url, data)
+		const response = await this._axios.get(url, { data })
 		return await response.data
 	}
 	async postAsync<P>(url: string, data?: P): Promise<repositoryNS.domain.I_Response<P>> {
@@ -40,11 +40,11 @@ export class HttpInPort implements repositoryNS.domain.I_HttpInPort {
 		return await response.data
 	}
 	async deleteAsync<P>(url: string, data?: P): Promise<repositoryNS.domain.I_Response<P>> {
-		const response = await this._axios.delete(url, data)
+		const response = await this._axios.delete(url, { data })
 		return await response.data
 	}
 	async optionsAsync<P>(url: string, data?: P): Promise<repositoryNS.domain.I_Response<P>> {
-		const response = await this._axios.options(url, data)
+		const response = await this._axios.options(url, { data })
 		return await response.data
 	}
 

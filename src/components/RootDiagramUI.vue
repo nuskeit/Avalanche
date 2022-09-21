@@ -64,7 +64,7 @@ onUnmounted(() => {
 	.root-diagram-title {
 		color: #ccc;
 		height: 1.5rem;
-		font-size: 1rem;
+		font-size: 1.2rem;
 		display: flex;
 		align-items: center;
 		padding: .2rem;

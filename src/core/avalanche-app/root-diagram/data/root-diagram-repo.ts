@@ -1,11 +1,12 @@
-import { Reviver } from "../../../data-transformation-services/application"
+import { Reviver } from "../../../factories/data-transformation-services/application"
 import { Repository } from "../../../repository/application"
 import { I_HttpInPort, I_Repository, I_Response } from "../../../repository/domain"
 import { RootDiagram } from "../application"
 import { I_RootDiagram } from "../domain"
+import { I_RootDiagramRepo } from "../domain/root-domain-repo"
 import { RootDiagram_DTO } from "./root-diagram-dto"
 
-export class RootDiagramRepo extends Repository implements I_Repository<I_RootDiagram> {
+export class RootDiagramRepo extends Repository implements I_Repository<I_RootDiagram>, I_RootDiagramRepo {
 
 	constructor(httpInPort: I_HttpInPort) {
 		super(httpInPort)

@@ -1,20 +1,17 @@
-import {
-    provide,
-    reactive
-} from 'vue';
+import { provide, reactive } from 'vue';
 
-import { RootDiagram } from '../.././core';
+import { AppFactory } from '../../core/factories/app-factory/application';
 
 // Use symbol as unique identifier.
 export const rootDiagramSymbol = Symbol('rootDiagramSymbol');
 
 export default {
-    setup() {
+	setup() {
 
-        const rootDiagram = reactive(new RootDiagram())
+		const rootDiagram = reactive(AppFactory.getSingleton().createRootDiagram())
 
-        provide(rootDiagramSymbol, rootDiagram);
+		provide(rootDiagramSymbol, rootDiagram);
 
-    }
+	}
 };
 

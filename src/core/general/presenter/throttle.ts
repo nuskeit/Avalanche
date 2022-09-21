@@ -1,6 +1,6 @@
 export class Throttle {
 
-	lastFunc: number = 0
+	lastFunc: any = 0
 	lastRan: number = 0
 
 	throttle(func: Function, limit: number) {

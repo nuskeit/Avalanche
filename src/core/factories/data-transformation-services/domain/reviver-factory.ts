@@ -1,8 +1,8 @@
-import * as rootDiagramNS from "../../avalanche-app/root-diagram"
-import * as elementNS from "../../avalanche-app/root-diagram/diagram/element"
-import * as fieldNS from "../../avalanche-app/root-diagram/diagram/element/field"
-import * as typeDefNS from "../../avalanche-app/root-diagram/diagram/element/field/type-def"
-import * as g from "../../general"
+import * as rootDiagramNS from "../../../avalanche-app/root-diagram"
+import * as elementNS from "../../../avalanche-app/root-diagram/diagram/element"
+import * as fieldNS from "../../../avalanche-app/root-diagram/diagram/element/field"
+import * as typeDefNS from "../../../avalanche-app/root-diagram/diagram/element/field/type-def"
+import * as g from "../../../general"
 
 
 export interface I_Reviver {

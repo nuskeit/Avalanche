@@ -1,26 +1,47 @@
-export {}
-// import { I_Parameter } from "../../../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
-// import { I_Presenter } from "../../../../../core/general/presenter";
+export { }
+import { I_Parameter } from "../../../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { AppFactory } from "../../../../../core/factories/app-factory/application";
+import { DataType, ParamDirection, ParamValRef } from "../../../../../core/general/domain";
+import { I_Presenter } from "../../../../../core/general/presenter";
 
-// export class ParametersEditorPresenter implements I_Presenter<I_Parameter[]> {
+export class ParametersEditorPresenter implements I_Presenter<I_Parameter[]> {
 
-// 	parameters: I_Parameter[]
-// 	expand: boolean = false
+	parameters: I_Parameter[]
+	expand: boolean = false
+	// @ts-ignore, value set trough function
+	newParameter: I_Parameter
 
-// 	constructor(proxies: Proxies, parameters: I_Parameter[]) {
-// 		this.proxies = proxies
-// 		this.parameters = parameters
-// 	}
+	constructor(proxies: Proxies, parameters: I_Parameter[]) {
+		this.proxies = proxies
+		this.parameters = parameters
+		this.createNewParameter()
+	}
 
-// 	proxies: Proxies
-// 	get presenterProxy() { return this.proxies.presenterProxy() }
+	proxies: Proxies
 
+	get presenterProxy() { return this.proxies.presenterProxy() }
 
-// 	delegates: {} | undefined
-// 	eventsHandler = {
-// 	}
-// }
+	createNewParameter() {
+		this.newParameter = AppFactory.getSingleton().createParameter("new",
+			ParamDirection.In, ParamValRef.Val, AppFactory.getSingleton().createTypeDef(DataType.string, null))
+	}
 
-// type Proxies = {
-// 	presenterProxy(): ParametersEditorPresenter
-// }
+	delegates: {} | undefined
+	eventsHandler = {
+
+		deleteParameterHandler: (index: number) => {
+			console.log('delete parameter');
+			this.proxies.parametersProxy().splice(index, 1)
+		},
+		addParameterHandler: (i: number, p: I_Parameter) => {
+			console.log('add parameter');
+			this.proxies.parametersProxy().push(p)
+			this.createNewParameter()
+		}
+	}
+}
+
+type Proxies = {
+	presenterProxy(): ParametersEditorPresenter,
+	parametersProxy(): I_Parameter[]
+}

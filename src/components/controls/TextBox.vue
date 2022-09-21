@@ -22,3 +22,9 @@ const text = computed<string>({
 <template>
 	<input :class="`${props.className}`" placeholder="..." :id="props.id" v-model="text" :style="props.style">
 </template>
+
+<style lang="scss" scoped>
+	input{
+		font-size: inherit;
+	}
+</style>

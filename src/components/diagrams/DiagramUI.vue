@@ -32,7 +32,6 @@ const avalancheApp = inject("avalanche-app") as AvalancheApp
 // })
 
 const diagramLocal = new Diagram(props.modelValue.name, props.modelValue.diagramType,
-	props.modelValue.elementsStore, props.modelValue.relationshipsStore,
 	props.modelValue.viewBox, props.modelValue.viewPort)
 Object.assign(diagramLocal, props.modelValue)
 
@@ -53,7 +52,6 @@ function createSvgPoint() {
 
 const presenter: DiagramPresenter = reactive<DiagramPresenter>(
 	new DiagramPresenter(
-		avalancheApp.generalFactory,
 		{
 			presenterProxy: () => presenter,
 			diagramProxy: () => diagramLocal
@@ -101,9 +99,8 @@ onUnmounted(async () => {
 
 			<DiagramOrigin />
 
-			<rect :x="diagramLocal.viewBox.x" :y="diagramLocal.viewBox.y"
-				:width="presenter.navigationControlPosition.x" :height="presenter.navigationControlPosition.y"
-				fill="#00f8" />
+			<rect :x="diagramLocal.viewBox.x" :y="diagramLocal.viewBox.y" :width="presenter.navigationControlPosition.x"
+				:height="presenter.navigationControlPosition.y" fill="#00f8" />
 
 			<!-- @open-crud="() => presenter.eventsHandler.openElementEditorHandler(diagramLocal.rootElements[elem.element.key])" -->
 			<g v-for="elem in diagramLocal.elements" :key="elem.element.key">
@@ -113,6 +110,12 @@ onUnmounted(async () => {
 					@select-element="presenter.eventsHandler.selectElementHandler" />
 
 			</g>
+			<g v-for="rel in diagramLocal.relationships" :key="'rel'+rel.key">
+
+				<Connection :source-element="diagramLocal.elements[rel.sourceKey]"
+					:target-element="diagramLocal.elements[rel.targetKey]" :rel="rel" />
+			</g>
+
 			<g v-for="rel in avalancheApp.rootDiagram.relationshipsStore.relationships" :key="rel.key">
 				<Connection
 					v-if="diagramLocal.elements[rel.sourceKey] != undefined && diagramLocal.elements[rel.targetKey] != undefined"
@@ -121,8 +124,7 @@ onUnmounted(async () => {
 			</g>
 
 			<g :transform="`translate(${diagramLocal.viewBox.x}, ${diagramLocal.viewBox.y})`">
-				<OriginPointer :origin-x="diagramLocal.viewBox.x" :origin-y="diagramLocal.viewBox.y" :x="70"
-					:y="70" />
+				<OriginPointer :origin-x="diagramLocal.viewBox.x" :origin-y="diagramLocal.viewBox.y" :x="70" :y="70" />
 
 				<NavigationControl :x="presenter.navigationControlPosition.x" :y="presenter.navigationControlPosition.y"
 					@navigate="presenter.eventsHandler.screenPadNavigationHandler"
@@ -133,8 +135,7 @@ onUnmounted(async () => {
 					:y="presenter.diagramToolboxPosition.y" :width="175" />
 			</g>
 		</svg>
-		<div class="left-panel"
-			:style="`font-size:${diagramLocal.viewPort.width / diagramLocal.viewBox.width}rem`">
+		<div class="left-panel" :style="`font-size:${diagramLocal.viewPort.width / diagramLocal.viewBox.width}rem`">
 
 			<ElementEditor v-if="presenter.elementEditorVisible"
 				@close="presenter.eventsHandler.closeElementEditorHandler" v-model="(presenter.editElement as any)"
@@ -159,12 +160,12 @@ onUnmounted(async () => {
 
 	.left-panel {
 		position: absolute;
-		left: 2rem;
-		top: 2rem;
+		left: 0;
+		top: 1.6rem;
 		// width: 10%;
 		//font-size: 15px;
 		overflow: auto;
-		max-height: 30rem;
+		max-height: calc(100% - 1.7rem);
 	}
 
 	svg {
@@ -173,7 +174,7 @@ onUnmounted(async () => {
 			text-decoration: none;
 		}
 
-		font-size: 2em;
+		font-size: 1rem;
 
 		left: 0;
 		right: 0;

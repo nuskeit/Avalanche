@@ -1,21 +1,24 @@
-import * as repositoryNS from "../../repository"
-import * as g from "../../general"
+import { AppFactory } from "../../factories/app-factory/application"
+import { Repository } from "../../repository/application"
+import { I_HttpInPort, I_Repository } from "../../repository/domain"
+import { KeyValuePair, SystemData } from "../application"
+import { FieldType, I_KeyValuePair, I_SystemData } from "../domain"
 
-export class SysyemDataRepo extends repositoryNS.application.Repository implements repositoryNS.domain.I_Repository<g.domain.I_SystemData> {
+export class SysyemDataRepo extends Repository implements I_Repository<I_SystemData> {
 
-	constructor(httpInPort: repositoryNS.domain.I_HttpInPort) {
+	constructor(httpInPort: I_HttpInPort) {
 		super(httpInPort)
 	}
 
-	async getDataAsync(): Promise<g.domain.I_SystemData> {
-		return new g.application.SystemData(this.getFieldTypes())
+	async getDataAsync(): Promise<I_SystemData> {
+		return AppFactory.getSingleton().createSystemData(this.getFieldTypes())
 	}
 
-	getFieldTypes(): g.domain.I_KeyValuePair<g.domain.FieldType, g.domain.FieldType>[] {
-		const result: g.domain.I_KeyValuePair<g.domain.FieldType, g.domain.FieldType>[] = []
-		result.push(new g.application.KeyValuePair(g.domain.FieldType.Event, g.domain.FieldType.Event))
-		result.push(new g.application.KeyValuePair(g.domain.FieldType.Method, g.domain.FieldType.Method))
-		result.push(new g.application.KeyValuePair(g.domain.FieldType.Property, g.domain.FieldType.Property))
+	getFieldTypes(): I_KeyValuePair<FieldType, FieldType>[] {
+		const result: I_KeyValuePair<FieldType, FieldType>[] = []
+		result.push(AppFactory.getSingleton().createKeyValuePair(FieldType.Event, FieldType.Event))
+		result.push(AppFactory.getSingleton().createKeyValuePair(FieldType.Method, FieldType.Method))
+		result.push(AppFactory.getSingleton().createKeyValuePair(FieldType.Property, FieldType.Property))
 		return result
 	}
 

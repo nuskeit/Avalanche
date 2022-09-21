@@ -13,6 +13,4 @@ import AvalancheApp from "./AvalancheApp.vue";
 img {
 	display: block;
 }
-
-
-</style>
+</style> 

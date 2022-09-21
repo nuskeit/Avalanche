@@ -1,4 +1,6 @@
-import { I_Draggable, I_Element, I_Vector, Nullable } from '../..';
+import { I_Element } from "../../avalanche-app/root-diagram/diagram/element/domain"
+import { I_Draggable } from "../../drag/domain"
+import { I_Vector, Nullable } from "../domain"
 
 export class DraggableHelper {
 

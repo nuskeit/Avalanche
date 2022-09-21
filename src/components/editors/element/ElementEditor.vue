@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, reactive, ref, watchEffect } from "vue";
 import { I_Element } from "../../../core/avalanche-app/root-diagram/diagram/element/domain";
-import { GeneralFactory } from "../../../core/factories/application";
 import TextBox from '../../controls/TextBox.vue';
 import { ElementEditorPresenter } from "./element-editor-presenter";
 import FieldEditor from "./field-editor/FieldEditor.vue";
@@ -17,39 +16,27 @@ const emit = defineEmits<{
 	(e: "update:modelValue", payload: I_Element): void
 }>()
 
-// watchEffect(() => {
-// 	console.log('watch effect element', props.modelValue);
-
-// 	// setTimeout(() => {
-// 	// presenter.element = props.element
-// 	// }, 0);
-// })
-
-
 const element = computed<I_Element>({
 	get: (): I_Element => {
-		console.log('element getter');
 		return props.modelValue
 	},
 	set: (value: I_Element) => {
-		console.log('element setter');
 		emit("update:modelValue", value)
 	}
 })
 
-const generalFactory = inject("general-factory") as GeneralFactory
-// const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new ElementEditorPresenter(() => presenter, element.value, generalFactory))
 const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new ElementEditorPresenter(
 	{
 		elementProxy: () => element.value
-	},
-	generalFactory))
+	}))
 
 
 // const handleClose = async () => {
 // 	emit("close")
 // }
-
+const activeNewProp = ref(true)
+const activeNewMethod = ref(true)
+const activeNewEvent = ref(true)
 </script>
 
 <template>
@@ -66,7 +53,7 @@ const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new E
 		<div class="element-editor_row" v-for="field, i in presenter.listProperties" :key="field.key">
 			<FieldEditor v-model="presenter.listProperties[i]" />
 		</div>
-		<div class="element-editor_row">
+		<div :class="`element-editor_row new ${activeNewProp ? 'active' : ''}`" @pointerdown="activeNewProp=true">
 			<FieldEditor v-model="presenter.newPropertyField" />
 			<button @click="presenter.eventsHandler.handleAddNewProperyField">+</button>
 		</div>
@@ -74,7 +61,7 @@ const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new E
 		<div class="element-editor_row" v-for="field, i in presenter.listMethods" :key="field.key">
 			<FieldEditor v-model="presenter.listMethods[i]" />
 		</div>
-		<div class="element-editor_row">
+		<div :class="`element-editor_row new ${activeNewMethod ? 'active' : ''}`" @pointerdown="activeNewMethod=true">
 			<FieldEditor v-model="presenter.newMethodField" />
 			<button @click="presenter.eventsHandler.handleAddNewMethodField">+</button>
 		</div>
@@ -82,7 +69,7 @@ const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new E
 		<div class="element-editor_row" v-for="field, i in presenter.listEvents" :key="field.key">
 			<FieldEditor v-model="presenter.listEvents[i]" />
 		</div>
-		<div class="element-editor_row">
+		<div :class="`element-editor_row new ${activeNewEvent ? 'active' : ''}`" @pointerdown="activeNewEvent=true">
 			<FieldEditor v-model="presenter.newEventField" />
 			<button @click="presenter.eventsHandler.handleAddNewEventField">+</button>
 		</div>
@@ -92,11 +79,13 @@ const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new E
 
 <style scoped lang="scss">
 .element-editor_root {
-	background-color: #333;
+
+	background-color: #333e;
 	border: solid rgba(#bbb, .5) .1rem;
 	box-shadow: .2rem .2rem .2rem rgba(#000, .5);
 	padding: 0;
 	color: #ddd;
+	font-size: .7rem;
 
 	.header {
 		display: flex;
@@ -122,12 +111,22 @@ const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new E
 		padding: 0;
 		border-top: solid #555 .01rem;
 		white-space: nowrap;
-		overflow: hidden;
+		//overflow: hidden;
 
 		button {
 			background-color: #555;
 			color: #5af;
 		}
+	}
+
+	.new {
+		background-color: #0a5;
+		height: .4rem;
+
+	}
+
+	.active {
+		height: unset;
 	}
 
 	// 	&:nth-last-child(1) {

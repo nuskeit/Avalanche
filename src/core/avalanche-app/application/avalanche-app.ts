@@ -1,48 +1,38 @@
-import * as g from "../../general";
-import * as avalancheApp from "../../avalanche-app"
-import * as factories from "../../factories";
-import * as repository from "../../repository";
-import * as repo from "../../repository";
-import * as rootDiag from "../root-diagram";
+import { AppFactory } from "../../factories/app-factory/application";
+import { GlobalKey, isUndefOrNull } from "../../general/domain";
+import { I_HttpInPort, I_Repository } from "../../repository/domain";
+import { I_AppConfigAmbient, I_AvalancheApp } from "../domain";
 import { I_RootDiagram } from "../root-diagram/domain";
-import { RootDiagram } from "../root-diagram/application";
 
-export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
+export class AvalancheApp implements I_AvalancheApp {
 	_rootDiagram: I_RootDiagram
-	get rootDiagram(): I_RootDiagram {return this._rootDiagram}
+	get rootDiagram(): I_RootDiagram { return this._rootDiagram }
 
-	repository: repository.domain.I_Repository<rootDiag.domain.I_RootDiagram>
+	repository: I_Repository<I_RootDiagram>
 
-	appConfigAmbient: avalancheApp.domain.I_AppConfigAmbient
+	appConfigAmbient: I_AppConfigAmbient
 
-	generalFactory: factories.domain.I_GeneralFactory
-
-	httpInPort: repo.domain.I_HttpInPort
+	httpInPort: I_HttpInPort
 
 	constructor() {
 		// get Config dependency to inject
-		this.appConfigAmbient = new avalancheApp.application.AppConfigAmbient("dev")
+		this.appConfigAmbient = AppFactory.getSingleton().createAppConfigAmbient("dev")
 
-		// create httpInPort dependency to inject
-		this.httpInPort = new repo.application.HttpInPort(this.appConfigAmbient.getApiConfig())
+		// create httpInPort dependency to inject into repositories
+		this.httpInPort = AppFactory.getSingleton().createHttpInPort(this.appConfigAmbient.getApiConfig())
 
-		this.repository = new rootDiag.data.RootDiagramRepo(this.httpInPort)
+		this.repository = AppFactory.getSingleton().createRootDiagramRepo(this.httpInPort)
 
-		this._rootDiagram = new RootDiagram()
+		this._rootDiagram = AppFactory.getSingleton().createRootDiagram(GlobalKey.getNewGlobalKey())
 
 		// create Repository dependency to inject
-		this.generalFactory = new factories.application.GeneralFactory(this.rootDiagram.relationshipsStore)
 
 	}
-
-	// constructor(httpInPort: I_HttpInPort, generalFactory: I_GeneralFactory, repo: I_Repository<I_RootDiagram>) {
-	// 	this.generalFactory = generalFactory
 
 	// 	this.httpInPort = httpInPort
 
 	// 	this.repository = repo
 
-	// 	this._rootDiagram = new RootDiagram(GlobalKey.getNewGlobalKey())
 	// }
 
 	//get rootDiagram(): I_RootDiagram { return this._rootDiagram }
@@ -50,7 +40,7 @@ export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
 	/**
 	 * Method-setter is used to avoid unintentional assignments
 	*/
-	setRootDiagram(rd: rootDiag.domain.I_RootDiagram) {
+	setRootDiagram(rd: I_RootDiagram) {
 		this._rootDiagram = rd
 	}
 
@@ -60,9 +50,9 @@ export class AvalancheApp implements avalancheApp.domain.I_AvalancheApp {
 	 * @param alternateRepo
 	 * @returns RootDiagramPresenter
 	 */
-	async loadRootPlanAsync(key: string, alternateRepo?: repo.domain.I_Repository<rootDiag.domain.I_RootDiagram>): Promise<AvalancheApp> {
+	async loadRootPlanAsync(key: string, alternateRepo?: I_Repository<I_RootDiagram>): Promise<AvalancheApp> {
 		if (this.repository != undefined) {
-			if (g.domain.isUndefOrNull(alternateRepo)) {
+			if (isUndefOrNull(alternateRepo)) {
 				this._rootDiagram = await this.repository.getDataAsync(key)
 			} else {
 				// @ts-ignore undefined checked

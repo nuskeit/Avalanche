@@ -1,8 +1,8 @@
-import * as rootDiagramNS from "../../avalanche-app/root-diagram"
-import * as diagramNS from "../../avalanche-app/root-diagram/diagram"
-import * as elementNS from "../../avalanche-app/root-diagram/diagram/element"
-import * as fieldNS from "../../avalanche-app/root-diagram/diagram/element/field"
-import * as typeDefNS from "../../avalanche-app/root-diagram/diagram/element/field/type-def"
+import * as rootDiagramNS from "../../../avalanche-app/root-diagram"
+import * as diagramNS from "../../../avalanche-app/root-diagram/diagram"
+import * as elementNS from "../../../avalanche-app/root-diagram/diagram/element"
+import * as fieldNS from "../../../avalanche-app/root-diagram/diagram/element/field"
+import * as typeDefNS from "../../../avalanche-app/root-diagram/diagram/element/field/type-def"
 
 export interface I_DtoFactory {
 

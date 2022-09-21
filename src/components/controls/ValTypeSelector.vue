@@ -27,3 +27,9 @@ const value = computed<DataType>({
 		</option>
 	</select>
 </template>
+
+<style lang="scss" scoped>
+	select{
+		font-size: inherit;
+	}
+</style>

@@ -47,6 +47,6 @@ onMounted(async () => {
 
 .grid-text {
 	fill: #0006;
-	font-size: 13px;
+	font-size: .8rem;
 }
 </style>

@@ -1,29 +1,24 @@
 import { Draggable, Dragger } from "../../../../drag/application"
 import { I_Draggable } from "../../../../drag/domain"
-import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, Nullable, Vector } from "../../../../general/domain"
-import { I_RelationshipsStore } from "../../../../relationships/domain"
+import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, Nullable, NumericRange, RelationshipType, Vector } from "../../../../general/domain"
+import { ElementsRelationship } from "../../../../relationships/application"
+import { I_ElementsRelationship, I_RelationshipsStore } from "../../../../relationships/domain"
 import { I_Diagram } from "../domain"
 import { I_Element, I_ElementsStore } from "../element/domain"
 
 export class Diagram implements I_Diagram {
 	constructor(name: string, diagramType: DiagramType,
-		elementsStore: I_ElementsStore, relationshipsStore: I_RelationshipsStore,
 		viewBox: I_ViewBox, viewPort: I_ViewPort) {
 		this._key = GlobalKey.getNewGlobalKey()
 		this.name = name
 		this._diagramType = diagramType
 		this._elements = {}
-		this._elementsStore = elementsStore
-		this._relationshipsStore = relationshipsStore
 		this.visible = true
 		this.viewBox = viewBox
 		this.viewPort = viewPort
 	}
 	viewBox: I_ViewBox
 	viewPort: I_ViewPort
-
-	private _elementsStore: I_ElementsStore
-	private _relationshipsStore: I_RelationshipsStore
 
 	private _key: string
 	public get key(): string { return this._key }
@@ -35,11 +30,6 @@ export class Diagram implements I_Diagram {
 
 	private _elements: HashTable<I_Draggable<I_Element>>
 	public get elements(): HashTable<I_Draggable<I_Element>> { return this._elements }
-
-	public get rootElements(): HashTable<I_Element> { return this._elementsStore.elements }
-
-	public get elementsStore(): I_ElementsStore { return this._elementsStore }
-	public get relationshipsStore(): I_RelationshipsStore { return this._relationshipsStore }
 
 	addElement(element: I_Element, x: Nullable<number> = null,
 		y: Nullable<number> = null, width: number = 180): void {
@@ -53,11 +43,24 @@ export class Diagram implements I_Diagram {
 		)
 	}
 
-	createElement(element: I_Element, x: Nullable<number> = null,
-		y: Nullable<number> = null): void {
-		this._elementsStore.addElement(element.key, element)
-		this.addElement(element, x, y)
+
+	relationships: I_ElementsRelationship[] = []
+
+	detectRelationshipsChanges(): void {
+		this.relationships.length = 0
+		for (const elemenKey in this.elements) {
+			this.elements[elemenKey].element.fields.forEach(e => {
+				if (e.dataTypeDef?.refElement != null)
+					this.relationships.push(new ElementsRelationship(elemenKey, e.dataTypeDef?.refElement?.key, "TAG", RelationshipType.DirectedAssociation, new NumericRange(1, 1), new NumericRange()))
+
+				e.parameters?.forEach(p => {
+					if (p.dataTypeDef.refElement != null)
+						this.relationships.push(new ElementsRelationship(elemenKey, p.dataTypeDef?.refElement?.key, "TAG", RelationshipType.DirectedAssociation, new NumericRange(1, 1), new NumericRange()))
+				})
+			})
+		}
 	}
+
 
 
 	toJSON() {

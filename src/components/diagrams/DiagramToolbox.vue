@@ -2,9 +2,8 @@
 import { computed, inject } from 'vue';
 import { AvalancheApp } from '../../core/avalanche-app/application';
 import { I_Diagram } from '../../core/avalanche-app/root-diagram/diagram/domain';
-import { BlockEntity, ClassEntity, ComponentEntity, EnumEntity, GenericEntity, InterfaceEntity } from '../../core/avalanche-app/root-diagram/diagram/element/application';
-import { I_Element, I_ElementsStore } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
-import { GeneralFactory } from '../../core/factories/application';
+import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
+import { AppFactory } from '../../core/factories/app-factory/application';
 import { ElementType } from '../../core/general/domain';
 import { DiagramToolbox } from '../../core/toolbox/domain';
 import BoxedText from '../controls/svg/BoxedText.vue';
@@ -32,37 +31,43 @@ const diagramToolbox: DiagramToolbox = new DiagramToolbox()
 const addComponent = (el: I_Element): void => {
 	el.name = `${el.elementType} ${el.key}`
 	el.visible = true
-	diagram.value.createElement(el)
+	diagram.value.addElement(el)
 }
 
 function addComponentHandler() {
-	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Component, undefined)
+	const pe: I_Element = AppFactory.getSingleton().createElement(ElementType.Component,
+		avalancheApp.rootDiagram.elementsStore, avalancheApp.rootDiagram.relationshipsStore, undefined)
 	addComponent(pe)
 }
 
 function addBlockHandler() {
-	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Block, undefined)
+	const pe: I_Element = AppFactory.getSingleton().createElement(ElementType.Block,
+		avalancheApp.rootDiagram.elementsStore, avalancheApp.rootDiagram.relationshipsStore, undefined)
 	addComponent(pe)
 }
 
 function addClassHandler() {
-	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Class, undefined)
+	const pe: I_Element = AppFactory.getSingleton().createElement(ElementType.Class,
+		avalancheApp.rootDiagram.elementsStore, avalancheApp.rootDiagram.relationshipsStore, undefined)
 	addComponent(pe)
 }
 
 function addInterfaceHandler() {
-	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Interface, undefined)
+	const pe: I_Element = AppFactory.getSingleton().createElement(ElementType.Interface,
+		avalancheApp.rootDiagram.elementsStore, avalancheApp.rootDiagram.relationshipsStore, undefined)
 	addComponent(pe)
 }
 
 function addEnumHandler() {
-	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.Enum, undefined)
+	const pe: I_Element = AppFactory.getSingleton().createElement(ElementType.Enum,
+		avalancheApp.rootDiagram.elementsStore, avalancheApp.rootDiagram.relationshipsStore, undefined)
 	addComponent(pe)
 }
 
 
 function addGenericEntityHandler() {
-	const pe: I_Element = avalancheApp.generalFactory.createElement(ElementType.GenericEntity, undefined)
+	const pe: I_Element = AppFactory.getSingleton().createElement(ElementType.GenericEntity,
+		avalancheApp.rootDiagram.elementsStore, avalancheApp.rootDiagram.relationshipsStore, undefined)
 	addComponent(pe)
 }
 

@@ -8,10 +8,6 @@ export class RelationshipsStore implements I_RelationshipsStore, I_Serializable 
 		this.relationships.push(rel)
 	}
 
-	getAllRelations(elementKey: string): I_ElementsRelationship[] {
-		return this.relationships.filter(e => e.sourceKey == elementKey || e.targetKey == elementKey)
-	}
-
 	toJSON(): any {
 		return {
 			__type: "RelationshipsStore",

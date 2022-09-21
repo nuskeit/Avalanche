@@ -1,23 +1,17 @@
 <script lang="ts" setup >
 import { provide, reactive } from 'vue';
-// import { AvalancheApp } from './core/src/avalanche-app/application';
-import { AppPresenter } from "./app-presenter";
 import RootDiagramUI from './components/RootDiagramUI.vue';
-import { AvalancheApp } from './core/avalanche-app/application';
 import { I_ElementsStore } from './core/avalanche-app/root-diagram/diagram/element/domain';
-import { GeneralFactory } from './core/factories/application';
+import { AppFactory } from './core/factories/app-factory/application';
 import { I_RelationshipsStore } from './core/relationships/domain';
 
-const avalancheApp = new AvalancheApp()
-
-const appPresenter = reactive<AppPresenter>(new AppPresenter(avalancheApp))
+const avalancheApp = AppFactory.getSingleton().createApp()
 
 provide("avalanche-app", avalancheApp)
 
 await avalancheApp.loadRootPlanAsync("rd1")
 
 provide("elements-store", reactive<I_ElementsStore>(avalancheApp.rootDiagram.elementsStore))
-provide<GeneralFactory>("general-factory", avalancheApp.generalFactory)
 provide("relationships-store", reactive<I_RelationshipsStore>(avalancheApp.rootDiagram.relationshipsStore))
 
 </script>
@@ -44,7 +38,6 @@ body {
 	color: #2c3e50;
 	margin: 0;
 	width: 100%;
-	//height: 100%;
 	position: absolute;
 	left: 0;
 	right: 0;

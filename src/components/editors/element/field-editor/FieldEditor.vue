@@ -28,7 +28,6 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 		<div class="row">
 
 			<div class="cell tag">
-				<!-- <FieldTypesComboBox :id="field.id.toString()" v-model="field.fieldType" /> -->
 				<TextBox :id="field.key" v-model="field.name" :className="'shy-input'" />
 			</div>
 
@@ -43,42 +42,51 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 
 		</div>
 
-		<table v-if="presenter.expand" class="details-table">
-			<tbody>
+		<div class="row">
+			<table v-if="presenter.expand" class="details-table">
+				<tbody>
 
-				<tr class="details-row">
-					<td class="details-cell">
-						<!-- <FieldTypesComboBox :id="field.id.toString()" v-model="field.fieldType" /> -->
-						Text
-					</td>
-					<td class="details-cell">
-						<!-- <label :for="`text-${field.id.toString()}`">Text:</label> -->
-						<TextBox :id="field.key" v-model="field.text" :className="'regular-input'" />
-					</td>
-				</tr>
+					<tr class="details-row">
+						<td class="details-cell">
+							<!-- <FieldTypesComboBox :id="field.id.toString()" v-model="field.fieldType" /> -->
+							Text:
+						</td>
+						<td class="details-cell">
+							<!-- <label :for="`text-${field.id.toString()}`">Text:</label> -->
+							<TextBox :id="field.key" v-model="field.text" :className="'regular-input'" />
+						</td>
+					</tr>
 
-				<tr class="details-row">
-					<td class="details-cell">
-						DataType
-					</td>
-					<td class="details-cell">
-						<TypeDefEditor v-model="field.dataTypeDef" />
-					</td>
-					<td v-if="field.fieldType == FieldType.Method">
-						<div>
-							<div class="details-cell">
-								Parameters
-							</div>
-							<div class="details-row field-type">
-								<ParametersEditor v-model="(presenter.fieldProxy as MethodField).parameters" />
-							</div>
-						</div>
+					<tr class="details-row">
+						<td class="details-cell">
+							DataType:
+						</td>
+						<td class="details-cell">
+							<TypeDefEditor v-model="field.dataTypeDef" />
+						</td>
 
-					</td>
-				</tr>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
-			</tbody>
-		</table>
+		<div class="row" v-if="presenter.expand">
+			<table class="details-table">
+				<tbody>
+
+					<tr class="details-row"
+						v-if="field.fieldType == FieldType.Method || field.fieldType == FieldType.Event ">
+						<td class="details-cell">
+							Parameters:
+						</td>
+						<td class="details-row field-type">
+							<ParametersEditor v-model="(presenter.fieldProxy as MethodField).parameters" />
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
 
 	</div>
 </template>
@@ -90,7 +98,7 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 	padding: .05rem;
 	border-bottom: solid #5f5 .01rem;
 	white-space: nowrap;
-	overflow: hidden;
+	//overflow: hidden;
 	width: 100%;
 	position: relative;
 
@@ -118,13 +126,13 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 		.editable {
 			background: rgba(#fff, .1);
 			//		border: solid .1rem rgba(#03a, .2);
-			padding-left: .2rem;
-			padding-right: .2rem;
+			padding-left: 0rem;
+			padding-right: 0rem;
 		}
 
 		.tag {
-			padding-left: .2rem;
-			padding-right: .2rem;
+			padding-left: 0rem;
+			padding-right: 0rem;
 		}
 	}
 
@@ -132,7 +140,6 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 
 
 	.details-table {
-		background-color: #555;
 		border-collapse: collapse;
 
 		.details-row {
@@ -147,7 +154,7 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 
 				&>input {
 					border: none;
-					background-color: #444;
+					background-color: #4443;
 				}
 			}
 		}
@@ -184,6 +191,7 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 
 .shy-input {
 	background-color: #0000;
+	font-size: unset;
 }
 
 .floating-local {
