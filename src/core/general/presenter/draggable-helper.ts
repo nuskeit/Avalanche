@@ -1,50 +1,54 @@
 import { I_Element } from "../../avalanche-app/root-diagram/diagram/element/domain"
 import { I_Draggable } from "../../drag/domain"
-import { I_Vector, Nullable } from "../domain"
+import { I_Vector, Nullable, Vector } from "../domain"
 
 export class DraggableHelper {
 
-    constructor(toLocalVector: Function) {
-        this.toLocalVector = toLocalVector
-    }
+	constructor(toLocalVector: Function) {
+		this.toLocalVector = toLocalVector
+		this.mouseLocation = new Vector(0, 0)
+	}
 
-    toLocalVector: Function
+	toLocalVector: Function
 
-    targetDraggable: Nullable<I_Draggable<any>> = null
+	mouseLocation: I_Vector
 
-    pickUpOffset: I_Vector = { x: 0, y: 0 }
-    SetOffset(x: number, y: number) {
-        this.pickUpOffset.x = x
-        this.pickUpOffset.y = y
-    }
+	targetDraggable: Nullable<I_Draggable<any>> = null
 
-    StartDrag(se: I_Draggable<any>) {
-        this.SetTargetDraggable(se)
-        let loc = this.toLocalVector(se.dragger.mouseLocation.x, se.dragger.mouseLocation.y);
-        this.SetOffset(se.dragger.location.x - loc.x, se.dragger.location.y - loc.y)
-    }
+	pickUpOffset: I_Vector = { x: 0, y: 0 }
+	
+	SetOffset(x: number, y: number) {
+		this.pickUpOffset.x = x
+		this.pickUpOffset.y = y
+	}
 
-    EndDrag() {
-        this.SetTargetDraggable(null)
-    }
+	StartDrag(se: I_Draggable<any>, mouseLocation: I_Vector) {
+		this.SetTargetDraggable(se)
+		let loc = this.toLocalVector(mouseLocation.x, mouseLocation.y);
+		this.SetOffset(se.location.x - loc.x, se.location.y - loc.y)
+	}
 
-    SetTargetDraggable(el: Nullable<I_Draggable<any>>) {
-        this.targetDraggable = el
-    }
+	EndDrag() {
+		this.SetTargetDraggable(null)
+	}
 
-    UpdateDrag(se: I_Draggable<I_Element>, clientX: number, clientY: number) {
-        if (se != null) {
-            let loc = this.toLocalVector(clientX, clientY);
-            let x = loc.x + this.pickUpOffset.x
-            let y = loc.y + this.pickUpOffset.y
-            if (this.targetDraggable != null) {
-                this.targetDraggable.dragger.location.x = x
-                this.targetDraggable.dragger.location.y = y
-                this.targetDraggable.dragger.mouseLocation.x = x
-                this.targetDraggable.dragger.mouseLocation.y = y
-            }
-        }
-    }
+	SetTargetDraggable(el: Nullable<I_Draggable<any>>) {
+		this.targetDraggable = el
+	}
+
+	UpdateDrag(se: I_Draggable<I_Element>, clientX: number, clientY: number) {
+		if (se != null) {
+			let loc = this.toLocalVector(clientX, clientY);
+			let x = loc.x + this.pickUpOffset.x
+			let y = loc.y + this.pickUpOffset.y
+			if (this.targetDraggable != null) {
+				this.targetDraggable.location.x = x
+				this.targetDraggable.location.y = y
+				this.mouseLocation.x = x
+				this.mouseLocation.y = y
+			}
+		}
+	}
 }
 
 

@@ -3,11 +3,9 @@ import { I_Presenter } from "../../../../core/general/presenter";
 
 export class FieldEditorPresenter implements I_Presenter<I_Field> {
 
-	expand: boolean
 
 	constructor(proxies: Proxies) {
 		this.proxies = proxies
-		this.expand = false
 	}
 
 	proxies: Proxies
@@ -17,9 +15,6 @@ export class FieldEditorPresenter implements I_Presenter<I_Field> {
 	delegates: {} | undefined
 
 	eventsHandler = {
-		toggleExpand: () => {
-			this.presenterProxy.expand = !this.expand
-		}
 	}
 }
 

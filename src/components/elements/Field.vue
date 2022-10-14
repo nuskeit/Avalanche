@@ -41,12 +41,13 @@ const dataTypeDef = computed<string>(() => {
 
 <template>
 	<g :transform="`translate(${x} ${y})`">
-		<rect x="19" y="0" :width="props.width ? props.width - 37 : 0" height="16" class="element-bg" rx="0" ry="0" />
+		<rect x="19" y="0" :width="props.width ? props.width - 37 : 0" height="16"
+			:class="`element-bg ${props.field.valid? '': 'invalid'}`" rx="0" ry="0" />
 		<text x="20" y="13" :width="props.width ? props.width - 38 : 0" height="100" class="element-row-text"
 			:style="{clipPath: `polygon(0px 0px, ${props.width ? props.width - 38 : 0}px 0px, ${props.width ? props.width - 38 : 0}px 20px, 0px 20px)`}">
-			<tspan class="field-name">{{ field.name }}
+			<tspan class="field-name">{{`${field.scopeSymbol} ${field.name}`}}
 				<tspan class="field-param" v-if="field.fieldType == FieldType.Method">
-					(<template v-for="(p, i) in (field as MethodField).parameters">
+					(<template v-for="(p, i) in (field as MethodField).parameters" :key="Math.random()">
 						{{ i > 0 ? ", " : "" }}{{ p.name }}
 					</template>)
 				</tspan>
@@ -69,6 +70,10 @@ const dataTypeDef = computed<string>(() => {
 .element-bg {
 	position: relative;
 
+}
+
+.invalid {
+	fill: red
 }
 
 .element-row-text {

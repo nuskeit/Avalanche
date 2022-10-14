@@ -1,17 +1,17 @@
-import { FieldType } from "../../../../../../general/domain"
+import { FieldType, Scope } from "../../../../../../general/domain"
 import { Field } from "../domain"
 import { I_TypeDef } from "../type-def/domain"
 
 export class PropertyField extends Field {
 
-	constructor(name: string, dataTypeDef: I_TypeDef, key?: string) {
-		super(name, FieldType.Property, dataTypeDef, key)
+	constructor(name: string, description: string, scope: Scope, dataTypeDef: I_TypeDef, key: string = "") {
+		super(name, description, scope, FieldType.Property, dataTypeDef, key)
 	}
 
 	toJSON() {
 		return {
 			__type: "PropertyField",
-			...super.toJSON()
+			...this
 		}
 	}
 }

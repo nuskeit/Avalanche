@@ -1,6 +1,6 @@
-import * as dragNS from "../../drag"
+import { I_Vector } from "../../general/domain"
 
 export interface I_Draggable<T> {
 	element: T
-	dragger: dragNS.domain.I_Dragger
+	location: I_Vector
 }

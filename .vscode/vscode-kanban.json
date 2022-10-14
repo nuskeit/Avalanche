@@ -13,9 +13,20 @@
       "id": "1",
       "references": [],
       "title": "Events Parameters always \"In\" direction"
+    },
+    {
+      "assignedTo": {
+        "name": "Adrian Nuske"
+      },
+      "category": "Fields",
+      "creation_time": "2022-09-21T04:00:05.031Z",
+      "id": "3",
+      "references": [],
+      "title": "Remove Field Functionality"
     }
   ],
-  "in-progress": [
+  "in-progress": [],
+  "testing": [
     {
       "assignedTo": {
         "name": "Adrian Nuske"
@@ -31,6 +42,5 @@
       "title": "Add New Parameter"
     }
   ],
-  "testing": [],
   "done": []
 }

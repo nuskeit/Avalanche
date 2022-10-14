@@ -6,12 +6,14 @@ export interface I_Presenter<T> {
 	*/
 	readonly proxies: {} | undefined
 	// It seems redundant, albeit necessary for reactivity interceptors of some modern FW
-	// sucha as "Vue.js". For "React.js" and other imperative-reactivity FW, this is
-	// transparent, as they don't mutate the state.  
+	// such as "Vue.js", which implements a native proxy. For "React.js" and other 
+	// imperative-reactivity FW, this is transparent, as they don't mutate the state.
+	// It also can be implemented with a facade object that executes a setState in corresponding setters.
 
 	/**
 	 * Delegates for GUI specifics' IOC.
-	 * All functions that neet to be executed in the component environment.
+	 * 1 - All functions that neet to be executed in the presentation component environment: in the UI script or in the template.
+	 * 2 - All accessor functions to elements in the DOM
 	*/
 	readonly delegates: {} | undefined
 

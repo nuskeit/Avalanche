@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { I_Parameter } from "../../../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import ConfirmButton from "../../../../controls/buttons/ConfirmButton.vue";
+import DeleteButton from "../../../../controls/buttons/DeleteButton.vue";
 import TextBox from '../../../../controls/TextBox.vue';
-import RefTypeSelector from '../../../../controls/RefTypeSelector.vue';
-import ValTypeSelector from '../../../../controls/ValTypeSelector.vue';
+import TypeDefEditor from "./type-def-editor/TypeDefEditor.vue";
 
 const props = defineProps<{
 	index: number
 	modelValue: I_Parameter
-	action: "add" | "delete"
+	action: "confirm" | "delete"
 }>()
 
 const emit = defineEmits<{
 	(e: "update:modelValue", value: I_Parameter): void
-	(e: "actionButtonClick", index: number, value: I_Parameter): void
+	(e: "action:delete", index: number, value: I_Parameter): void
+	(e: "action:confirm", index: number, value: I_Parameter): void
 }>()
 
 const parameter = computed<I_Parameter>({
@@ -21,67 +23,57 @@ const parameter = computed<I_Parameter>({
 	set: (value: I_Parameter) => emit("update:modelValue", value)
 })
 
-function actionButtonHandler() {
-	emit('actionButtonClick', props.index, parameter.value)
+function actionButtonDeleteHandler() {
+	emit('action:delete', props.index, parameter.value)
 }
+
+function actionButtonConfirmHandler() {
+	emit('action:confirm', props.index, parameter.value)
+}
+
 
 </script>
 
 <template>
-	<div class="group">
-		<div class="row">
-			<TextBox v-model="parameter.name" :id="parameter.name" />
+	<div class="row division-title">
+		<div>Parameter Name:</div>
+		<div>
+			<TextBox v-model="parameter.name" :id="parameter.name"
+				:class-name="`${parameter.validProp['name'] ? '' :'invalid'} `" />
 		</div>
-		<div class="row">
-			<div class="details-cell">
-				<ValTypeSelector :id="`val-type-${parameter.key}`" v-model="parameter.dataTypeDef.fallbackDataType" />
-			</div>
-			<div class="details-cell">
-				<RefTypeSelector :id="`reg-type-${parameter.key}`" v-model="parameter.dataTypeDef.refElement" />
-			</div>
-			<div class="details-cell">
-				<div @click="actionButtonHandler" class="action-button"> {{action=='add'?'+':'-'}}</div>
-			</div>
+	</div>
+	<div class="row" >
+		<div>
+			<TypeDefEditor v-model="parameter.dataTypeDef" />
+		</div>
+		<div class="button-col">
+			<ConfirmButton @click="actionButtonConfirmHandler" v-if="action=='confirm'" />
+			<DeleteButton @click="actionButtonDeleteHandler" v-if="action=='delete'" />
 		</div>
 	</div>
 </template>
 
 <style scoped lang="scss">
-.group {
-	//			border: solid 1px green;
-	padding: 0;
+.row {
+	padding: .1rem;
 	display: flex;
-	flex-direction: column;
-	// border-bottom: dashed .05rem #aaa;
-	margin-bottom: .2rem;
-	background-color: #000;
+	flex-direction: row;
+	white-space: nowrap;
 
-	&:nth-last-child(1) {
-		border-bottom: none;
-
+	>div {
+		flex: 1 1 auto;
 	}
 
-	.row {
-		display: flex;
-		flex-direction: row;
+	.button-col {
+		flex: 0 0 1rem;
 	}
 
-	.details-cell {
-		padding: .03rem;
-		//		border: solid 1px yellow;
-		text-align: left;
-		vertical-align: top;
-		height: 1rem;
-
-		.action-button {
-			box-sizing: border-box;
-			width: 1rem;
-			// height: .93rem;
-			height: 100%;
-			text-align: center;
-			border: solid .01rem #777;
-		}
-	}
-
+	// &:nth-child(even){
+	// 	background-color:#555;
+	// }
 }
+
+// .division-title {
+// 		background-color:#555;
+// 	}
 </style>

@@ -20,23 +20,23 @@ const points = computed<string>(() => {
     if (sourceElement != undefined && targetElement != undefined) {
 
 
-        const b = targetElement.dragger.location.x - sourceElement.dragger.location.x
-        const h = targetElement.dragger.location.y - sourceElement.dragger.location.y
+        const b = targetElement.location.x - sourceElement.location.x
+        const h = targetElement.location.y - sourceElement.location.y
         const hip = Math.sqrt(h * h + b * b)
         const lateralFactor = b / hip
 
         let y1y2 = sourceStartLineAtTopOrBottom()
 
         let lateralShift = (elementWidth / 2 * lateralFactor)
-        let x1 = sourceElement.dragger.location.x + elementWidth / 2 + lateralShift  //* distributionFactor
-        let x4 = targetElement.dragger.location.x + elementWidth / 2 - lateralShift  //* distributionFactor
+        let x1 = sourceElement.location.x + elementWidth / 2 + lateralShift  //* distributionFactor
+        let x4 = targetElement.location.x + elementWidth / 2 - lateralShift  //* distributionFactor
 
 
 
         let y3y4 = targetFinishLineAtTopOrBottom()
 
-        if ((sourceElement.dragger.location.y < targetElement.dragger.location.y + elementHeight(targetElement.element) + clearance * 2
-            && sourceElement.dragger.location.y + elementHeight(sourceElement.element) > targetElement.dragger.location.y - clearance * 2)) {
+        if ((sourceElement.location.y < targetElement.location.y + elementHeight(targetElement.element) + clearance * 2
+            && sourceElement.location.y + elementHeight(sourceElement.element) > targetElement.location.y - clearance * 2)) {
             poly = `${x1},${y1y2[0]}`
             poly += ` ${x1},${y1y2[1]}`
             poly += ` ${x1 + (x4 - x1) / 2},${y1y2[1]}`
@@ -66,7 +66,7 @@ let tag = computed<I_Vector>(() => {
     if (sourceElement != undefined && targetElement != undefined) {
         const ys1 = sourceStartLineAtTopOrBottom()
         const ys2 = targetFinishLineAtTopOrBottom()
-        return new Vector((sourceElement.dragger.location.x + elementWidth / 2 + targetElement.dragger.location.x + elementWidth / 2) / 2,
+        return new Vector((sourceElement.location.x + elementWidth / 2 + targetElement.location.x + elementWidth / 2) / 2,
             (ys1[1] + ys2[1]) / 2)
     }
     return new Vector(0, 0)
@@ -78,8 +78,8 @@ function elementHeight(elem: I_Element): number {
 }
 
 function sourceStartLineAtTopOrBottom(): [number, number] {
-    const y1 = sourceElement.dragger.location.y
-    const y2 = targetElement.dragger.location.y
+    const y1 = sourceElement.location.y
+    const y2 = targetElement.location.y
     const elemHeight = elementHeight(sourceElement.element)
 
     if (y1 + elemHeight / 2 < y2)
@@ -89,8 +89,8 @@ function sourceStartLineAtTopOrBottom(): [number, number] {
 }
 
 function targetFinishLineAtTopOrBottom(): [number, number] {
-    const y1 = sourceElement.dragger.location.y
-    const y2 = targetElement.dragger.location.y
+    const y1 = sourceElement.location.y
+    const y2 = targetElement.location.y
     const elemHeight = elementHeight(targetElement.element)
 
     if (y1 < y2 + elemHeight / 2)

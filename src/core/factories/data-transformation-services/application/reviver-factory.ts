@@ -1,10 +1,9 @@
-import { RootDiagram } from "../../../avalanche-app/root-diagram/application";
 import { RootDiagram_DTO } from "../../../avalanche-app/root-diagram/data";
 import { Diagram } from "../../../avalanche-app/root-diagram/diagram/application";
 import { Diagram_DTO } from "../../../avalanche-app/root-diagram/diagram/data";
-import { ElementsStore, Element_DTO } from "../../../avalanche-app/root-diagram/diagram/element/data";
+import { Element_DTO } from "../../../avalanche-app/root-diagram/diagram/element/data";
 import { I_Element, I_ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/domain";
-import { MethodField, Parameter, PropertyField } from "../../../avalanche-app/root-diagram/diagram/element/field/application";
+import { EventField, MethodField, Parameter, PropertyField } from "../../../avalanche-app/root-diagram/diagram/element/field/application";
 import { Field_DTO, Parameter_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/data";
 import { I_Field } from "../../../avalanche-app/root-diagram/diagram/element/field/domain";
 import { TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/application";
@@ -12,7 +11,6 @@ import { TypeDef_DTO } from "../../../avalanche-app/root-diagram/diagram/element
 import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain";
 import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain";
 import { FieldType, isUndefOrNull } from "../../../general/domain";
-import { ElementsRelationship } from "../../../relationships/application";
 import { I_RelationshipsStore } from "../../../relationships/domain";
 import { AppFactory } from "../../app-factory/application";
 
@@ -20,24 +18,28 @@ export class Reviver {
 
 
 	createRootDiagram(rootDiagDto: RootDiagram_DTO): I_RootDiagram {
+		const config = AppFactory.getSingleton().createAppConfigAmbient().getApiConfig()
+		const httpInPort = AppFactory.getSingleton().createHttpInPort(config)
+		const repo = AppFactory.getSingleton().createRootDiagramRepo(httpInPort)
 
-		const rootDiagram = new RootDiagram()
+		const rootDiagram = AppFactory.getSingleton().createRootDiagram(repo, rootDiagDto.key)
 		rootDiagram.name = rootDiagDto.name
 		for (const elementDto of rootDiagDto.elementsStore) {
 			const elem = this.createEntity(elementDto, rootDiagram.elementsStore, rootDiagram.relationshipsStore)
 			elem.name = elementDto.name
 			for (const f of elementDto.fields) {
 				elem.addField(this.createField(rootDiagram.elementsStore, f))
-
 			}
 			rootDiagram.elementsStore.addElement(elementDto.key, elem);
 		}
 
 		// Relationships store
 		for (let rel of rootDiagDto.relationshipsStore) {
-			rootDiagram.relationshipsStore.addRelationship(new ElementsRelationship(
+			rootDiagram.relationshipsStore.addRelationship(AppFactory.getSingleton().createElementsRelationship(
 				rel.sourceKey,
 				rel.targetKey,
+				rel.sourceElementKey,
+				rel.targetElementKey,
 				rel.tag,
 				rel.relationshipType,
 				rel.sourceMultiplicity,
@@ -47,10 +49,12 @@ export class Reviver {
 		}
 
 		// Diagrams
-		for (const diag of rootDiagDto.diagrams as Diagram_DTO[]) {
-			const newDiagram = new Diagram(diag.name, diag.diagramType, diag.viewBox, diag.viewPort)
-			for (const elem of diag.elements) {
-				newDiagram.addElement(rootDiagram.elementsStore.elements[elem.element], elem.location.x, elem.location.y)
+		for (const diagDto of rootDiagDto.diagrams as Diagram_DTO[]) {
+			const newDiagram = AppFactory.getSingleton().createDiagram(diagDto.name, diagDto.diagramType, diagDto.viewBox, diagDto.viewPort, diagDto.key)
+			for (const elemDto of diagDto.elements) {
+				const el = rootDiagram.elementsStore.elements[elemDto.element]
+				newDiagram.addElement(rootDiagram.elementsStore.elements[el.key],
+					elemDto.location.x, elemDto.location.y, elemDto.size)
 			}
 			newDiagram.detectRelationshipsChanges()
 			rootDiagram.addDiagram(newDiagram)
@@ -59,13 +63,25 @@ export class Reviver {
 		return rootDiagram
 	}
 
-	createField(elementsStore: ElementsStore, fieldDTO: Field_DTO): I_Field {
-
+	createField(elementsStore: I_ElementsStore, fieldDTO: Field_DTO): I_Field {
 		let f: I_Field
 		switch (fieldDTO.fieldType) {
 			case FieldType.Method:
 				f = new MethodField(
 					fieldDTO.name,
+					fieldDTO.description,
+					fieldDTO.scope,
+					this.createTypeDef(elementsStore, fieldDTO.dataTypeDef),
+					// @ts-ignore  fieldDTO?.parameters is not undefined
+					fieldDTO?.parameters?.map(param => this.createParameter(elementsStore, param)),
+					fieldDTO.key)
+				break;
+
+			case FieldType.Event:
+				f = new EventField(
+					fieldDTO.name,
+					fieldDTO.description,
+					fieldDTO.scope,
 					this.createTypeDef(elementsStore, fieldDTO.dataTypeDef),
 					// @ts-ignore  fieldDTO?.parameters is not undefined
 					fieldDTO?.parameters?.map(param => this.createParameter(elementsStore, param)),
@@ -75,6 +91,8 @@ export class Reviver {
 			default:
 				f = new PropertyField(
 					fieldDTO.name,
+					fieldDTO.description,
+					fieldDTO.scope,
 					this.createTypeDef(elementsStore, fieldDTO?.dataTypeDef),
 					fieldDTO.key)
 
@@ -85,14 +103,14 @@ export class Reviver {
 	}
 
 
-	createTypeDef(elementsStore: ElementsStore, typeDefDto: TypeDef_DTO): I_TypeDef {
+	createTypeDef(elementsStore: I_ElementsStore, typeDefDto: TypeDef_DTO): I_TypeDef {
 		if (isUndefOrNull(typeDefDto.refElementKey))
 			return new TypeDef(typeDefDto.fallbackDataType, null, typeDefDto.key)
 		// @ts-ignore  typeDefDto.refElementKey is not undefined
 		return new TypeDef(typeDefDto.fallbackDataType, elementsStore.elements[typeDefDto.refElementKey], typeDefDto.key)
 	}
 
-	createParameter(elementsStore: ElementsStore, param: Parameter_DTO): Parameter {
+	createParameter(elementsStore: I_ElementsStore, param: Parameter_DTO): Parameter {
 		return new Parameter(param.key, param.name, param.direction, param.category, this.createTypeDef(elementsStore, param.dataTypeDef))
 	}
 

@@ -27,7 +27,7 @@ const draggableElement = computed<I_Draggable<I_Element>>({
 <template>
 	<ElementTemplate :draggableElement="draggableElement" :selected="props.selected">
 		<Field :x="0" :y="16 + rowHeight * i" :width="elementWidth" v-for="(x, i) in draggableElement.element.fields"
-			:text="x.text" :key="x.key" :showInPort="true" :showOutPort="true" :field="x" />
+			:text="x.description" :key="Math.random()" :showInPort="true" :showOutPort="true" :field="x" />
 	</ElementTemplate>
 </template>
 

@@ -1,11 +1,13 @@
-import { FieldType, GlobalKey, isUndefOrNull, Nullable } from "../../../../../../general/domain"
-import { I_TypeDef } from "../type-def/domain"
-import { I_Parameter } from "./parameter"
+import { FieldType, GlobalKey, HashTable, isUndefOrNull, I_Validable, Scope } from "../../../../../../general/domain";
+import { I_TypeDef } from "../type-def/domain";
+import { I_Parameter } from "./parameter";
 
-export interface I_Field {
+export interface I_Field extends I_Validable {
 	readonly key: string
 	name: string
-	text: string
+	scope: Scope
+	readonly scopeSymbol: string
+	description: string
 	parameters?: I_Parameter[]
 	readonly fieldType: FieldType
 	event_dataTypeDef_changed?: Function
@@ -16,12 +18,22 @@ export interface I_Field {
 	 * events with elements as parameters  
 	 */
 	readonly dataTypeDef: I_TypeDef
+	valid: boolean
 }
 
 export abstract class Field implements I_Field {
 	readonly key: string
+
 	name: string
-	text: string
+	scope: Scope
+	get scopeSymbol(): string {
+		if (this.scope == Scope.Public) return '+'
+		if (this.scope == Scope.Package) return '#'
+		if (this.scope == Scope.Protected) return '~'
+		if (this.scope == Scope.Private) return '-'
+		return ''
+	}
+	description: string
 	readonly fieldType: FieldType
 
 	//@ts-ignore, initialized through setter
@@ -44,24 +56,32 @@ export abstract class Field implements I_Field {
 	}
 
 
-	constructor(name: string, fieldType: FieldType, dataTypeDef: I_TypeDef, key: string = "") {
+	constructor(name: string, description: string, scope: Scope, fieldType: FieldType, dataTypeDef: I_TypeDef, key: string = "") {
 		this.key = key === "" || isUndefOrNull(key) ? GlobalKey.getNewGlobalKey() : key
 		this.name = name
-		this.text = ""
+		this.description = description
+		this.scope = scope
 		this.fieldType = fieldType
 		this.dataTypeDef = dataTypeDef
-		dataTypeDefChanged: Function
 	}
 
-
-	toJSON() {
-		return {
-			key: this.key,
-			name: this.name,
-			text: this.text,
-			fieldType: this.fieldType,
-			dataTypeDef: this.dataTypeDef,
-		}
+	// validation
+	validate(): boolean {
+		const firtsLetter = this.name.substring(0, 1)
+		this._validProp['name'] = this.name.indexOf(' ') == -1
+			&& this.name != ''
+			&& !(firtsLetter >= '0' && firtsLetter <= '9')
+		return this.validProp['name']
 	}
+
+	protected _valid = false
+	get valid(): boolean {
+		return this.validate()
+	}
+
+	protected _validProp: HashTable<boolean> = {}
+	get validProp(): HashTable<boolean> {
+		return this._validProp
+	}
+
 }
-

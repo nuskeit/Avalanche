@@ -20,7 +20,7 @@ export class Element_DTO {
 		name: string,
 		visible: boolean,
 		elementType: g.domain.ElementType,
-		fields: field.data.Field_DTO[]
+		fields: field.data.Field_DTO[],
 	) {
 		this.key = key
 		this.name = name

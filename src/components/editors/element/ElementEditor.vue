@@ -4,16 +4,22 @@ import { I_Element } from "../../../core/avalanche-app/root-diagram/diagram/elem
 import TextBox from '../../controls/TextBox.vue';
 import { ElementEditorPresenter } from "./element-editor-presenter";
 import FieldEditor from "./field-editor/FieldEditor.vue";
+import SplitPanel from "./SplitPanel.vue";
+import FieldsList from "./FieldsList.vue";
+import DeleteButton from "../../controls/buttons/DeleteButton.vue";
 
 const props = defineProps<{
 	modelValue: I_Element
 }>()
+
+console.log('ELEMENT EDITOR LOADED');
 
 const emit = defineEmits<{
 	(e: "addNewPropertyField"): void,
 	(e: "addNewMethodField"): void,
 	(e: "addNewEventField"): void,
 	(e: "update:modelValue", payload: I_Element): void
+	(e: "delete:element", element: I_Element): void
 }>()
 
 const element = computed<I_Element>({
@@ -27,52 +33,53 @@ const element = computed<I_Element>({
 
 const presenter: ElementEditorPresenter = reactive<ElementEditorPresenter>(new ElementEditorPresenter(
 	{
+		presenterProxy: () => presenter,
 		elementProxy: () => element.value
 	}))
-
 
 // const handleClose = async () => {
 // 	emit("close")
 // }
-const activeNewProp = ref(true)
-const activeNewMethod = ref(true)
-const activeNewEvent = ref(true)
 </script>
 
 <template>
 	<div class="element-editor_root form">
-		<div class="header">
-			<div class="element-name">
-				<TextBox :id="`${element.key}`" v-model="element.name" />
-			</div>
-			<div class="element-type">
-				{{ element.elementType }}
-			</div>
-		</div>
 
-		<div class="element-editor_row" v-for="field, i in presenter.listProperties" :key="field.key">
-			<FieldEditor v-model="presenter.listProperties[i]" />
-		</div>
-		<div :class="`element-editor_row new ${activeNewProp ? 'active' : ''}`" @pointerdown="activeNewProp=true">
-			<FieldEditor v-model="presenter.newPropertyField" />
-			<button @click="presenter.eventsHandler.handleAddNewProperyField">+</button>
-		</div>
+		<SplitPanel>
+			<template #top>
+				<div class="top">
+					<div class="header">
+						<div class="element-name">
+							<TextBox :id="`${element.key}`" v-model="element.name" />
+						</div>
+						<div class="element-type">
+							{{ element.elementType }}
+						</div>
+						<div class="corner-button">
+							<DeleteButton @click="emit('delete:element', element)" />
+						</div>
+					</div>
 
-		<div class="element-editor_row" v-for="field, i in presenter.listMethods" :key="field.key">
-			<FieldEditor v-model="presenter.listMethods[i]" />
-		</div>
-		<div :class="`element-editor_row new ${activeNewMethod ? 'active' : ''}`" @pointerdown="activeNewMethod=true">
-			<FieldEditor v-model="presenter.newMethodField" />
-			<button @click="presenter.eventsHandler.handleAddNewMethodField">+</button>
-		</div>
+					<FieldsList :properties-list="presenter.listProperties" :methods-list="presenter.listMethods"
+						:events-list="presenter.listEvents" @select-field="presenter.eventsHandler.selectField"
+						@new-property="presenter.eventsHandler.handleAddNewProperyField"
+						@new-method="presenter.eventsHandler.handleAddNewMethodField"
+						@new-event="presenter.eventsHandler.handleAddNewEventField" />
 
-		<div class="element-editor_row" v-for="field, i in presenter.listEvents" :key="field.key">
-			<FieldEditor v-model="presenter.listEvents[i]" />
-		</div>
-		<div :class="`element-editor_row new ${activeNewEvent ? 'active' : ''}`" @pointerdown="activeNewEvent=true">
-			<FieldEditor v-model="presenter.newEventField" />
-			<button @click="presenter.eventsHandler.handleAddNewEventField">+</button>
-		</div>
+				</div>
+
+			</template>
+
+			<template #bottom>
+
+
+				<div class="element-editor_row" v-if="presenter.selectedField!=null">
+					<FieldEditor v-model="presenter.selectedField"  @delete:field="presenter.eventsHandler.handleDeleteField"/>
+					<!-- <button @click="presenter.eventsHandler.handleAddNewProperyField">+</button> -->
+				</div>
+
+			</template>
+		</SplitPanel>
 
 	</div>
 </template>
@@ -80,29 +87,40 @@ const activeNewEvent = ref(true)
 <style scoped lang="scss">
 .element-editor_root {
 
-	background-color: #333e;
-	border: solid rgba(#bbb, .5) .1rem;
-	box-shadow: .2rem .2rem .2rem rgba(#000, .5);
+	background-color: #333;
 	padding: 0;
 	color: #ddd;
 	font-size: .7rem;
+	height: 100%;
 
-	.header {
-		display: flex;
-		flex-direction: row;
-		background-color: #444;
-		align-items: center;
+	.top {
 
-		.element-name {
-			text-align: left;
-			white-space: nowrap;
-			flex: 1 1 auto;
+		background-color: #0a5a;
+
+		.header {
+			display: flex;
+			flex-direction: row;
+			background-color: #444;
+			align-items: center;
+
+			.element-name {
+				text-align: left;
+				white-space: nowrap;
+				flex: 1 1 auto;
+				cursor: pointer;
+			}
+
+			.element-type {
+				white-space: nowrap;
+				flex: 1 1 auto;
+				border: #0a5 solid 1px;
+			}
+
+			.corner-button {
+				flex: 0 0 .1rem;
+			}
 		}
 
-		.element-type {
-			white-space: nowrap;
-			flex: 1 1 .1rem;
-		}
 	}
 
 	.element-editor_row {
@@ -116,6 +134,10 @@ const activeNewEvent = ref(true)
 		button {
 			background-color: #555;
 			color: #5af;
+		}
+
+		.action-button {
+			width: 100%;
 		}
 	}
 

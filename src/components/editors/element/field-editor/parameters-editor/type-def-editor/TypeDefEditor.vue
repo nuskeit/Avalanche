@@ -36,10 +36,10 @@ const fallbackDataType = computed<DataType>({
 			<tbody>
 				<tr class="details-row">
 					<td class="details-cell">
-						<ValTypeSelector :id="`val-type-${typeDef.key}`" v-model="fallbackDataType" />
+						fallback: <ValTypeSelector :id="`val-type-${typeDef.key}`" v-model="fallbackDataType" />
 					</td>
 					<td class="details-cell">
-						<RefTypeSelector :id="`reg-type-${typeDef.key}`" v-model="typeDef.refElement" />
+						ref?: <RefTypeSelector :id="`reg-type-${typeDef.key}`" v-model="typeDef.refElement" />
 					</td>
 				</tr>
 			</tbody>
@@ -52,9 +52,7 @@ const fallbackDataType = computed<DataType>({
 .typedef-editor_root {
 
 	.details-table {
-		background-color: #0002;
 		border-collapse: collapse;
-		border: solid 1px red;
 
 		.details-row {
 			//			border: solid 1px green;

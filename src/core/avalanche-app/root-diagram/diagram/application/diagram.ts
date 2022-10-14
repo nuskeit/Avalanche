@@ -1,15 +1,16 @@
-import { Draggable, Dragger } from "../../../../drag/application"
+import { Draggable } from "../../../../drag/application"
 import { I_Draggable } from "../../../../drag/domain"
-import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, Nullable, NumericRange, RelationshipType, Vector } from "../../../../general/domain"
-import { ElementsRelationship } from "../../../../relationships/application"
-import { I_ElementsRelationship, I_RelationshipsStore } from "../../../../relationships/domain"
+import { I_DraggableElement } from "../../../../drag/domain/draggable-element"
+import { AppFactory } from "../../../../factories/app-factory/application"
+import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, Nullable, NumericRange, RelationshipType, Size, Vector } from "../../../../general/domain"
+import { I_ElementsRelationship } from "../../../../relationships/domain"
 import { I_Diagram } from "../domain"
-import { I_Element, I_ElementsStore } from "../element/domain"
+import { I_Element } from "../element/domain"
 
 export class Diagram implements I_Diagram {
 	constructor(name: string, diagramType: DiagramType,
-		viewBox: I_ViewBox, viewPort: I_ViewPort) {
-		this._key = GlobalKey.getNewGlobalKey()
+		viewBox: I_ViewBox, viewPort: I_ViewPort, key?: string) {
+		this._key = key ? key : GlobalKey.getNewGlobalKey()
 		this.name = name
 		this._diagramType = diagramType
 		this._elements = {}
@@ -28,21 +29,27 @@ export class Diagram implements I_Diagram {
 	public get diagramType(): DiagramType { return this._diagramType }
 	public visible: boolean
 
-	private _elements: HashTable<I_Draggable<I_Element>>
-	public get elements(): HashTable<I_Draggable<I_Element>> { return this._elements }
+	private _elements: HashTable<I_DraggableElement>
+	public get elements(): HashTable<I_DraggableElement> { return this._elements }
 
 	addElement(element: I_Element, x: Nullable<number> = null,
-		y: Nullable<number> = null, width: number = 180): void {
+		y: Nullable<number> = null, size: Size = { width: 180, height: "auto" }): void {
 		let _x: number, _y: number
 		if (x == null) _x = getRandomPosition(300, 50); else _x = x
 		if (y == null) _y = getRandomPosition(200, 50); else _y = y
-		this.elements[element.key] = new Draggable<I_Element>(element,
-			new Dragger(element.key,
-				new Vector(_x, _y),
-				new Vector(_x, _y))
-		)
+		this.elements[element.key] = AppFactory.getSingleton().createDraggableElement(element, new Vector(_x, _y), size)
 	}
 
+	removeElement(key: string): void {
+		this.removeRelationshipsByElement(key)
+		delete this.elements[key]
+
+	}
+
+	removeRelationshipsByElement(key: string): void {
+		this.relationships = this.relationships.filter(r => r.sourceElementKey != key && r.targetElementKey != key)
+		AppFactory.getSingleton().createRelationshipsStore().removeRelationshipsByElement(key)
+	}
 
 	relationships: I_ElementsRelationship[] = []
 
@@ -51,11 +58,13 @@ export class Diagram implements I_Diagram {
 		for (const elemenKey in this.elements) {
 			this.elements[elemenKey].element.fields.forEach(e => {
 				if (e.dataTypeDef?.refElement != null)
-					this.relationships.push(new ElementsRelationship(elemenKey, e.dataTypeDef?.refElement?.key, "TAG", RelationshipType.DirectedAssociation, new NumericRange(1, 1), new NumericRange()))
+					this.relationships.push(AppFactory.getSingleton().createElementsRelationship(
+						e.key, e.dataTypeDef?.refElement?.key, elemenKey, e.dataTypeDef?.refElement?.key, "TAG", RelationshipType.DirectedAssociation, new NumericRange(1, 1), new NumericRange()))
 
 				e.parameters?.forEach(p => {
 					if (p.dataTypeDef.refElement != null)
-						this.relationships.push(new ElementsRelationship(elemenKey, p.dataTypeDef?.refElement?.key, "TAG", RelationshipType.DirectedAssociation, new NumericRange(1, 1), new NumericRange()))
+						this.relationships.push(AppFactory.getSingleton().createElementsRelationship(
+							e.key, p.dataTypeDef?.refElement?.key, elemenKey, p.dataTypeDef?.refElement?.key, "TAG", RelationshipType.DirectedAssociation, new NumericRange(1, 1), new NumericRange()))
 				})
 			})
 		}

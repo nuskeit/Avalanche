@@ -3,6 +3,8 @@ import { I_ElementsRelationship } from "../domain"
 
 export class ElementsRelationship implements I_ElementsRelationship {
 	readonly key: string
+	readonly sourceElementKey: string
+	readonly targetElementKey: string
 	readonly sourceKey: string
 	readonly targetKey: string
 	sourceMultiplicity: I_NumericRange
@@ -13,6 +15,8 @@ export class ElementsRelationship implements I_ElementsRelationship {
 	constructor(
 		sourceKey: string,
 		targetKey: string,
+		sourceElementKey: string,
+		targetElementKey: string,
 		tag: string,
 		relationshipType: RelationshipType,
 		sourceMultiplicity: I_NumericRange = new NumericRange(),
@@ -25,6 +29,8 @@ export class ElementsRelationship implements I_ElementsRelationship {
 			this.key = `rel${GlobalKey.getNewGlobalKey()}`
 		this.sourceKey = sourceKey
 		this.targetKey = targetKey
+		this.sourceElementKey = sourceElementKey
+		this.targetElementKey = targetElementKey
 		this.tag = tag
 		this.relationshipType = relationshipType
 		this.sourceMultiplicity = sourceMultiplicity

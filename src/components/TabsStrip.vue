@@ -52,7 +52,7 @@ const selectedDiagram = computed({
             padding: .5rem;
             padding-top: .2rem;
             padding-bottom: .2rem;
-            color: #ddd;
+            color: #000;
             font-size: .6rem;
             cursor: pointer;
             display: flex;

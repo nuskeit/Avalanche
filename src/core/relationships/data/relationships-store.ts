@@ -8,6 +8,11 @@ export class RelationshipsStore implements I_RelationshipsStore, I_Serializable 
 		this.relationships.push(rel)
 	}
 
+	removeRelationshipsByElement(key: string): void {
+		this.relationships = this.relationships.filter(r => r.sourceElementKey != key && r.targetElementKey != key)
+	}
+
+
 	toJSON(): any {
 		return {
 			__type: "RelationshipsStore",

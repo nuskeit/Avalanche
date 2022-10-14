@@ -16,7 +16,7 @@ input {
 	
 	
 	input {
-		color: #ff0;
+		color: #faf;
 		outline: none;
 		background-color: transparent;
 	}
@@ -24,7 +24,7 @@ input {
 	select {
 		outline: none;
 		background-color: transparent;
-		color: #ff0;
+		color: #faf;
 		border: none;
 		// &>* {
 		// 	background-color: transparent
@@ -40,4 +40,9 @@ input {
 		border: solid .1rem #666;
 	}
 	
+}
+
+.invalid {
+	border: solid .1rem red;
+	background:red;
 }

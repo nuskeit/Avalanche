@@ -1,24 +1,43 @@
-import * as diagramNS from "../../../avalanche-app/root-diagram/diagram";
-import * as elemNS from "../../../avalanche-app/root-diagram/diagram/element";
-import * as fieldNS from "../../../avalanche-app/root-diagram/diagram/element/field";
-import * as g from "../../../general";
-import * as relationshipsNS from "../../../relationships";
-import * as rootDiagramNS from "../../../avalanche-app/root-diagram"
-import * as dtoNS from ".."
-import * as  typeDefNS from "../../../avalanche-app/root-diagram/diagram/element/field/type-def";
-import * as dragNS from "../../../drag";
+import { RootDiagram_DTO } from "../../../avalanche-app/root-diagram/data";
+import { Diagram_DTO } from "../../../avalanche-app/root-diagram/diagram/data";
+import { I_Diagram } from "../../../avalanche-app/root-diagram/diagram/domain";
+import { Element_DTO } from "../../../avalanche-app/root-diagram/diagram/element/data";
+import { I_Element } from "../../../avalanche-app/root-diagram/diagram/element/domain";
+import { MethodField } from "../../../avalanche-app/root-diagram/diagram/element/field/application";
+import { EventField_DTO, Field_DTO, MethodField_DTO, Parameter_DTO, PropertyField_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/data";
+import { I_Field, I_Parameter } from "../../../avalanche-app/root-diagram/diagram/element/field/domain";
+import { TypeDef_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/data";
+import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain";
+import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain";
+import { DraggableElement_DTO } from "../../../drag/data/draggable-element-dto";
+import { I_DraggableElement } from "../../../drag/domain/draggable-element";
+import { FieldType, HashTabletoArray, undefinedToNull } from "../../../general/domain";
+import { ElementsRelationship_DTO } from "../../../relationships/data";
+import { I_DtoFactory } from "../domain";
 
-export class DtoFactory implements dtoNS.domain.I_DtoFactory {
+export class DtoFactory implements I_DtoFactory {
 
-	createRootDiagramDto(rd: rootDiagramNS.application.RootDiagram): rootDiagramNS.data.RootDiagram_DTO {
-		const r = new rootDiagramNS.data.RootDiagram_DTO(
+	private static singletonInstance: DtoFactory | undefined
+
+	private constructor() { }
+
+	static getSingleton(): DtoFactory {
+		if (!this.singletonInstance)
+			this.singletonInstance = new DtoFactory()
+
+		return this.singletonInstance
+	}
+
+	createRootDiagramDto(rd: I_RootDiagram): RootDiagram_DTO {
+		const r = new RootDiagram_DTO(
 			rd.key,
 			rd.name,
 			rd.diagrams.map(d => this.createDiagramDto(d)),
-			g.domain.HashTabletoArray<elemNS.domain.I_Element>(rd.elementsStore.elements)
+			HashTabletoArray<I_Element>(rd.elementsStore.elements)
 				.map(e => this.createElementDto(e)),
-			rd.relationshipsStore.relationships.map<relationshipsNS.data.ElementsRelationship_DTO>(r =>
-				new relationshipsNS.data.ElementsRelationship_DTO(r.sourceKey, r.targetKey, r.tag,
+			rd.relationshipsStore.relationships.map<ElementsRelationship_DTO>(r =>
+				new ElementsRelationship_DTO(r.sourceKey, r.targetKey,
+					r.sourceElementKey, r.targetElementKey, r.tag,
 					r.relationshipType, r.sourceMultiplicity, r.targetMultiplicity, r.key))
 		)
 		return r
@@ -27,48 +46,57 @@ export class DtoFactory implements dtoNS.domain.I_DtoFactory {
 	// createDiagramDto(d: I_Diagram): Diagram_DTO {
 	// 	return new Diagram_DTO(d.key, d.name, d.diagramType, d.visible,
 	// 		HashTabletoArray<I_Draggable<I_Element>>(d.elements)
-	// 			.map(e => new Draggable_DTO<string>(e.element.key, { x: e.dragger.location.x, y: e.dragger.location.y })))
+	// 			.map(e => new Draggable_DTO<string>(e.element.key, { x: e.location.x, y: e.location.y })))
 	// }
 
-	createDiagramDto(d: diagramNS.application.Diagram): diagramNS.data.Diagram_DTO {
-		const elementsArray = g.domain.HashTabletoArray<dragNS.domain.I_Draggable<elemNS.domain.I_Element>>(d.elements)
+	createDiagramDto(d: I_Diagram): Diagram_DTO {
+		const elementsArray = HashTabletoArray<I_DraggableElement>(d.elements)
 		const elements = elementsArray.map(e => {
-			return {
-				element: e.element.key,
-				//width: e.width,
-				location: new g.domain.Vector(e.dragger.location.x, e.dragger.location.y)
-			}
+			return this.createDraggableElementDto(e)
 		})
 
-		return new diagramNS.data.Diagram_DTO(d.key, d.name, d.diagramType, d.visible, elements, d.viewBox, d.viewPort)
+		return new Diagram_DTO(d.key, d.name, d.diagramType, d.visible, elements, d.viewBox, d.viewPort)
 	}
 
-	createElementDto(e: elemNS.domain.I_Element) {
-		return new elemNS.data.Element_DTO(e.key, e.name, e.visible, e.elementType, e.fields.map(f => this.createFieldDto(f)))
+	createElementDto(e: I_Element): Element_DTO {
+		return new Element_DTO(e.key, e.name, e.visible, e.elementType, e.fields.map(f => this.createFieldDto(f)))
 	}
 
-	createFieldDto(field: fieldNS.domain.I_Field): fieldNS.data.Field_DTO {
-		if (field.fieldType == g.domain.FieldType.Method) {
-			return new fieldNS.data.MethodField_DTO(field.key,
-				field.name, field.text, field.fieldType,
+	createDraggableElementDto(e: I_DraggableElement): DraggableElement_DTO {
+		return new DraggableElement_DTO(e.element.key, e.location, e.size)
+	}
+
+	createFieldDto(field: I_Field): Field_DTO {
+		if (field.fieldType == FieldType.Method) {
+			return new MethodField_DTO(field.key, field.name, field.description, field.scope, field.fieldType,
 				// @ts-ignore
-				undefinedToNull(field.dataTypeDef) == null ? null : this.createTypeDefDto(field.dataTypeDef),
-				(field as fieldNS.application.MethodField).parameters
+				this.createTypeDefDto(field.dataTypeDef),
+				(field as MethodField).parameters
 					.map(p => this.creatParameterDto(p)))
-		} else
-			return new fieldNS.data.PropertyField_DTO(field.key, field.name, field.text, field.fieldType,
+		} else if (field.fieldType == FieldType.Event) {
+			return new EventField_DTO(field.key, field.name, field.description, field.scope, field.fieldType,
 				// @ts-ignore
-				undefinedToNull(field.dataTypeDef) == null ? null : this.createTypeDefDto(field.dataTypeDef))
+				this.createTypeDefDto(field.dataTypeDef),
+				(field as MethodField).parameters
+					.map(p => this.creatParameterDto(p)))
+		} else {
+			return new PropertyField_DTO(field.key, field.name, field.description, field.scope, field.fieldType,
+				// @ts-ignore
+				this.createTypeDefDto(field.dataTypeDef))
+		}
 	}
 
-	creatParameterDto(p: fieldNS.domain.I_Parameter): fieldNS.data.Parameter_DTO {
-		// @ts-ignore
-		return new Parameter_DTO(p.name, p.direction, p.category, undefinedToNull(p.dataTypeDef) == null ? null : this.createTypeDefDto(p.dataTypeDef))
+	creatParameterDto(p: I_Parameter): Parameter_DTO {
+		if (p.dataTypeDef.refElement != null) {
+			console.log('p.dataTypeDef', p.dataTypeDef)
+			console.log('Parameter_DTO', new Parameter_DTO(p.key, p.name, p.direction, p.category, this.createTypeDefDto(p.dataTypeDef)))
+		}
+		console.log('p.dataTypeDef', p.dataTypeDef);
+		return new Parameter_DTO(p.key, p.name, p.direction, p.category, this.createTypeDefDto(p.dataTypeDef))
 	}
 
-	createTypeDefDto(t: typeDefNS.domain.I_TypeDef): typeDefNS.data.TypeDef_DTO {
-		// @ts-ignore
-		return new TypeDef_DTO(t.name, t.fallbackDataType, undefinedToNull(t.refElement) == null ? null : t.refElement.key)
+	createTypeDefDto(t: I_TypeDef): TypeDef_DTO {
+		return new TypeDef_DTO(t.key, t.name, t.fallbackDataType, t.refElement == null ? null : t.refElement.key)
 	}
 
 }

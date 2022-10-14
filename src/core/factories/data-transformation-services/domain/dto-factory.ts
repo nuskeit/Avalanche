@@ -1,21 +1,30 @@
-import * as rootDiagramNS from "../../../avalanche-app/root-diagram"
-import * as diagramNS from "../../../avalanche-app/root-diagram/diagram"
-import * as elementNS from "../../../avalanche-app/root-diagram/diagram/element"
-import * as fieldNS from "../../../avalanche-app/root-diagram/diagram/element/field"
-import * as typeDefNS from "../../../avalanche-app/root-diagram/diagram/element/field/type-def"
+import { RootDiagram_DTO } from "../../../avalanche-app/root-diagram/data"
+import { Diagram_DTO } from "../../../avalanche-app/root-diagram/diagram/data"
+import { I_Diagram } from "../../../avalanche-app/root-diagram/diagram/domain"
+import { Element_DTO } from "../../../avalanche-app/root-diagram/diagram/element/data"
+import { I_Element } from "../../../avalanche-app/root-diagram/diagram/element/domain"
+import { Field_DTO, Parameter_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/data"
+import { I_Field, I_Parameter } from "../../../avalanche-app/root-diagram/diagram/element/field/domain"
+import { TypeDef_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/data"
+import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain"
+import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain"
+import { DraggableElement_DTO } from "../../../drag/data/draggable-element-dto"
+import { I_DraggableElement } from "../../../drag/domain/draggable-element"
 
 export interface I_DtoFactory {
 
-	createRootDiagramDto(rd: rootDiagramNS.application.RootDiagram): rootDiagramNS.data.RootDiagram_DTO
+	createRootDiagramDto(rd: I_RootDiagram): RootDiagram_DTO
 
-	createDiagramDto(d: diagramNS.domain.I_Diagram): diagramNS.data.Diagram_DTO
+	createDiagramDto(d: I_Diagram): Diagram_DTO
 
-	createElementDto(e: elementNS.domain.I_Element): elementNS.data.Element_DTO
+	createElementDto(e: I_Element): Element_DTO
 
-	createFieldDto(field: fieldNS.domain.I_Field): fieldNS.data.Field_DTO
+	createDraggableElementDto(e: I_DraggableElement): DraggableElement_DTO
 
-	creatParameterDto(p: fieldNS.domain.I_Parameter): fieldNS.data.Parameter_DTO
+	createFieldDto(field: I_Field): Field_DTO
 
-	createTypeDefDto(t: typeDefNS.domain.I_TypeDef): typeDefNS.data.TypeDef_DTO
+	creatParameterDto(p: I_Parameter): Parameter_DTO
+
+	createTypeDefDto(t: I_TypeDef): TypeDef_DTO
 
 }

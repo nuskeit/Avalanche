@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
 import { I_Draggable } from '../../core/drag/domain';
+import { I_Vector } from '../../core/general/domain';
 import * as constantsNS from '../../core/general/domain/constants';
 import InboundPort from './InboundPort.vue';
 import OutboundPort from './OutboundPort.vue';
@@ -14,7 +15,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	(e: 'open-crud'): void
 	(e: 'select-element', dragObj: I_Element): void
-	(e: 'drag-start', dragObj: I_Draggable<I_Element>): void
+	(e: 'drag-start', dragObj: I_Draggable<I_Element>, mouseLocation: I_Vector): void
 }>()
 
 const {
@@ -25,9 +26,7 @@ const {
 } = useConnectingPaths()
 
 function startDragHandler(e: any) {
-	props.draggableElement.dragger.mouseLocation.x = e.clientX
-	props.draggableElement.dragger.mouseLocation.y = e.clientY
-	emit('drag-start', props.draggableElement)
+	emit('drag-start', props.draggableElement, { x: e.clientX, y: e.clientY })
 	emit('select-element', props.draggableElement.element)
 }
 
@@ -43,7 +42,7 @@ function selectHandler(e: any) {
 </script>
 
 <template>
-	<g :transform="`translate(${draggableElement.dragger.location.x},${draggableElement.dragger.location.y})`"
+	<g :transform="`translate(${draggableElement.location.x},${draggableElement.location.y})`"
 		class="element-root" @pointerdown.prevent.stop="startDragHandler">
 
 		<rect x="-1" y="-1" :width="constantsNS.elementWidth + 2"
@@ -59,7 +58,7 @@ function selectHandler(e: any) {
 			:width="constantsNS.elementWidth" :height="constantsNS.rowHeight" />
 
 		<text x="3" y="11" class="element-root-header-text" @pointerdown.prevent.stop="startDragHandler"> {{
-				`${draggableElement.element.name}`
+		`${draggableElement.element.name}`
 		}}
 		</text>
 

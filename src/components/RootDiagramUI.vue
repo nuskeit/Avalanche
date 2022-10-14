@@ -5,6 +5,8 @@ import TabsStrip from './TabsStrip.vue';
 //custom types
 import { AvalancheApp } from '../core/avalanche-app/application';
 import { RootDiagramPresenter } from "./root-diagram-presenter";
+import SaveButton from './controls/buttons/SaveButton.vue';
+import { preseter } from '../core/general';
 
 // Create object model reference (OMR)
 const avalancheApp = inject("avalanche-app") as AvalancheApp
@@ -33,6 +35,10 @@ onUnmounted(() => {
 <template>
 	<Suspense>
 		<div class="root-diagram">
+			<div class="root-diagram-toolbar">
+				<SaveButton :className="'save-button'"
+					@click="rootDiagramPresenter.eventsHandler.handleSaveRootDiagram" />
+			</div>
 			<div class="root-diagram-title">
 				<div>{{ rootDiagramPresenter.rootDiagramProxy?.name }} </div>
 			</div>
@@ -61,9 +67,24 @@ onUnmounted(() => {
 	height: 100%;
 	box-sizing: border-box;
 
+	.root-diagram-toolbar {
+		color: #ccc;
+		background-color: #000;
+		font-size: .5rem;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		padding: .1rem;
+		flex: 0 0 1.5rem;
+
+		.save-button {
+			//	width: 1.5rem;
+			height: 100%;
+		}
+	}
+
 	.root-diagram-title {
 		color: #ccc;
-		height: 1.5rem;
 		font-size: 1.2rem;
 		display: flex;
 		align-items: center;
@@ -95,5 +116,7 @@ onUnmounted(() => {
 		}
 
 	}
+
+
 }
 </style>

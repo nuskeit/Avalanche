@@ -7,11 +7,13 @@ import TextBox from '../../../controls/TextBox.vue';
 import { FieldEditorPresenter } from "./field-editor-presenter";
 import ParametersEditor from "./parameters-editor/ParametersEditor.vue";
 import TypeDefEditor from "./parameters-editor/type-def-editor/TypeDefEditor.vue";
+import DeleteButton from "../../../controls/buttons/DeleteButton.vue";
 
 const props = defineProps<{ modelValue: I_Field }>()
 
 const emit = defineEmits<{
 	(e: "update:modelValue", value: I_Field): void
+	(e: "delete:field", value: I_Field): void
 }>()
 
 const field = computed<I_Field>({
@@ -25,70 +27,48 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 
 <template>
 	<div class="field-editor_root">
-		<div class="row">
 
-			<div class="cell tag">
-				<TextBox :id="field.key" v-model="field.name" :className="'shy-input'" />
+		<div class="row header">
+
+			<div class="col">
+				<TextBox :id="field.key" v-model="field.name"
+					:className="`shy-input ${field.validProp['name'] ? '' :'invalid'} `" />
 			</div>
 
-			<div class="cell right field-type">
+			<div class="field-type">
 				{{ field.fieldType }}
 			</div>
 
-			<div class="cell toggle-btn">
-				<img :class="`drop-down-btn ${presenter.expand ? 'flip' : ''}`"
-					src="./../../../../assets/drop-down-ico.png" @pointerdown="presenter.eventsHandler.toggleExpand">
+			<div class="corner-button">
+				<DeleteButton @click="emit('delete:field', field)" />
 			</div>
 
 		</div>
 
+		<div class="row division-title">
+			Description:
+		</div>
+
 		<div class="row">
-			<table v-if="presenter.expand" class="details-table">
-				<tbody>
-
-					<tr class="details-row">
-						<td class="details-cell">
-							<!-- <FieldTypesComboBox :id="field.id.toString()" v-model="field.fieldType" /> -->
-							Text:
-						</td>
-						<td class="details-cell">
-							<!-- <label :for="`text-${field.id.toString()}`">Text:</label> -->
-							<TextBox :id="field.key" v-model="field.text" :className="'regular-input'" />
-						</td>
-					</tr>
-
-					<tr class="details-row">
-						<td class="details-cell">
-							DataType:
-						</td>
-						<td class="details-cell">
-							<TypeDefEditor v-model="field.dataTypeDef" />
-						</td>
-
-					</tr>
-				</tbody>
-			</table>
+			<TextBox :id="field.key" v-model="field.description" :className="'regular-input'" />
 		</div>
 
-		<div class="row" v-if="presenter.expand">
-			<table class="details-table">
-				<tbody>
-
-					<tr class="details-row"
-						v-if="field.fieldType == FieldType.Method || field.fieldType == FieldType.Event ">
-						<td class="details-cell">
-							Parameters:
-						</td>
-						<td class="details-row field-type">
-							<ParametersEditor v-model="(presenter.fieldProxy as MethodField).parameters" />
-						</td>
-					</tr>
-
-				</tbody>
-			</table>
+		<div class="row division-title">
+			DataType:
+		</div>
+		<div class="row">
+			<TypeDefEditor v-model="field.dataTypeDef" />
 		</div>
 
+
+		<template v-if="field.fieldType == FieldType.Method || field.fieldType == FieldType.Event ">
+			<div class="row division-title">
+				Parameters:
+			</div>
+			<ParametersEditor v-model="(presenter.fieldProxy as MethodField).parameters" />
+		</template>
 	</div>
+
 </template>
 
 <style scoped lang="scss">
@@ -96,106 +76,42 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 	display: flex;
 	flex-direction: column;
 	padding: .05rem;
-	border-bottom: solid #5f5 .01rem;
 	white-space: nowrap;
-	//overflow: hidden;
-	width: 100%;
 	position: relative;
-
-	&:nth-last-child(1) {
-		border: none
-	}
+	flex: 1 1 auto;
 
 	.row {
+		padding: .1rem;
+		flex: 1 1 auto;
 		display: flex;
 		flex-direction: row;
+		overflow: hidden;
+	}
+	.header{
+		background-color: #55a;
+	}
 
-		.cell {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			padding-left: .1rem;
-			//border: solid white 1px;
-			flex: 1 1 auto;
-		}
+	.field-type {
+		white-space: nowrap;
+		flex: 1 1 auto;
+		border: #0ad solid 1px;
+	}
 
-		.toggle-btn {
-			flex: 0 0 1rem;
-		}
-
-		.editable {
-			background: rgba(#fff, .1);
-			//		border: solid .1rem rgba(#03a, .2);
-			padding-left: 0rem;
-			padding-right: 0rem;
-		}
-
-		.tag {
-			padding-left: 0rem;
-			padding-right: 0rem;
-		}
+	.corner-button {
+		flex: 0 0 .1rem;
 	}
 
 
-
-
-	.details-table {
-		border-collapse: collapse;
-
-		.details-row {
-			//border:solid 1px red;
-			padding: 0;
-
-			.details-cell {
-				padding: 0;
-				//				border:solid 1px blue;
-				text-align: left;
-				vertical-align: top;
-
-				&>input {
-					border: none;
-					background-color: #4443;
-				}
-			}
-		}
+	.division-title {
+		background-color: #000;
 	}
-}
 
-.drop-down-btn {
-	width: .7rem;
-	height: .7rem;
-	transition: all .5s;
-
-}
-
-.flip {
-	transform: rotate(180deg);
-	transition: all .5s;
-}
-
-.field-type {
-	opacity: .6;
-	font-style: italic;
-	// border: solid white 1px;
-}
-
-// input {
-// 	background-color: #5f55;
-// 	color: #ddd;
-// }
-
-
-.regular-input {
-	background-color: #ddd;
-}
-
-.shy-input {
-	background-color: #0000;
-	font-size: unset;
-}
-
-.floating-local {
-	position: absolute;
-	// left: 15rem;
+	.col {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding-left: .1rem;
+	}
 }
 </style>

@@ -1,21 +1,27 @@
-import { GlobalKey, Nullable } from "../../../general/domain"
-import { RelationshipsStore } from "../../../relationships/data"
+import { GlobalKey } from "../../../general/domain"
+import { I_RelationshipsStore } from "../../../relationships/domain"
 import { Diagram } from "../diagram/application"
-import { ElementsStore } from "../diagram/element/data"
+import { I_Diagram } from "../diagram/domain"
+import { I_ElementsStore } from "../diagram/element/domain"
 import { I_RootDiagram } from "../domain"
+import { I_RootDiagramRepo } from "../domain/root-domain-repo"
 
 export class RootDiagram implements I_RootDiagram {
 	readonly key: string
 	name: string
-	diagrams: Diagram[]
-	elementsStore: ElementsStore
-	relationshipsStore: RelationshipsStore
+	diagrams: I_Diagram[]
+	elementsStore: I_ElementsStore
+	relationshipsStore: I_RelationshipsStore
+	repo: I_RootDiagramRepo
 
-	constructor(key?: string) {
+	constructor(elementsStore: I_ElementsStore,
+		relationshipsStore: I_RelationshipsStore, repo: I_RootDiagramRepo,
+		key?: string) {
 		this.name = "New Root Diagram"
 		this.diagrams = []
-		this.elementsStore = new ElementsStore()
-		this.relationshipsStore = new RelationshipsStore()
+		this.elementsStore = elementsStore
+		this.relationshipsStore = relationshipsStore
+		this.repo = repo
 		if (!key) {
 			this.key = GlobalKey.getNewGlobalKey()
 		} else {
@@ -23,8 +29,12 @@ export class RootDiagram implements I_RootDiagram {
 		}
 	}
 
-	public addDiagram(p: Diagram): void {
+	addDiagram(p: Diagram): void {
 		this.diagrams.push(p)
+	}
+
+	async save(): Promise<boolean> {
+		return await this.repo.saveDataAsync(this)
 	}
 
 	toJSON() {

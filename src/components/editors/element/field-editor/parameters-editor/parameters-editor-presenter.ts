@@ -15,7 +15,11 @@ export class ParametersEditorPresenter implements I_Presenter<I_Parameter[]> {
 		this.proxies = proxies
 		this.parameters = parameters
 		this.createNewParameter()
+		this.addingNew = false
 	}
+
+
+	addingNew: boolean
 
 	proxies: Proxies
 
@@ -30,13 +34,16 @@ export class ParametersEditorPresenter implements I_Presenter<I_Parameter[]> {
 	eventsHandler = {
 
 		deleteParameterHandler: (index: number) => {
-			console.log('delete parameter');
 			this.proxies.parametersProxy().splice(index, 1)
 		},
 		addParameterHandler: (i: number, p: I_Parameter) => {
-			console.log('add parameter');
 			this.proxies.parametersProxy().push(p)
 			this.createNewParameter()
+			this.proxies.presenterProxy().addingNew = false
+		},
+		activateNewHandler: () => {
+			//emit('action:add', props.index, parameter.value)
+			this.proxies.presenterProxy().addingNew = true
 		}
 	}
 }

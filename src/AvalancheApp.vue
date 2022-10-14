@@ -9,7 +9,7 @@ const avalancheApp = AppFactory.getSingleton().createApp()
 
 provide("avalanche-app", avalancheApp)
 
-await avalancheApp.loadRootPlanAsync("rd1")
+await avalancheApp.loadRootPlanAsync("rd3")
 
 provide("elements-store", reactive<I_ElementsStore>(avalancheApp.rootDiagram.elementsStore))
 provide("relationships-store", reactive<I_RelationshipsStore>(avalancheApp.rootDiagram.relationshipsStore))

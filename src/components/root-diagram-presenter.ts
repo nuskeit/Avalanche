@@ -22,9 +22,15 @@ export class RootDiagramPresenter implements I_Presenter<I_RootDiagram>{
 	delegates: {} | undefined // Placeholder for delegates
 
 	eventsHandler = {
+		
 		handleKeyDown: (e: KeyboardEvent) => {
 			this.selectElement(e.key, e.altKey)
+		},
+
+		handleSaveRootDiagram: () => {
+			this.rootDiagramProxy.save()
 		}
+
 	}
 }
 

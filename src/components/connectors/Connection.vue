@@ -24,15 +24,15 @@ const points = computed<string>(() => {
 	if (sourceElement != undefined && targetElement != undefined) {
 
 
-		const b = targetElement.dragger.location.x - sourceElement.dragger.location.x
-		const h = targetElement.dragger.location.y - sourceElement.dragger.location.y
+		const b = targetElement.location.x - sourceElement.location.x
+		const h = targetElement.location.y - sourceElement.location.y
 		const hip = Math.sqrt(h * h + b * b)
 		const lateralFactor = b / hip
 		const leanFactor = 3
 
 		let lateralShift = (elementWidth / 2 * lateralFactor)
-		let startX = sourceElement.dragger.location.x + elementWidth / 2 + lateralShift
-		let endX = targetElement.dragger.location.x + elementWidth / 2 - lateralShift
+		let startX = sourceElement.location.x + elementWidth / 2 + lateralShift
+		let endX = targetElement.location.x + elementWidth / 2 - lateralShift
 		startX = Math.floor(startX)
 		endX = Math.floor(endX)
 		var midX = (endX + startX) / 2
@@ -45,8 +45,8 @@ const points = computed<string>(() => {
 		let endCurve = AppFactory.getSingleton().createVector(endX, endY1Y2[0])
 		let end = AppFactory.getSingleton().createVector(endX, endY1Y2[1])
 
-		if ((sourceElement.dragger.location.y < targetElement.dragger.location.y + elementHeight(targetElement.element) + clearance * 2
-			&& sourceElement.dragger.location.y + elementHeight(sourceElement.element) > targetElement.dragger.location.y - clearance * 2)) {
+		if ((sourceElement.location.y < targetElement.location.y + elementHeight(targetElement.element) + clearance * 2
+			&& sourceElement.location.y + elementHeight(sourceElement.element) > targetElement.location.y - clearance * 2)) {
 			path = `M${start.x},${start.y}`
 			path += ` V${startCurve.y}`
 			path += ` L${start.x + (end.x - start.x) / 2},${startCurve.y}`
@@ -91,7 +91,7 @@ let tag = computed<I_Vector>(() => {
 	if (sourceElement != undefined && targetElement != undefined) {
 		const ys1 = sourceStartLineAtTopOrBottom()
 		const ys2 = targetFinishLineAtTopOrBottom()
-		return AppFactory.getSingleton().createVector((sourceElement.dragger.location.x + elementWidth / 2 + targetElement.dragger.location.x + elementWidth / 2) / 2,
+		return AppFactory.getSingleton().createVector((sourceElement.location.x + elementWidth / 2 + targetElement.location.x + elementWidth / 2) / 2,
 			(ys1[1] + ys2[1]) / 2)
 	}
 	return AppFactory.getSingleton().createVector(0, 0)
@@ -103,8 +103,8 @@ function elementHeight(elem: I_Element): number {
 }
 
 function sourceStartLineAtTopOrBottom(): [number, number] {
-	const y1 = sourceElement.dragger.location.y
-	const y2 = targetElement.dragger.location.y
+	const y1 = sourceElement.location.y
+	const y2 = targetElement.location.y
 	const elemHeight = elementHeight(sourceElement.element)
 
 	if (y1 + elemHeight / 2 < y2)
@@ -114,8 +114,8 @@ function sourceStartLineAtTopOrBottom(): [number, number] {
 }
 
 function targetFinishLineAtTopOrBottom(): [number, number] {
-	const y1 = sourceElement.dragger.location.y
-	const y2 = targetElement.dragger.location.y
+	const y1 = sourceElement.location.y
+	const y2 = targetElement.location.y
 	const elemHeight = elementHeight(targetElement.element)
 
 	if (y1 < y2 + elemHeight / 2)
@@ -231,7 +231,7 @@ function targetFinishLineAtTopOrBottom(): [number, number] {
 
 .inheritance {
 	@extend .all;
-	stroke: #5d9; //#559
+	stroke: #172; //#559
 	stroke-dasharray: 4 2;
 	marker-end: url(#inheritance-endcap);
 }

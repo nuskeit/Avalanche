@@ -1,4 +1,4 @@
-import { Reviver } from "../../../factories/data-transformation-services/application"
+import { DtoFactory, Reviver } from "../../../factories/data-transformation-services/application"
 import { Repository } from "../../../repository/application"
 import { I_HttpInPort, I_Repository, I_Response } from "../../../repository/domain"
 import { RootDiagram } from "../application"
@@ -26,5 +26,18 @@ export class RootDiagramRepo extends Repository implements I_Repository<I_RootDi
 	async getDataByKey<T>(key: string): Promise<I_Response<T>> {
 		return await this.httpInPort.getAsync<T>(`root-diagram/${key}`)
 	}
+
+
+	async saveDataAsync(rd: I_RootDiagram): Promise<boolean> {
+		const rootDiagDto = DtoFactory.getSingleton().createRootDiagramDto(rd)
+		console.log('rootDiagDto.key TO SAVE: ',rootDiagDto.key);
+		const result = await this.httpInPort.postAsync<RootDiagram_DTO>(`root-diagram/${rootDiagDto.key}`, rootDiagDto)
+
+		if (result.httpStatus == "200")
+			return true
+		else
+			throw false
+	}
+
 
 }

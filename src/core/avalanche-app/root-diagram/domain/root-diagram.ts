@@ -9,6 +9,7 @@ export interface I_RootDiagram {
 	diagrams: I_Diagram[]
 	elementsStore: I_ElementsStore
 	relationshipsStore: I_RelationshipsStore
+	save(): Promise<boolean>
 
 	addDiagram(p: I_Diagram): void
 }

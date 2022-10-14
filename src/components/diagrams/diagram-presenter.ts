@@ -16,10 +16,11 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 
 	dragType: DraggableObjectType | undefined
 
-	interval: any
+	navigationInterval: any
+
 	keyboardNavFlag: boolean = false
 
-	draggable: any
+	draggableHelper: any
 
 	grid: I_Grid
 
@@ -28,9 +29,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		level: 0,
 		center: { x: 0, y: 0 }
 	}
-
-
-
+	
 	_prevEditElementKey: Nullable<string> = null
 	_editElement: Nullable<I_Element> = null
 	get editElement(): Nullable<I_Element> { return this._editElement }
@@ -50,29 +49,12 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	get elementEditorVisible(): boolean { return this.editElement != null }
 
 
-
-	// Delegates
-	delegates: {
-		/**
-		 *diagram's SVG's DOM element ref accesor 
-		*/
-		diagramSvgAccessor: Function
-
-		/**
-		 *diagram's svgPoint's DOM element ref accesor 
-		*/
-		diagramSvgPointAccessor: Function
-	}
-
-
-
-
 	constructor(proxies: Proxies,
 		diagramSvgAccessor: Function,
 		diagramSvgPointAccessor: Function
 	) {
 		this.proxies = proxies
-		this.draggable = new DraggableHelper(this.toLocalVector)
+		this.draggableHelper = new DraggableHelper(this.toLocalVector)
 		this.grid = new Grid(this.diagramProxy.viewBox, this.diagramProxy.viewPort)
 		this.delegates = {
 			diagramSvgAccessor,
@@ -85,14 +67,11 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		return this.delegates.diagramSvgPointAccessor().matrixTransform(this.delegates.diagramSvgAccessor().getScreenCTM().inverse());
 	}
 
-	//navigationControlPosition: I_Vector = {x:0,y:0}
-
-
-	get navigationControlPosition(): I_Vector {
+	get navigationControlLocation(): I_Vector {
 		return { x: this.diagramProxy.viewBox.width - 210, y: 50 }
 	}
 
-	get diagramToolboxPosition(): I_Vector {
+	get diagramToolboxLocation(): I_Vector {
 		return { x: this.diagramProxy.viewBox.width - 230, y: 270 }
 	}
 
@@ -100,19 +79,18 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		if (this.draggableElement == undefined) {
 			let loc = this.toLocalVector(e.clientX, e.clientY)
 			this.dragType = DraggableObjectType.viewBox
-			this.draggableViewBox = AppFactory.getSingleton().createDraggable<I_Vector>(this.diagramProxy.viewBox,
-				AppFactory.getSingleton().createDragger("draggableViewBox", loc, AppFactory.getSingleton().createVector(e.clientX, e.clientY)))
+			this.draggableViewBox = AppFactory.getSingleton().createDraggable<I_Vector>(this.diagramProxy.viewBox, loc)
 		} else
-			this.draggable.StartDrag(this.draggableElement)
+			this.draggableHelper.StartDrag(this.draggableElement)
 
-		this.draggingDynamicClassName = "dragging"
+		this.presenterProxy.draggingDynamicClassName = "dragging"
 	}
 
 
-	startDraggingElement(se: I_Draggable<I_Element>) {
+	startDraggingElement(se: I_Draggable<I_Element>, mouseLocation: I_Vector) {
 		this.dragType = DraggableObjectType.element
 		this.draggableElement = se
-		this.draggable.StartDrag(this.draggableElement)
+		this.draggableHelper.StartDrag(this.draggableElement, mouseLocation)
 	}
 
 	updateDrag(e: PointerEvent) {
@@ -120,7 +98,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		if (this.dragType == DraggableObjectType.element) {
 			t.throttle(() => {
 				if (this.draggableElement == undefined) return
-				this.draggable.UpdateDrag(this.draggableElement, e.clientX, e.clientY)
+				this.draggableHelper.UpdateDrag(this.draggableElement, e.clientX, e.clientY)
 			}, 18)
 		} else if (this.dragType == DraggableObjectType.viewBox) {
 			t.throttle(() => {
@@ -135,8 +113,8 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	UpdateDragViewBox(se: Nullable<I_Draggable<I_Vector>>, clientX: number, clientY: number) {
 		if (se != null) {
 			let loc = this.toLocalVector(clientX, clientY)
-			se.element.x -= (loc.x - se.dragger.location.x)
-			se.element.y -= (loc.y - se.dragger.location.y)
+			se.element.x -= (loc.x - se.location.x)
+			se.element.y -= (loc.y - se.location.y)
 		}
 	}
 
@@ -144,18 +122,18 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	cancelDrag() {
 		this.draggableElement = undefined
 		this.draggableViewBox = undefined
-		this.draggingDynamicClassName = ""
-		this.draggable.EndDrag()
+		this.proxies.presenterProxy().draggingDynamicClassName = ""
+		this.draggableHelper.EndDrag()
 	}
 
 	screenPadNavigation(v: I_Vector) {
 		this.presenterProxy.keyboardNavFlag = true
-		this.presenterProxy.interval = setInterval(
+		this.presenterProxy.navigationInterval = setInterval(
 			() => {
 				this.grid.drawGrid()
 
 				if (!this.keyboardNavFlag) {
-					clearInterval(this.interval)
+					clearInterval(this.navigationInterval)
 					return
 				}
 				const navVector: I_Vector = AppFactory.getSingleton().createVector(20 * v.x, 20 * v.y)
@@ -203,16 +181,12 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	}
 
 	quitKeyboardInteraction() {
-		clearInterval(this.interval)
+		clearInterval(this.navigationInterval)
 		this.keyboardNavFlag = false
 	}
 
 	zoom(factor: number): void {
 		this.presenterProxy.zoomState.level += factor
-		// this.diagramProxy.viewBox.x -= factor
-		// this.diagramProxy.viewBox.y -= factor
-		// this.diagramProxy.viewBox.width += factor
-		// this.diagramProxy.viewBox.height += factor
 	}
 
 	travel(factorX: number, factorY: number): void {
@@ -229,30 +203,38 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		this.travelTo({ x: -this.diagramProxy.viewBox.width / 2, y: -this.diagramProxy.viewBox.height / 2 })
 	}
 
-	updateViewportSize() {
-		this.diagramProxy.viewPort.width = this.delegates.diagramSvgAccessor().width.animVal.value
-		this.diagramProxy.viewPort.height = this.delegates.diagramSvgAccessor().height.animVal.value
-		this.presenterProxy.navigationControlPosition.x = this.diagramProxy.viewPort.width - 20
-
-	}
-
-
 	proxies: Proxies
-
 	get presenterProxy(): DiagramPresenter { return this.proxies.presenterProxy() }
 	get diagramProxy(): I_Diagram { return this.proxies.diagramProxy() }
 
+	// Delegates
+	delegates: {
+		/**
+		 *diagram's SVG's DOM element ref accesor 
+		*/
+		diagramSvgAccessor: Function
+
+		/**
+		 *diagram's svgPoint's DOM element ref accesor 
+		*/
+		diagramSvgPointAccessor: Function
+	}
 
 	// UI events handler
 	eventsHandler = {
+		deleteElement: (element: I_Element) => {
+			this.diagramProxy.removeElement(element.key)
+			this.presenterProxy.selectedElement = null
+		},
+
 		diagramPointerDownHandler: (e: PointerEvent) => {
 			this.presenterProxy.selectedElement = null
 			this.presenterProxy.editElement = null
 			this.detectDraggingMode(e)
 		},
 
-		startDraggingElementHandler: (se: I_Draggable<I_Element>) => {
-			this.startDraggingElement(se)
+		startDraggingElementHandler: (se: I_Draggable<I_Element>, mouseLocation: I_Vector) => {
+			this.startDraggingElement(se, mouseLocation)
 		},
 
 		selectElementHandler: (element: Nullable<I_Element>) => {
@@ -276,7 +258,6 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		},
 
 		updateDragHandler: (e: PointerEvent) => {
-			this.presenterProxy.updateViewportSize()
 			this.updateDrag(e)
 		},
 
@@ -290,6 +271,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		},
 
 		handleKeyDown: (e: KeyboardEvent) => {
+			// Zoom funtionality
 			// if (e.key == "+") {
 			// 	console.log('MAS');
 			// 	this.zoom(-this.zoomFactor)
@@ -306,8 +288,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 }
 
 
-type Proxies =
-	{
-		presenterProxy(): DiagramPresenter
-		diagramProxy(): I_Diagram
-	}
+type Proxies = {
+	presenterProxy(): DiagramPresenter
+	diagramProxy(): I_Diagram
+}

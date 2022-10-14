@@ -5,9 +5,10 @@ import { RootDiagramRepo } from "../../../avalanche-app/root-diagram/data"
 import { Diagram } from "../../../avalanche-app/root-diagram/diagram/application"
 import { I_Diagram } from "../../../avalanche-app/root-diagram/diagram/domain"
 import {
-	BlockEntity, ClassEntity, ComponentEntity, EnumEntity, ExternalDependencyEntity,
+	BlockEntity, ClassEntity, EnumEntity, ExternalDependencyEntity,
 	GenericEntity, InterfaceEntity
 } from "../../../avalanche-app/root-diagram/diagram/element/application"
+import { ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/data"
 import { I_Element, I_ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/domain"
 import {
 	EventField, MethodField, Parameter, PropertyField
@@ -17,16 +18,21 @@ import { TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/fie
 import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain"
 import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain"
 import { I_RootDiagramRepo } from "../../../avalanche-app/root-diagram/domain/root-domain-repo"
-import { Draggable, Dragger } from "../../../drag/application"
-import { I_Draggable, I_Dragger } from "../../../drag/domain"
+import { Draggable } from "../../../drag/application"
+import { DraggableElement } from "../../../drag/application/draggable-element"
+import { I_Draggable } from "../../../drag/domain"
+import { I_DraggableElement } from "../../../drag/domain/draggable-element"
 import { KeyValuePair, SystemData } from "../../../general/application"
 import {
 	DataType, DiagramType, ElementType, FieldType,
 	GlobalKey,
 	I_KeyValuePair,
+	I_NumericRange,
 	I_SystemData,
-	I_Vector, I_ViewBox, I_ViewPort, Nullable, ParamDirection, ParamValRef, undefinedToNull, Vector
+	I_Vector, I_ViewBox, I_ViewPort, Nullable, NumericRange, ParamDirection, ParamValRef, RelationshipType, Scope, Size, undefinedToNull, Vector
 } from "../../../general/domain"
+import { ElementsRelationship } from "../../../relationships/application"
+import { RelationshipsStore } from "../../../relationships/data"
 import { I_RelationshipsStore } from "../../../relationships/domain"
 import { HttpInPort } from "../../../repository/application"
 import { I_HttpInPort } from "../../../repository/domain"
@@ -49,12 +55,29 @@ export class AppFactory implements I_AppFactory {
 		return new AvalancheApp()
 	}
 
-	createRootDiagram(key?: string): I_RootDiagram {
-		return new RootDiagram(key)
+	createRootDiagram(repo: I_RootDiagramRepo, key?: string): I_RootDiagram {
+		return new RootDiagram(this.createElementsStore(), this.createRelationshipsStore(), repo, key)
 	}
 
-	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort): I_Diagram {
-		return new Diagram(name, diagramType, viewBox, viewPort)
+	protected static elementsStore: I_ElementsStore | undefined
+	createElementsStore(): I_ElementsStore {
+		if (AppFactory.elementsStore == undefined)
+			AppFactory.elementsStore = new ElementsStore()
+
+		return AppFactory.elementsStore
+	}
+
+	protected static relationshipsStore: I_RelationshipsStore | undefined
+	createRelationshipsStore(): I_RelationshipsStore {
+		if (AppFactory.relationshipsStore == undefined)
+			AppFactory.relationshipsStore = new RelationshipsStore()
+
+		return AppFactory.relationshipsStore
+	}
+
+
+	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, key?:string): I_Diagram {
+		return new Diagram(name, diagramType, viewBox, viewPort, key)
 	}
 
 	createElement(elementType: ElementType, elementsStore: I_ElementsStore, relationshipsStore: I_RelationshipsStore, key?: string): I_Element {
@@ -77,28 +100,37 @@ export class AppFactory implements I_AppFactory {
 
 	}
 
-	createField(name: string, fieldType: FieldType, dataTypeDef: I_TypeDef,
-		parameters: Nullable<I_Parameter[]>, key?: string): I_Field {
+	createField(name: string, description: string, scope: Scope, fieldType: FieldType,
+		dataTypeDef: I_TypeDef, parameters: Nullable<I_Parameter[]>, key: string = ""): I_Field {
+
 		let f: I_Field
 		switch (fieldType) {
 			case FieldType.Method:
 				f = new MethodField(
 					name,
+					description,
+					scope,
 					dataTypeDef,
-					parameters, key)
+					parameters,
+					key)
 				break;
 
 			case FieldType.Event:
 				f = new EventField(
 					name,
+					description,
+					scope,
 					dataTypeDef,
-					parameters, key)
+					parameters,
+					key)
 				break;
 
 			default:
 
 				f = new PropertyField(
 					name,
+					description,
+					scope,
 					dataTypeDef,
 					key)
 
@@ -113,8 +145,8 @@ export class AppFactory implements I_AppFactory {
 		direction: ParamDirection,
 		category: ParamValRef,
 		dataTypeDef: I_TypeDef,
-		key ?: string): I_Parameter {
-		return new Parameter(key==undefined? GlobalKey.getNewGlobalKey() :key, name, direction, category, dataTypeDef)
+		key?: string): I_Parameter {
+		return new Parameter(key == undefined ? GlobalKey.getNewGlobalKey() : key, name, direction, category, dataTypeDef)
 
 	}
 
@@ -122,15 +154,39 @@ export class AppFactory implements I_AppFactory {
 		return new TypeDef(fallbackDataType, undefinedToNull(refElement), key)
 	}
 
+	createElementsRelationship(
+		sourceKey: string,
+		targetKey: string,
+		sourceElementKey: string,
+		targetElementKey: string,
+		tag: string,
+		relationshipType: RelationshipType,
+		sourceMultiplicity: I_NumericRange = new NumericRange(),
+		targetMultiplicity: I_NumericRange = new NumericRange(),
+		key: Nullable<string> = null
+	) {
+		return new ElementsRelationship(
+			sourceKey,
+			targetKey,
+			sourceElementKey,
+			targetElementKey,
+			tag,
+			relationshipType,
+			sourceMultiplicity,
+			targetMultiplicity,
+			key
+
+		)
+	}
+
 
 
 	// Drag
-	createDragger(key: string, location: I_Vector, mouseLocation: I_Vector): I_Dragger {
-		return new Dragger(key, location, mouseLocation)
+	createDraggable<T>(element: T, location: I_Vector): I_Draggable<T> {
+		return new Draggable<T>(element, location)
 	}
-
-	createDraggable<T>(element: T, dragger: I_Dragger): I_Draggable<T> {
-		return new Draggable<T>(element, dragger)
+	createDraggableElement(element: I_Element, location: I_Vector, size: Size = { width: "auto", height: "auto" }): I_DraggableElement {
+		return new DraggableElement(element, location, size)
 	}
 
 
@@ -138,7 +194,6 @@ export class AppFactory implements I_AppFactory {
 	createVector(x: number, y: number): I_Vector {
 		return new Vector(x, y)
 	}
-
 
 
 	createSystemData(fieldTypes: I_KeyValuePair<FieldType, FieldType>[]): I_SystemData {
@@ -149,8 +204,9 @@ export class AppFactory implements I_AppFactory {
 		return new KeyValuePair<K, V>(key, value)
 	}
 
-	createAppConfigAmbient(currentAmbient: string): I_AppConfigAmbient {
-		return new AppConfigAmbient(currentAmbient)
+	createAppConfigAmbient(): I_AppConfigAmbient {
+		// REFACTOR THIS: Get current ambient from environment variable of config file
+		return new AppConfigAmbient("dev")
 	}
 
 	createHttpInPort(appConfig: I_AppConfig): I_HttpInPort {

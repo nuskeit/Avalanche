@@ -10,6 +10,7 @@ export interface I_Element {
 	readonly elementType: ElementType
 	fields: I_Field[]
 	addField(f: I_Field): void
+	removeField(f: I_Field): void
 }
 
 export class Element implements I_Element {
@@ -30,6 +31,10 @@ export class Element implements I_Element {
 
 	addField(f: I_Field): void {
 		this.fields.push(f)
+	}
+
+	removeField(f: I_Field): void {
+		this.fields = this.fields.filter(x => x.key != f.key)
 	}
 
 }

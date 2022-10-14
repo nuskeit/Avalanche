@@ -1,12 +1,13 @@
-import { Draggable_DTO } from "../../../../drag/data"
+import { DraggableElement_DTO } from "../../../../drag/data/draggable-element-dto"
 import { DiagramType, I_ViewBox, I_ViewPort } from "../../../../general/domain"
+import { Element_DTO } from "../element/data"
 
 export interface I_Diagram_DTO {
 	key: string
 	name: string
 	diagramType: DiagramType
 	visible: boolean
-	elements: Draggable_DTO<string>[]
+	elements: DraggableElement_DTO[]
 }
 
 export class Diagram_DTO implements I_Diagram_DTO {
@@ -19,14 +20,14 @@ export class Diagram_DTO implements I_Diagram_DTO {
 	viewBox: I_ViewBox
 	viewPort: I_ViewPort
 
-	elements: Draggable_DTO<string>[] = []
+	elements: DraggableElement_DTO[] = []
 
 	constructor(
 		key: string,
 		name: string,
 		diagramType: DiagramType,
 		visible: boolean,
-		elements: Draggable_DTO<string>[],
+		elements: DraggableElement_DTO[],
 		viewBox: I_ViewBox,
 		viewPort: I_ViewPort
 	) {
