@@ -87,11 +87,6 @@ export class DtoFactory implements I_DtoFactory {
 	}
 
 	creatParameterDto(p: I_Parameter): Parameter_DTO {
-		if (p.dataTypeDef.refElement != null) {
-			console.log('p.dataTypeDef', p.dataTypeDef)
-			console.log('Parameter_DTO', new Parameter_DTO(p.key, p.name, p.direction, p.category, this.createTypeDefDto(p.dataTypeDef)))
-		}
-		console.log('p.dataTypeDef', p.dataTypeDef);
 		return new Parameter_DTO(p.key, p.name, p.direction, p.category, this.createTypeDefDto(p.dataTypeDef))
 	}
 

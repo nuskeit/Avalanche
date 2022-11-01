@@ -1,1 +1,1 @@
-export * as domain from './domain'
+export * as domain from './data'

@@ -1,0 +1,71 @@
+@use './diagram.scss';
+
+.tabs-strip {
+	display: flex;
+	flex-direction: row;
+	height: 2rem;
+
+	.tabs-strip-row {
+		flex: 0 0 10rem;
+		position: relative;
+		display: flex;
+		flex-direction: row;
+
+		.tab {
+			padding: 0;
+			border-radius: .25rem .25rem 0 0;
+			margin-left: .15rem;
+			margin-right: .15rem;
+			margin-top: .3rem;
+			padding-top: .1rem;
+			padding-bottom: .1rem;
+			color: #000;
+			cursor: pointer;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			box-shadow: 0 0 .1rem .068rem rgba(#000, .5);
+			white-space: nowrap;
+
+			.tab-body {
+				padding: .2rem;
+			}
+
+			.diagramType {
+				font-size: .5rem;
+			}
+		}
+
+		.selected {
+			background-color: linear-gradient(#ccc, #777); //linear-gradient(0deg diagram.$class-color1 white);
+
+			&::after {
+				content: "\00a0";
+				width: 100%;
+				height: .1rem;
+				background: linear-gradient(-20deg, violet, purple, red, orange, green, blue);
+			}
+		}
+
+
+
+		.tab-component {
+			background-color: diagram.$component-color1;
+		}
+
+		.tab-class {
+			background-color: diagram.$class-color1;
+		}
+
+		.tab-block {
+			background-color: diagram.$block-color1;
+		}
+
+		.tab-new {
+			background-color: #0a0;
+			flex-direction: row;
+		}
+	}
+
+}

@@ -1,0 +1,90 @@
+.element-editor {
+
+	background-color: #333;
+	padding: 0;
+	color: #ddd;
+	font-size: .7rem;
+	height: 100%;
+
+	.top {
+
+		background-color: #0a5a;
+
+		.header {
+			display: flex;
+			flex-direction: row;
+			background-color: #444;
+			align-items: center;
+
+			.element-name {
+				text-align: left;
+				white-space: nowrap;
+				flex: 1 1 auto;
+				cursor: pointer;
+			}
+
+			.element-type {
+				white-space: nowrap;
+				flex: 1 1 auto;
+				border: #0a5 solid 1px;
+			}
+
+			.corner-button {
+				flex: 0 0 .1rem;
+			}
+		}
+
+	}
+
+	.element-editor_row {
+		display: flex;
+		flex-direction: row;
+		padding: 0;
+		border-top: solid #555 .01rem;
+		white-space: nowrap;
+
+		button {
+			background-color: #555;
+			color: #5af;
+		}
+
+		.action-button {
+			width: 100%;
+		}
+	}
+
+	.new {
+		background-color: #0a5;
+		height: .4rem;
+
+	}
+
+	.active {
+		height: unset;
+	}
+
+	// 	&:nth-last-child(1) {
+	// 		border: none
+	// 	}
+
+	// 	.element-editor_cell {
+	// 		display: flex;
+	// 		flex-direction: row;
+	// 		align-items: center;
+
+	// 	}
+
+	// 	.editable {
+	// 		background: rgba(#03a, .2);
+	// 		border: solid .1rem rgba(#03a, .2);
+	// 		padding-left: .2rem;
+	// 		padding-right: .2rem;
+	// 	}
+
+	// 	.tag {
+	// 		padding-left: .2rem;
+	// 		padding-right: .2rem;
+	// 	}
+	// }
+
+}

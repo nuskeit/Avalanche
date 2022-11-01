@@ -1,0 +1,27 @@
+.typedef-editor {
+
+	.details-table {
+		border-collapse: collapse;
+
+		.details-row {
+			//			border: solid 1px green;
+			padding: 0;
+
+			.details-cell {
+				padding: 0;
+				//		border: solid 1px yellow;
+				text-align: left;
+				vertical-align: top;
+
+				&>input {
+					border: none;
+					background-color: #444;
+				}
+			}
+		}
+	}
+
+	.input {
+		color: #ddd;
+	}
+}

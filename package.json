@@ -5,7 +5,8 @@
 	"description": "Plan as you glide",
 	"main": "index.js",
 	"scripts": {
-		"dev": "vite",
+		"dev": "vite --host",
+		"dev-secure": "vite --host --https",
 		"build": "vite build",
 		"preview": "vite preview",
 		"unit": "jest"

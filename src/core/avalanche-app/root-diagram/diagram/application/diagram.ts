@@ -1,8 +1,6 @@
-import { Draggable } from "../../../../drag/application"
-import { I_Draggable } from "../../../../drag/domain"
 import { I_DraggableElement } from "../../../../drag/domain/draggable-element"
 import { AppFactory } from "../../../../factories/app-factory/application"
-import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, Nullable, NumericRange, RelationshipType, Size, Vector } from "../../../../general/domain"
+import { DiagramType, getRandomPosition, GlobalKey, HashTable, I_ViewBox, I_ViewPort, undefOrNullDefault, NumericRange, RelationshipType, Size, Vector, defaultValue } from "../../../../general/domain"
 import { I_ElementsRelationship } from "../../../../relationships/domain"
 import { I_Diagram } from "../domain"
 import { I_Element } from "../element/domain"
@@ -32,12 +30,11 @@ export class Diagram implements I_Diagram {
 	private _elements: HashTable<I_DraggableElement>
 	public get elements(): HashTable<I_DraggableElement> { return this._elements }
 
-	addElement(element: I_Element, x: Nullable<number> = null,
-		y: Nullable<number> = null, size: Size = { width: 180, height: "auto" }): void {
-		let _x: number, _y: number
-		if (x == null) _x = getRandomPosition(300, 50); else _x = x
-		if (y == null) _y = getRandomPosition(200, 50); else _y = y
-		this.elements[element.key] = AppFactory.getSingleton().createDraggableElement(element, new Vector(_x, _y), size)
+	addElement(element: I_Element, x?: number, y?: number, size?: Size): void {
+		const _x = defaultValue<number>(x, [null, undefined], getRandomPosition(300, 50))
+		const _y = undefOrNullDefault<number>(y, getRandomPosition(200, 50))
+		const _size: Size = undefOrNullDefault<Size>(size, new Size(180, 30))
+		this.elements[element.key] = AppFactory.getSingleton().createDraggableElement(element, new Vector(_x, _y), _size)
 	}
 
 	removeElement(key: string): void {

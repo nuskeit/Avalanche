@@ -18,12 +18,12 @@ onMounted(async () => {
 </script>
 
 <template>
-	<g>
+	<g class="grid">
 		<g v-for="e, i in presenter.gridProxy.cols">
 			<line :x1="e.x" :x2="e.x" :y1="e.y1" :y2="e.y2" class="grid-line" />
 			<text :x="e.x" :y="presenter.gridProxy.horizontalRulerOffsetY" class="grid-text">
 				<tspan :dx="presenter.gridLabelsPosition.columns.dx" :dy="presenter.gridLabelsPosition.columns.dy">{{
-				e.label
+						e.label
 				}}</tspan>
 			</text>
 		</g>
@@ -31,22 +31,10 @@ onMounted(async () => {
 			<line :x1="e.x1" :x2="e.x2" :y1="e.y" :y2="e.y" class="grid-line" />
 			<text :x="presenter.gridProxy.verticalRulerOffsetX" :y="e.y" class="grid-text">
 				<tspan :dx="presenter.gridLabelsPosition.rows.dx" :dy="presenter.gridLabelsPosition.rows.dy">{{
-				e.label
+						e.label
 				}}</tspan>
 			</text>
 		</g>
 	</g>
 </template>
 
-<style lang="scss" scoped>
-.grid-line {
-	stroke: #0006;
-	stroke-width: .5;
-	stroke-dasharray: 4
-}
-
-.grid-text {
-	fill: #0006;
-	font-size: .8rem;
-}
-</style>

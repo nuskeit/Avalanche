@@ -1,0 +1,22 @@
+.navigation-arrow {
+	opacity: .7;
+
+	.navigation-button {
+		cursor: pointer;
+		filter: drop-shadow(.1em .1em .1em #000);
+	}
+
+	.arrow {
+		fill: #222;
+		display: table-cell;
+		vertical-align: middle;
+		padding: 0;
+
+		background-repeat: no-repeat;
+		background-size: contain;
+	}
+
+	.pressed {
+		fill: #555
+	}
+}

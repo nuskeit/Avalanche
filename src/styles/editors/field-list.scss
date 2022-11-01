@@ -1,0 +1,62 @@
+.field-list {
+
+	background-color: #333e;
+	padding: 0;
+	color: #ddd;
+	font-size: .7rem;
+	height: 100%;
+
+	.row {
+		display: flex;
+		flex-direction: row;
+		padding-left: .1rem;
+		padding-right: .1rem;
+		border-top: solid #555 .01rem;
+		white-space: nowrap;
+		cursor: pointer;
+		min-height: .8rem;
+	}
+
+	.buttons {
+		display: flex;
+		flex-direction: row;
+
+		.action-button {
+			flex: 1 1 auto;
+			background-color: #555;
+			color: #5af;
+			width: 2rem;
+			margin: .2rem;
+			margin-right: 0;
+
+			&:nth-child(1) {
+				margin-left: 0;
+			}
+		}
+	}
+
+	.selected {
+		background-color: #0a5;
+	}
+
+	.active {
+		height: unset;
+	}
+
+	.type-name {
+		margin-left: .5rem;
+		margin-right: .2rem;
+		font-style: italic;
+		color: #ffb;
+	}
+
+	.field-parameters {
+		margin-left: .5rem;
+		font-size: .6rem;
+		font-style: italic;
+		color: #bfb;
+		white-space: initial;
+		text-align: left;
+	}
+
+}

@@ -1,0 +1,24 @@
+.parameters-editor {
+	display: flex;
+	flex-direction: column;
+
+	div.btn-cell {
+		display: flex;
+		flex: 1 1 auto;
+		align-items: center;
+		justify-content: center;
+
+
+
+	}
+
+	&>div {
+		background-color: #555;
+
+		&:nth-child(even) {
+			background-color: #444;
+		}
+
+	}
+
+}

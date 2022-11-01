@@ -76,7 +76,7 @@ export class AppFactory implements I_AppFactory {
 	}
 
 
-	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, key?:string): I_Diagram {
+	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, key?: string): I_Diagram {
 		return new Diagram(name, diagramType, viewBox, viewPort, key)
 	}
 
@@ -185,7 +185,7 @@ export class AppFactory implements I_AppFactory {
 	createDraggable<T>(element: T, location: I_Vector): I_Draggable<T> {
 		return new Draggable<T>(element, location)
 	}
-	createDraggableElement(element: I_Element, location: I_Vector, size: Size = { width: "auto", height: "auto" }): I_DraggableElement {
+	createDraggableElement(element: I_Element, location: I_Vector, size: Size = new Size(180, 30)): I_DraggableElement {
 		return new DraggableElement(element, location, size)
 	}
 

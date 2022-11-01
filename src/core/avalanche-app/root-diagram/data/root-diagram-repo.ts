@@ -30,7 +30,6 @@ export class RootDiagramRepo extends Repository implements I_Repository<I_RootDi
 
 	async saveDataAsync(rd: I_RootDiagram): Promise<boolean> {
 		const rootDiagDto = DtoFactory.getSingleton().createRootDiagramDto(rd)
-		console.log('rootDiagDto.key TO SAVE: ',rootDiagDto.key);
 		const result = await this.httpInPort.postAsync<RootDiagram_DTO>(`root-diagram/${rootDiagDto.key}`, rootDiagDto)
 
 		if (result.httpStatus == "200")

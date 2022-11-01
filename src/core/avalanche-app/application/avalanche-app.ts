@@ -1,5 +1,5 @@
 import { AppFactory } from "../../factories/app-factory/application";
-import { GlobalKey, isUndefOrNull } from "../../general/domain";
+import { GlobalKey } from "../../general/domain";
 import { I_HttpInPort, I_Repository } from "../../repository/domain";
 import { I_AppConfigAmbient, I_AvalancheApp } from "../domain";
 import { I_RootDiagram } from "../root-diagram/domain";
@@ -45,11 +45,10 @@ export class AvalancheApp implements I_AvalancheApp {
 	 */
 	async loadRootPlanAsync(key: string, alternateRepo?: I_Repository<I_RootDiagram>): Promise<AvalancheApp> {
 		if (this.repository != undefined) {
-			if (isUndefOrNull(alternateRepo)) {
+			if (alternateRepo == undefined) {
 				this._rootDiagram = await this.repository.getDataAsync(key)
 			} else {
-				// @ts-ignore undefined checked
-				this.rootDiagram = await alternateRepo.getDataAsync(key)
+				this._rootDiagram = await alternateRepo.getDataAsync(key)
 			}
 		}
 		else

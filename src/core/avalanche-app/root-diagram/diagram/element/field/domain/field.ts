@@ -1,4 +1,4 @@
-import { FieldType, GlobalKey, HashTable, isUndefOrNull, I_Validable, Scope } from "../../../../../../general/domain";
+import { defaultValue, FieldType, GlobalKey, HashTable, I_Validable, Scope } from "../../../../../../general/domain";
 import { I_TypeDef } from "../type-def/domain";
 import { I_Parameter } from "./parameter";
 
@@ -57,7 +57,7 @@ export abstract class Field implements I_Field {
 
 
 	constructor(name: string, description: string, scope: Scope, fieldType: FieldType, dataTypeDef: I_TypeDef, key: string = "") {
-		this.key = key === "" || isUndefOrNull(key) ? GlobalKey.getNewGlobalKey() : key
+		this.key = defaultValue<string>(key, [undefined, null, ""], GlobalKey.getNewGlobalKey())
 		this.name = name
 		this.description = description
 		this.scope = scope

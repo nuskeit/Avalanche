@@ -30,9 +30,3 @@ const refTypeValue = computed<Nullable<string>>({
 		</option>
 	</select>
 </template>
-
-<style lang="scss" scoped>
-	select{
-		font-size: inherit;
-	}
-</style>

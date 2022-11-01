@@ -1,5 +1,5 @@
 import { I_DraggableElement } from "../../../../drag/domain/draggable-element"
-import { DiagramType, HashTable, I_ViewBox, I_ViewPort, Nullable, Size } from "../../../../general/domain"
+import { DiagramType, HashTable, I_ViewBox, I_ViewPort, Size } from "../../../../general/domain"
 import { I_ElementsRelationship } from "../../../../relationships/domain"
 import { I_Element } from "../element/domain"
 
@@ -14,7 +14,7 @@ export interface I_Diagram {
 	readonly viewBox: I_ViewBox
 	readonly viewPort: I_ViewPort
 
-	addElement(element: I_Element, x: Nullable<number>, y: Nullable<number>, size: Size): void
+	addElement(element: I_Element, x?: number, y?: number, size?: Size): void
 
 	removeElement(key: string): void
 

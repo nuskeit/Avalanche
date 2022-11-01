@@ -10,7 +10,7 @@ import { TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/fie
 import { TypeDef_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/data";
 import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain";
 import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain";
-import { FieldType, isUndefOrNull } from "../../../general/domain";
+import { defaultValue, FieldType, isUndefOrNull, undefOrNullDefault } from "../../../general/domain";
 import { I_RelationshipsStore } from "../../../relationships/domain";
 import { AppFactory } from "../../app-factory/application";
 
@@ -24,13 +24,18 @@ export class Reviver {
 
 		const rootDiagram = AppFactory.getSingleton().createRootDiagram(repo, rootDiagDto.key)
 		rootDiagram.name = rootDiagDto.name
+
+		// fisrt add all elements to store
 		for (const elementDto of rootDiagDto.elementsStore) {
 			const elem = this.createEntity(elementDto, rootDiagram.elementsStore, rootDiagram.relationshipsStore)
-			elem.name = elementDto.name
-			for (const f of elementDto.fields) {
-				elem.addField(this.createField(rootDiagram.elementsStore, f))
-			}
+			elem.name=elementDto.name
 			rootDiagram.elementsStore.addElement(elementDto.key, elem);
+		}
+		// after adding all elements to store, add fields to the elements
+		for (const elementDto of rootDiagDto.elementsStore) {
+			for (const f of elementDto.fields) {
+				rootDiagram.elementsStore.elements[elementDto.key].addField(this.createField(rootDiagram.elementsStore, f))
+			}
 		}
 
 		// Relationships store
@@ -104,10 +109,10 @@ export class Reviver {
 
 
 	createTypeDef(elementsStore: I_ElementsStore, typeDefDto: TypeDef_DTO): I_TypeDef {
-		if (isUndefOrNull(typeDefDto.refElementKey))
+		const key = undefOrNullDefault<string>(typeDefDto.refElementKey, "")
+		if (key == "")
 			return new TypeDef(typeDefDto.fallbackDataType, null, typeDefDto.key)
-		// @ts-ignore  typeDefDto.refElementKey is not undefined
-		return new TypeDef(typeDefDto.fallbackDataType, elementsStore.elements[typeDefDto.refElementKey], typeDefDto.key)
+		return new TypeDef(typeDefDto.fallbackDataType, elementsStore.elements[key], typeDefDto.key)
 	}
 
 	createParameter(elementsStore: I_ElementsStore, param: Parameter_DTO): Parameter {

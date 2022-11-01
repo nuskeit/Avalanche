@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { isUndefOrNull } from '../../../core/general/domain';
+import { undefOrNullDefault } from '../../../core/general/domain';
 
 const props = defineProps<{
 	x: number
@@ -18,10 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const middle = computed<number>(() => {
-	if (!isUndefOrNull(props.verticalTrim))
-		// @ts-ignore props.verticalTrim is not undefined
-		return props.y + props.height / 2 + props.verticalTrim
-	return props.y + props.height / 2
+	return props.y + props.height / 2 + undefOrNullDefault<number>(props.verticalTrim, 0)
 })
 
 function clickHandler() {

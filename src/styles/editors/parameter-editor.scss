@@ -1,0 +1,22 @@
+.parameter-editor-row {
+	padding: .1rem;
+	display: flex;
+	flex-direction: row;
+	white-space: nowrap;
+
+	>div {
+		flex: 1 1 auto;
+	}
+
+	.button-col {
+		flex: 0 0 1rem;
+	}
+
+	// &:nth-child(even){
+	// 	background-color:#555;
+	// }
+}
+
+// .division-title {
+// 		background-color:#555;
+// 	}

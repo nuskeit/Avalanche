@@ -30,8 +30,40 @@ export class RootDiagram implements I_RootDiagram {
 	}
 
 	addDiagram(p: Diagram): void {
-		this.diagrams.push(p)
+		this.diagrams = [...this.diagrams, p]
 	}
+
+	deleteDiagram(diagramKey: string): void {
+		const elementsToDelete = this.findElementsToDelete(diagramKey)
+		this.diagrams = this.diagrams.filter(d => d.key != diagramKey)
+		this.deleteRelationshipsOfElementsNotInADiagram(elementsToDelete)
+		this.deleteElementsNotInADiagram(elementsToDelete)
+	}
+
+	private findElementsToDelete(diagramKey: string): string[] {
+		const diagramIndex = this.diagrams.findIndex(d => d.key == diagramKey)
+		const elementsInDiagram = Object.keys(this.diagrams[diagramIndex].elements)
+		const elementsToDelete = elementsInDiagram.filter(el => {
+			for (let d of this.diagrams.filter(diag => diag.key != diagramKey)) {
+				if (el in d.elements) return false
+			}
+			return true
+		})
+		return elementsToDelete
+	}
+
+	private deleteRelationshipsOfElementsNotInADiagram(elementsToDelete: string[]) {
+		for (const e of elementsToDelete) {
+			 this.relationshipsStore.relationships = [...this.relationshipsStore.relationships.filter(r => r.sourceElementKey != e && r.targetElementKey != e)]
+		}
+	}
+
+	private deleteElementsNotInADiagram(elementsToDelete: string[]) {
+		for (const e of elementsToDelete) {
+			delete this.elementsStore.elements[e]
+		}
+	}
+
 
 	async save(): Promise<boolean> {
 		return await this.repo.saveDataAsync(this)

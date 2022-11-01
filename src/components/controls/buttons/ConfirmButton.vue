@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Button from "./Button.vue";
 
 const props = defineProps<{
 	className?: string
@@ -12,8 +11,5 @@ const emit = defineEmits<{
 </script>
 	
 <template>
-	<Button>
-		<img class="btn" @click="()=>emit('click')" src="../../../assets/buttons/confirm.png"
-			:class="props.className" />
-	</Button>
+	<img class="btn" @click="()=>emit('click')" src="../../../assets/buttons/confirm.png" :class="props.className" />
 </template>

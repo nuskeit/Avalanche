@@ -2,21 +2,18 @@
 import { inject, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { AvalancheApp } from '../../core/avalanche-app/application';
 
-import { Diagram } from '../../core/avalanche-app/root-diagram/diagram/application';
 import { I_Diagram } from '../../core/avalanche-app/root-diagram/diagram/domain';
 import { isUndefOrNull } from '../../core/general/domain';
-import { Throttle } from '../../core/general/presenter';
 import Connection from '../connectors/Connection.vue';
-import NavigationControl from '../controls/NavigationControl.vue';
 import OriginPointer from '../controls/OriginPointer.vue';
-import ElementEditor from '../editors/element/ElementEditor.vue';
+import DiagramEditor from '../editors/diagram-editor/DiagramEditor.vue';
+import ElementEditor from '../editors/element-editor/ElementEditor.vue';
+import MenuBlock from '../editors/MenuBlock.vue';
 import ElementUI from '../elements/ElementUI.vue';
 import { DiagramPresenter } from './diagram-presenter';
 import DiagramOrigin from './DiagramOrigin.vue';
 import DiagramToolbox from './DiagramToolbox.vue';
 import GridUI from './GridUI.vue';
-import DiagramEditor from '../editors/element/DiagramEditor.vue';
-import { AppFactory } from '../../core/factories/app-factory/application';
 
 const props = defineProps<{
 	modelValue: I_Diagram
@@ -24,20 +21,19 @@ const props = defineProps<{
 
 const emit = defineEmits<{
 	(e: 'update:modelValue', diagram: I_Diagram): void
+	(e: 'delete:diagram', diagramKey: string): void
 }>()
 
 const avalancheApp = inject("avalanche-app") as AvalancheApp
 
 // const diagramLocal = new Diagram(props.modelValue.name, props.modelValue.diagramType,
 // 	props.modelValue.viewBox, props.modelValue.viewPort)
-const diagramLocal = AppFactory.getSingleton().createDiagram(props.modelValue.name, props.modelValue.diagramType,
-	props.modelValue.viewBox, props.modelValue.viewPort, props.modelValue.key)
 
-Object.assign(diagramLocal, props.modelValue)
+// const diagramLocal = AppFactory.getSingleton().createDiagram(props.modelValue.name, props.modelValue.diagramType,
+// 	props.modelValue.viewBox, props.modelValue.viewPort, props.modelValue.key)
 
-
-const t = new Throttle()
-
+// Object.assign(diagramLocal, props.modelValue)
+const diagramLocal = props.modelValue
 
 //Drag elements
 const diagramSvg = ref<any>(null)
@@ -62,23 +58,34 @@ const presenter: DiagramPresenter = reactive<DiagramPresenter>(
 onMounted(async () => {
 	createSvgPoint()
 
-	const afn = async () => {
-		setTimeout(() => diagramLocal.viewPort.width = diagramSvg.value.width.animVal.value, 10)
-		setTimeout(() => diagramLocal.viewPort.height = diagramSvg.value.height.animVal.value, 10)
-	}
-	await afn()
+	window.addEventListener("resize", presenter.eventsHandler.svgResizeHandler)
+
+	requestAnimationFrame(presenter.eventsHandler.svgResizeHandler)
 
 	diagramSvg.value.focus()
 })
+
+onUnmounted(async () => {
+	window.removeEventListener("resize", presenter.eventsHandler.svgResizeHandler)
+})
+
+function deleteDiagram(diagramKey: string) {
+	emit('delete:diagram', diagramKey)
+}
+
+
 
 </script>
 
 <template>
 	<div class="diagram-root">
-		<div class="left">{{presenter.draggingDynamicClassName}}
-			<svg preserveAspectRatio="xMinYMin slice"
+		<div class="left">
+			<!-- :class="`checkers-${diagramLocal.diagramType.toLocaleLowerCase()} ${presenter.draggingDynamicClassName}`" -->
+
+			<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
+				preserveAspectRatio="xMinYMin slice"
 				:viewBox="`${presenter.diagramProxy.viewBox.x} ${presenter.diagramProxy.viewBox.y} ${presenter.diagramProxy.viewBox.width} ${presenter.diagramProxy.viewBox.height}`"
-				xmlns="http://www.w3.org/2000/svg" ref="diagramSvg"
+				ref="diagramSvg"
 				:class="`checkers-${diagramLocal.diagramType.toLocaleLowerCase()} ${presenter.draggingDynamicClassName}`"
 				@focus="" @pointerdown="presenter.eventsHandler.diagramPointerDownHandler"
 				@pointerup="presenter.eventsHandler.cancelDragHandler"
@@ -86,25 +93,31 @@ onMounted(async () => {
 				@pointerleave="presenter.eventsHandler.cancelDragHandler"
 				@pointercancel="presenter.eventsHandler.cancelDragHandler"
 				@keydown="presenter.eventsHandler.handleKeyDown">
+				<defs>
+					<svg:style type="text/css">
+						{{ presenter.svgStyle }}
+					</svg:style>
+				</defs>
+
+				<rect :x="presenter.diagramProxy.viewBox.x + 10" :y="presenter.diagramProxy.viewBox.y + 10"
+					:width="presenter.viewBoxRealSize.width - 20" :height="presenter.viewBoxRealSize.height - 20"
+					fill="#0003" stroke="#0005" />
 
 				<!-- <GridUI :grid="new Grid(diagramLocal.viewBox,diagramLocal.viewPort)" /> -->
 				<GridUI :grid="presenter.grid" />
 
 				<DiagramOrigin />
 
-				<rect :x="diagramLocal.viewBox.x" :y="diagramLocal.viewBox.y"
-					:width="presenter.navigationControlLocation.x" :height="presenter.navigationControlLocation.y"
-					fill="#00f8" />
-
 				<!-- @open-crud="() => presenter.eventsHandler.openElementEditorHandler(diagramLocal.rootElements[elem.element.key])" -->
 				<g v-for="elem in diagramLocal.elements" :key="Math.random()">
 					<ElementUI v-model="diagramLocal.elements[elem.element.key]"
 						:selected="elem.element.key == presenter.selectedElement?.key"
 						@drag-start="presenter.eventsHandler.startDraggingElementHandler"
-						@select-element="presenter.eventsHandler.selectElementHandler" />
+						@select-element="presenter.eventsHandler.selectElementHandler"
+						@key-down="presenter.eventsHandler.deleteElement" />
 
 				</g>
-				<g v-for="rel in diagramLocal.relationships" :key="'rel'+rel.key">
+				<g v-for="rel in diagramLocal.relationships" :key="'rel' + rel.key">
 
 					<Connection :source-element="diagramLocal.elements[rel.sourceElementKey]"
 						:target-element="diagramLocal.elements[rel.targetElementKey]" :rel="rel" />
@@ -118,71 +131,33 @@ onMounted(async () => {
 				</g>
 
 				<g :transform="`translate(${diagramLocal.viewBox.x}, ${diagramLocal.viewBox.y})`">
-					<OriginPointer :origin-x="diagramLocal.viewBox.x" :origin-y="diagramLocal.viewBox.y" :x="70"
-						:y="70" />
+					<OriginPointer v-if="presenter.originPointerVisible" :origin-x="diagramLocal.viewBox.x"
+						:origin-y="diagramLocal.viewBox.y" :x="70" :y="70" />
 
-					<NavigationControl :x="presenter.navigationControlLocation.x"
+					<!-- <NavigationControl :x="presenter.navigationControlLocation.x"
 						:y="presenter.navigationControlLocation.y"
 						@navigate="presenter.eventsHandler.screenPadNavigationHandler"
 						@stop-navigating="presenter.eventsHandler.stopNavigatingHandler"
-						:keyboardNavFlag="presenter.keyboardNavFlag" :navFlag="presenter.keyboardNavFlag" />
+						:keyboardNavFlag="presenter.keyboardNavFlag" :navFlag="presenter.keyboardNavFlag" /> -->
 
-					<DiagramToolbox v-model="diagramLocal" :x="presenter.diagramToolboxLocation.x"
-						:y="presenter.diagramToolboxLocation.y" :width="175" />
 				</g>
 			</svg>
 		</div>
 		<div class="right" :style="`font-size:${diagramLocal.viewPort.width / diagramLocal.viewBox.width}rem`">
 			<ElementEditor v-if="presenter.elementEditorVisible" :key="presenter.editElement?.key"
-				@close="presenter.eventsHandler.closeElementEditorHandler" v-model="(presenter.editElement as any)"
-				@update:element="presenter.eventsHandler.updateElementHandler"
-				@delete:element="presenter.eventsHandler.deleteElement" />
+				v-model="(presenter.editElement as any)" @delete:element="presenter.eventsHandler.deleteElement" />
 
-			<DiagramEditor v-if="!presenter.elementEditorVisible"
-				@close="presenter.eventsHandler.closeElementEditorHandler" v-model="diagramLocal"
-				@update:element="presenter.eventsHandler.updateElementHandler" />
+			<DiagramEditor v-if="!presenter.elementEditorVisible" v-model="diagramLocal"
+				@delete:diagram="deleteDiagram">
+
+				<MenuBlock :title="'Add Elements'">
+					<DiagramToolbox v-model="diagramLocal" :x="presenter.diagramToolboxLocation.x"
+						:y="presenter.diagramToolboxLocation.y" :width="175" />
+				</MenuBlock>
+
+			</DiagramEditor>
 
 		</div>
 	</div>
 </template>
 
-<style scoped lang="scss">
-@use '../../styles/diagram.scss';
-
-
-.diagram-root {
-	flex: 1 0 auto;
-	display: flex;
-	flex-direction: row;
-	position: absolute;
-	height: 100%;
-	width: 100%;
-	background-color: purple;
-
-	.left {
-		flex: 1 1 auto;
-		cursor: default;
-
-		svg.dragging {
-			cursor: grabbing
-		}
-
-		svg {
-			&:focus {
-				outline: solid 1px lime;
-				text-decoration: none;
-			}
-
-			font-size: 1rem;
-			width: 100%;
-			height: 100%;
-		}
-	}
-
-	.right {
-		// overflow-x: auto;
-		max-width: 20rem;
-		flex: 0 0 20rem;
-	}
-}
-</style>

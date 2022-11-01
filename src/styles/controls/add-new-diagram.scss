@@ -1,0 +1,46 @@
+.add-new-diagram {
+	display: flex;
+	flex-direction: column;
+	max-height: 1.5rem;
+	overflow: hidden;
+	// background-color: orange;
+	padding: .1rem;
+
+	.row {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.name {
+		max-height: .6rem;
+		background: none;
+		width: 100%;
+		box-sizing: border-box;
+		border-bottom: solid .06rem black;
+
+		&:focus {
+			background-color: #ddd;
+		}
+	}
+
+	.selector {
+		border: none;
+		background: none;
+		max-height: .8rem;
+		box-sizing: border-box;
+		border-bottom: solid .06rem black;
+
+		&:focus {
+			background-color: #ddd;
+		}
+
+	}
+
+	.margin-bottom {
+		margin-bottom: .06rem;
+	}
+
+	.margin-right {
+		margin-right: .1rem;
+	}
+}

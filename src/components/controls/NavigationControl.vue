@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
 import { I_Vector } from '../../core/general/domain';
-import ArrowButton from './ArrowButton.vue';
+import ArrowButton from './NavigationArrow.vue';
 import { NavigationControlPresenter } from './navigation-control-presenter';
 
 const props = defineProps<{

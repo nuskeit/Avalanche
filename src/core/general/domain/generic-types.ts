@@ -5,11 +5,30 @@ export interface I_Vector {
 	y: number
 }
 
-export type numberAuto = number | "auto"
+export class ValueAuto<T> {
+	value: T
+	auto: boolean
+	get ValueAuto(): T | "auto" {
+		return this.auto ? "auto" : this.value
+	}
 
-export type Size = {
-	width: numberAuto
-	height: numberAuto
+	constructor(
+		value: T,
+		auto: boolean
+	) {
+		this.value = value
+		this.auto = auto
+	}
+}
+
+export class Size {
+	width: number
+	height: number
+	
+	constructor(width: number, height: number) {
+		this.width = width
+		this.height = height
+	}
 }
 
 export class Vector implements I_Vector {
@@ -65,4 +84,19 @@ export function undefinedToNull(d: any) {
 
 export function isUndefOrNull(d: any) {
 	return (d == undefined || d == null)
+}
+
+export function undefOrNullDefault<T>(value: any, replacement: T): T {
+	// if (value == undefined || value == null)
+	// 	return replacement
+	// else
+	// 	return value
+	return defaultValue<T>(value, [null, undefined], replacement)
+}
+
+export function defaultValue<T>(value: any, invalids: any[], replacement: T): T {
+	if (invalids.some(x => x == value))
+		return replacement
+	else
+		return value
 }

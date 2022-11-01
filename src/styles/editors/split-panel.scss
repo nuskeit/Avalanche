@@ -1,0 +1,17 @@
+.split-panel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	.split-panel-top {
+		flex: 0 0 50%;
+		// background-color: red;
+		overflow: auto;
+	}
+
+	.split-panel-bottom {
+		flex: 0 0 50%;
+		// background-color: blue;
+		overflow: auto;
+	}
+}

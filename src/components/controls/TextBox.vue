@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 const props = defineProps<{
 	modelValue: string,
-	id: string
+	id?: string
 	style?: {}
 	className?: string
 }>()
@@ -22,9 +22,3 @@ const text = computed<string>({
 <template>
 	<input :class="`${props.className}`" placeholder="..." :id="props.id" v-model="text" :style="props.style">
 </template>
-
-<style lang="scss" scoped>
-	input{
-		font-size: inherit;
-	}
-</style>

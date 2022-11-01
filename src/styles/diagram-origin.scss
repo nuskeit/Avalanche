@@ -1,0 +1,31 @@
+.diagram-origin {
+	opacity: .5;
+	filter: drop-shadow(.05em .05em .03em rgb(0 0 0 / 1));
+
+
+	.diagram-origin-circle-1 {
+		stroke: #000;
+		stroke-width: 20;
+		fill: none;
+		//stroke-dasharray: 15.7;
+	}
+
+	.diagram-origin-circle-2 {
+		stroke: #ccc;
+		fill: none;
+		stroke-width: 20;
+		stroke-dasharray: 15.7;
+		stroke-dashoffset: 15.7;
+	}
+
+	.diagram-origin-line {
+		stroke: #ddd;
+		stroke-dasharray: 13;
+	}
+
+	.diagram-origin-line-alt {
+		@extend .diagram-origin-line;
+		stroke: #000;
+		stroke-dashoffset: 13;
+	}
+}

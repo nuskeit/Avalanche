@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-import { elementWidth } from '../../core/general/domain';
 
-
-const { dx } = defineProps<{
-    dx?: number
+const props = defineProps<{
+    x: number
 }>()
 
 </script>
 
 <template>
-    <circle :cx="elementWidth + 5" cy="0" r="5" class="out-port"
-        :style="{ transform: `translate(${dx != undefined ? -.9 + dx : -.9}rem, .6rem)` }" />
+    <circle :cx="props.x + 5" cy="0" r="5" class="out-port"
+        :style="{ transform: `translate(${-15}px, .6rem)` }" />
 </template>
 
 <style scoped lang="scss">

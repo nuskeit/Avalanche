@@ -12,4 +12,6 @@ export interface I_RootDiagram {
 	save(): Promise<boolean>
 
 	addDiagram(p: I_Diagram): void
+	deleteDiagram(diagramKey: string): void
+
 }

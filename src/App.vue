@@ -9,8 +9,4 @@ import AvalancheApp from "./AvalancheApp.vue";
 	</Suspense>
 </template>
 
-<style lang="scss">
-img {
-	display: block;
-}
-</style> 
+<style lang="scss" src="./styles/root.scss" />

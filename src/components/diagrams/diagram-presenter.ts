@@ -3,7 +3,7 @@ import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element
 import { I_Grid } from '../../core/avalanche-app/root-diagram/diagram/grid/domain'
 import { I_Draggable } from '../../core/drag/domain'
 import { AppFactory } from '../../core/factories/app-factory/application'
-import { DraggableObjectType, I_Vector, Nullable, travelStep } from '../../core/general/domain'
+import { DraggableObjectType, I_Vector, Nullable, Size, travelStep } from '../../core/general/domain'
 import { DraggableHelper, I_Presenter, Throttle } from '../../core/general/presenter'
 import { Grid } from './grid-presenter'
 const t = new Throttle()
@@ -24,12 +24,15 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 
 	grid: I_Grid
 
+
+	viewBoxRealSize: { width: number, height: number }
+
 	zoomState = {
-		factor: 10,
+		factor: 100,
 		level: 0,
 		center: { x: 0, y: 0 }
 	}
-	
+
 	_prevEditElementKey: Nullable<string> = null
 	_editElement: Nullable<I_Element> = null
 	get editElement(): Nullable<I_Element> { return this._editElement }
@@ -37,19 +40,26 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		this._editElement = value
 		if (value == null && this._prevEditElementKey != null) {
 			this._prevEditElementKey = null
-			this.diagramProxy.detectRelationshipsChanges()
 		} else if (value != null && this._prevEditElementKey != value.key) {
 			this._prevEditElementKey = value.key
-			this.diagramProxy.detectRelationshipsChanges()
 		}
+		this.diagramProxy.detectRelationshipsChanges()
 	}
 
 	selectedElement: Nullable<I_Element> = null
 
 	get elementEditorVisible(): boolean { return this.editElement != null }
 
+	get originPointerVisible(): boolean {
+		if (this.diagramProxy.viewBox.x > 0 || this.diagramProxy.viewBox.x < -this.viewBoxRealSize.width ||
+			this.diagramProxy.viewBox.y > 0 || this.diagramProxy.viewBox.y < -this.viewBoxRealSize.height)
+			return true
+		else
+			return false
+	}
 
 	constructor(proxies: Proxies,
+
 		diagramSvgAccessor: Function,
 		diagramSvgPointAccessor: Function
 	) {
@@ -60,6 +70,8 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 			diagramSvgAccessor,
 			diagramSvgPointAccessor
 		}
+		// this.viewBoxRealSize = { width: parseInt( diagramSvgAccessor().width.animVal.value), height: parseInt( diagramSvgAccessor().height.animVal.value )}
+		this.viewBoxRealSize = { width: proxies.diagramProxy().viewBox.width, height: proxies.diagramProxy().viewBox.height }
 	}
 
 	toLocalVector = (clientX: number, clientY: number): I_Vector => {
@@ -122,7 +134,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	cancelDrag() {
 		this.draggableElement = undefined
 		this.draggableViewBox = undefined
-		this.proxies.presenterProxy().draggingDynamicClassName = ""
+		this.presenterProxy.draggingDynamicClassName = ""
 		this.draggableHelper.EndDrag()
 	}
 
@@ -138,7 +150,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 				}
 				const navVector: I_Vector = AppFactory.getSingleton().createVector(20 * v.x, 20 * v.y)
 				if (v.x === 0 && v.y === 0) { // center
-					this.travelToOrigin()
+					this.travelToCenter()
 				} else { // navigate
 					this.travel(navVector.x, navVector.y)
 				}
@@ -154,6 +166,13 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		// } else if (key == "-") {
 		// 	this.zoom(this.zoomFactor)
 		// }
+
+		if (key == "Delete") {
+			if (this.selectedElement) {
+				this.diagramProxy.removeElement(this.selectedElement.key)
+			}
+		}
+
 		if (["ArrowLeft", "a"].includes(key)) {
 			moveVec.x = -3
 		}
@@ -168,7 +187,7 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		}
 
 		if ([" ", "Clear"].includes(key)) {
-			this.travelToOrigin()
+			this.travelToCenter()
 		} else {
 			const travelFactor = 15
 			moveVec.x *= travelFactor
@@ -203,6 +222,31 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 		this.travelTo({ x: -this.diagramProxy.viewBox.width / 2, y: -this.diagramProxy.viewBox.height / 2 })
 	}
 
+	travelToCenter(): void {
+		let minW = Number.MAX_VALUE, maxW = -Number.MAX_VALUE
+		let minH = Number.MAX_VALUE, maxH = -Number.MAX_VALUE
+
+		for (const e in this.diagramProxy.elements) {
+			minW = Math.min(minW, this.diagramProxy.elements[e].location.x)
+			maxW = Math.max(maxW, this.diagramProxy.elements[e].location.x + this.diagramProxy.elements[e].size.width)
+			minH = Math.min(minH, this.diagramProxy.elements[e].location.y)
+			maxH = Math.max(maxH, this.diagramProxy.elements[e].location.y + this.diagramProxy.elements[e].heightAuto)
+		}
+		const avgW = (minW + maxW) / 2
+		const avgH = (minH + maxH) / 2
+
+		const x = this.viewBoxRealSize.width / 2
+		const y = this.viewBoxRealSize.height / 2
+
+		this.travelTo({ x: avgW - x, y: avgH - y })
+
+		// this.travelTo({ x: -avgW, y: -avgH })
+
+		// this.travelTo(this.toLocalVector(-avgW, -avgH))
+
+		// this.travelTo({ x: -this.diagramProxy.viewBox.width / 2, y: -this.diagramProxy.viewBox.height / 2 })
+	}
+
 	proxies: Proxies
 	get presenterProxy(): DiagramPresenter { return this.proxies.presenterProxy() }
 	get diagramProxy(): I_Diagram { return this.proxies.diagramProxy() }
@@ -210,12 +254,12 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 	// Delegates
 	delegates: {
 		/**
-		 *diagram's SVG's DOM element ref accesor 
+		 *diagram's SVG's DOM element ref accesor
 		*/
 		diagramSvgAccessor: Function
 
 		/**
-		 *diagram's svgPoint's DOM element ref accesor 
+		 *diagram's svgPoint's DOM element ref accesor
 		*/
 		diagramSvgPointAccessor: Function
 	}
@@ -242,16 +286,28 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 			this.presenterProxy.editElement = element
 		},
 
-		closeElementEditorHandler: () => {
-			console.log('CLOSE EDITOR');
-			this.presenterProxy.editElement = null
-			this.presenterProxy.diagramProxy.relationships = { ...this.presenterProxy.diagramProxy.relationships }
+		svgResizeHandler: () => {
+			console.log('x');
+			requestAnimationFrame(() => {
+
+				this.diagramProxy.viewBox.width = this.delegates.diagramSvgAccessor().width.animVal.value
+				this.diagramProxy.viewBox.height = this.delegates.diagramSvgAccessor().height.animVal.value
+				this.presenterProxy.viewBoxRealSize.width = this.delegates.diagramSvgAccessor().width.animVal.value
+				this.presenterProxy.viewBoxRealSize.height = this.delegates.diagramSvgAccessor().height.animVal.value
+			})
+
 		},
 
-		updateElementHandler: (e: I_Element) => {
-			console.log('UPDATE ELEMENT');
-			this.diagramProxy.elements[e.key].element = e
-		},
+		// closeElementEditorHandler: () => {
+		// 	console.log('CLOSE EDITOR');
+		// 	this.presenterProxy.editElement = null
+		// 	this.presenterProxy.diagramProxy.relationships = { ...this.presenterProxy.diagramProxy.relationships }
+		// },
+
+		// updateElementHandler: (e: I_Element) => {
+		// 	console.log('UPDATE ELEMENT');
+		// 	this.diagramProxy.elements[e.key].element = e
+		// },
 
 		cancelDragHandler: () => {
 			this.cancelDrag()
@@ -279,12 +335,88 @@ export class DiagramPresenter implements I_Presenter<I_Diagram> {
 			// 	this.zoom(this.zoomFactor)
 			// }
 
-			if (!e.ctrlKey && !e.altKey && !e.shiftKey && ["+", "-", "ArrowLeft", "a", "ArrowRight", "d", "ArrowUp", "w", "ArrowDown", "s", " ", "Clear"].includes(e.key)) {
+			if (!e.ctrlKey && !e.altKey && !e.shiftKey && ["+", "-", "ArrowLeft", "a", "ArrowRight", "d", "ArrowUp", "w", "ArrowDown", "s", " ",
+				"Clear", "Delete"].includes(e.key)) {
 				e.preventDefault()
 				this.keyboardInteraction(e.key)
 			}
 		}
 	}
+
+
+	svgStyle = `
+	.element-template {
+		fill: none;
+		overflow: hidden;
+	}
+
+	.element-template text {
+		fill: white;
+		font-size: .6rem;
+	}
+
+	.selected {
+		stroke: #0f0;
+		stroke-width: 1.5;
+	}
+
+	.element-template-header-body {
+		fill: #222;
+		stroke: none;
+		cursor: pointer;
+	}
+
+	.element-template-header-text {
+		cursor: pointer;
+		font-size: 20rem;
+	}
+
+	.element-type {
+		font-size: .6rem;
+	}
+
+	.element-template-body {
+		stroke-width: 1;
+		filter: drop-shadow(4px 4px 1.5px rgb(0 0 0 / .5));
+		stroke: #aaa;
+		fill: #7778;
+	}
+
+	.element-template-inner-body {
+		stroke-width: 1;
+		stroke: #333;
+		fill: #000, 1);
+	}
+
+
+	.Block {
+		fill: #3373;
+	}
+
+	.Component {
+		fill: #a5a3;
+	}
+
+	.Class {
+		fill: #f753;
+	}
+
+	.Interface {
+		fill: #cfa3;
+		stroke-dasharray: 4;
+		stroke-width: .5;
+		stroke: #000;
+	}
+
+	.header-Interface {
+		fill: #0003;
+	}
+
+	.Enum {
+		fill: #55a3;
+	}
+	`
+
 }
 
 
