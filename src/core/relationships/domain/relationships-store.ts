@@ -7,7 +7,8 @@ export interface I_RelationshipsStore {
 
 	removeRelationshipsByElement(key: string): void
 
-	removeRelationshipsByElement(key: string): void
+	removeRelationshipsBySource(key: string): void
 
+	removeRelationshipsByTarget(key: string): void
 
 }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { I_Parameter } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { I_Parameter } from "../../../core/field/domain";
+import TextBox from '../../controls/TextBox.vue';
 import ConfirmButton from "../../controls/buttons/ConfirmButton.vue";
 import DeleteButton from "../../controls/buttons/DeleteButton.vue";
-import TextBox from '../../controls/TextBox.vue';
 import TypeDefEditor from "../type-def-editor/TypeDefEditor.vue";
 
 const props = defineProps<{
@@ -39,16 +39,16 @@ function actionButtonConfirmHandler() {
 		<div>Parameter Name:</div>
 		<div>
 			<TextBox v-model="parameter.name" :id="parameter.name"
-				:class-name="`${parameter.validProp['name'] ? '' :'invalid'} `" />
+				:class-name="`${parameter.validProp['name'] ? '' : 'invalid'} `" />
 		</div>
 	</div>
-	<div class="row" >
+	<div class="row">
 		<div>
 			<TypeDefEditor v-model="parameter.dataTypeDef" />
 		</div>
 		<div class="button-col">
-			<ConfirmButton @click="actionButtonConfirmHandler" v-if="action=='confirm'" />
-			<DeleteButton @click="actionButtonDeleteHandler" v-if="action=='delete'" />
+			<ConfirmButton @click="actionButtonConfirmHandler" v-if="action == 'confirm'" />
+			<DeleteButton @click="actionButtonDeleteHandler" v-if="action == 'delete'" />
 		</div>
 	</div>
 </template>

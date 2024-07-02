@@ -1,15 +1,13 @@
 export const DiagramType = {
 	Component: "Component",
-	Block: "Block",
+	Generic: "Generic",
 	Class: "Class"
 } as const
 export type DiagramType = typeof DiagramType[keyof typeof DiagramType]
 
-
 export const ElementType = {
 	Component: "Component",
-	GenericEntity: "GenericEntity",
-	Block: "Block",
+	Generic: "Generic",
 	Class: "Class",
 	Interface: "Interface",
 	Enum: "Enum",

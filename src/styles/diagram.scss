@@ -1,44 +1,10 @@
 @use 'animations.scss';
 
 $component-color1: rgb(130, 130, 110);
-$class-color1: rgb(170, 170, 170);
-$block-color1: rgb(120, 140, 150);
+$class-color1: rgb(250, 170, 170);
+$generic-color1: rgb(120, 140, 150);
 
 
-svg.checkers-generic {
-    transform-origin: center center;
-    animation: object-shake .2s linear 0s 1;
-    animation-timing-function: steps(1, end);
-
-    .diagram-shake {
-        animation: object-shake .2s linear 0s 1;
-        animation-timing-function: steps(1, end);
-    }
-
-}
-
-
-
-//Component Diagram
-svg.checkers-component {
-    @extend .checkers-generic;
-    background-color: $component-color1;;
-}
-
-
-
-//Class Diagram
-svg.checkers-class {
-    @extend .checkers-generic;
-    background-color: $class-color1;
-}
-
-
-//Block Diagram
-svg.checkers-block {
-    @extend .checkers-generic;
-    background-color: $block-color1;
-}
 
 .diagram-root {
 	flex: 1 0 auto;
@@ -49,12 +15,17 @@ svg.checkers-block {
 	width: 100%;
 	background-color: #012;
 
-	.left {
+	.diagram-panel {
 		flex: 1 1 auto;
 
 		svg {
+			box-sizing: border-box;
+			border: solid .1rem transparent;
+
 			&:focus {
-				outline: solid 1px lime;
+				outline: none;
+				border-image: linear-gradient(90deg, #0000 0%, #af0a 50%, #0000 100%);
+				border-image-slice: 1;
 				text-decoration: none;
 			}
 
@@ -70,11 +41,9 @@ svg.checkers-block {
 
 	}
 
-	.right {
+	.tools-panel {
 		max-width: 15rem;
-		min-width: 10rem;
+		min-width: 15rem;
 		flex: 1 1 20%;
 	}
 }
-
-

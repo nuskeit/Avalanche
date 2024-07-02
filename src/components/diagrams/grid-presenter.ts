@@ -1,4 +1,4 @@
-import { I_Grid, I_GridColumn, I_GridRow } from "../../core/avalanche-app/root-diagram/diagram/grid/domain"
+import { I_Grid, I_GridColumn, I_GridRow } from "../../core/diagram/grid/domain"
 import { I_ViewBox, I_ViewPort } from "../../core/general/domain"
 import { I_Presenter } from "../../core/general/presenter"
 

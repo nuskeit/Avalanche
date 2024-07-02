@@ -1,4 +1,4 @@
-import { I_Element } from "../../avalanche-app/root-diagram/diagram/element/domain"
+import { I_Element } from "../../element/domain"
 import { I_Draggable } from "../../drag/domain"
 import { I_Vector, Nullable, Vector } from "../domain"
 
@@ -16,7 +16,7 @@ export class DraggableHelper {
 	targetDraggable: Nullable<I_Draggable<any>> = null
 
 	pickUpOffset: I_Vector = { x: 0, y: 0 }
-	
+
 	SetOffset(x: number, y: number) {
 		this.pickUpOffset.x = x
 		this.pickUpOffset.y = y
@@ -49,6 +49,13 @@ export class DraggableHelper {
 			}
 		}
 	}
+
+	UpdateDragViewBox(se: I_Draggable<I_Vector>, clientX: number, clientY: number) {
+		let loc = this.toLocalVector(clientX, clientY)
+		se.element.x -= (loc.x - se.location.x)
+		se.element.y -= (loc.y - se.location.y)
+	}
+
 }
 
 

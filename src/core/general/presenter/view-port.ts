@@ -1,6 +1,6 @@
 import { I_Serializable, I_Vector, I_ViewPort } from "../domain"
 
-export class ViewPort implements I_ViewPort, I_Vector {
+export class ViewPort implements I_ViewPort, I_Vector, I_Serializable {
 	x: number
 	y: number
 	width: number

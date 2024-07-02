@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { I_Diagram } from '../core/avalanche-app/root-diagram/diagram/domain';
+import { computed } from 'vue';
+import { I_Diagram } from '../core/diagram/domain';
 import { DiagramType } from '../core/general/domain';
 import AddNewDiagram from './controls/AddNewDiagram.vue';
 
@@ -50,4 +50,3 @@ function addNewDiagram(name: string, diagramType: DiagramType) {
 		</div>
 	</div>
 </template>
-

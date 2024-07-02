@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
-import { I_Parameter } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { computed, reactive } from "vue";
+import { I_Parameter } from "../../../core/field/domain";
+import AddButton from "../../controls/buttons/AddButton.vue";
 import ParameterEditor from "./ParameterEditor.vue";
 import { ParametersEditorPresenter } from "./parameters-editor-presenter";
-import AddButton from "../../controls/buttons/AddButton.vue";
 
 const props = defineProps<{ modelValue: I_Parameter[] }>()
 
@@ -28,14 +28,14 @@ const presenter: ParametersEditorPresenter = reactive<ParametersEditorPresenter>
 
 <template>
 	<div class="parameters-editor">
-		<div v-for="p,i in parameters" :key="Math.random()">
+		<div v-for="p, i in parameters" :key="Math.random()">
 			<ParameterEditor v-model="parameters[i]" :index="i" :action="'delete'"
 				@action:delete="presenter.eventsHandler.deleteParameterHandler" />
 		</div>
 
 		<div class="add-button" v-if="!presenter.addingNew">
 			<div class="btn-cell">
-				<!-- <AddButton @click="presenter.eventsHandler.activateNewHandler" /> -->
+				<AddButton @click="presenter.eventsHandler.activateNewHandler" />
 			</div>
 		</div>
 

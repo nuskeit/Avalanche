@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { I_Diagram } from "../../../core/avalanche-app/root-diagram/diagram/domain";
-import TextBox from '../../controls/TextBox.vue';
+import { I_Diagram } from "../../../core/diagram/domain";
 import DeleteButton from "../../controls/buttons/DeleteButton.vue";
+import TextBox from '../../controls/TextBox.vue';
 
 const props = defineProps<{
 	modelValue: I_Diagram
@@ -39,12 +39,19 @@ function deleteDiagram() {
 				<DeleteButton @click="deleteDiagram" />
 			</div>
 		</div>
+		<slot></slot>
 
-		<div class="listing">
-			<div class="element-editor_row listing-item">
-				<slot></slot>
-			</div>
+		<!-- <div class="element-editor_row">
+			<slot name="zoom"></slot>
 		</div>
+
+		<div class="element-editor_row">
+			<slot name="listing-new-elements"></slot>
+		</div>
+
+		<div class="element-editor_row">
+			<slot name="listing-existing-elements"></slot>
+		</div> -->
 
 	</div>
 </template>

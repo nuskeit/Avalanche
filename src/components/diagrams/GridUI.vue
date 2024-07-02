@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onActivated, onMounted } from 'vue';
-import { I_Grid } from '../../core/avalanche-app/root-diagram/diagram/grid/domain';
+import { I_Grid } from '../../core/diagram/grid/domain';
 import { preseter } from '../../core/general';
 import { GridPresenter } from './grid-presenter';
 

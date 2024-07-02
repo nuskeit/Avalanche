@@ -1,18 +1,21 @@
-import { RootDiagram_DTO } from "../../../avalanche-app/root-diagram/data";
-import { Diagram_DTO } from "../../../avalanche-app/root-diagram/diagram/data";
-import { I_Diagram } from "../../../avalanche-app/root-diagram/diagram/domain";
-import { Element_DTO } from "../../../avalanche-app/root-diagram/diagram/element/data";
-import { I_Element } from "../../../avalanche-app/root-diagram/diagram/element/domain";
-import { MethodField } from "../../../avalanche-app/root-diagram/diagram/element/field/application";
-import { EventField_DTO, Field_DTO, MethodField_DTO, Parameter_DTO, PropertyField_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/data";
-import { I_Field, I_Parameter } from "../../../avalanche-app/root-diagram/diagram/element/field/domain";
-import { TypeDef_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/data";
-import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain";
-import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain";
+import { RootDiagram_DTO } from "../../../root-diagram/data";
+import { Diagram_DTO } from "../../../diagram/data";
+import { I_Diagram } from "../../../diagram/domain";
+import { Element_DTO } from "../../../element/data";
+import { I_Element } from "../../../element/domain";
+import { MethodField } from "../../../field/application";
+import { EventField_DTO, Field_DTO, MethodField_DTO, Parameter_DTO, PropertyField_DTO } from "../../../field/data";
+import { I_Field, I_Parameter } from "../../../field/domain";
+import { TypeDef_DTO } from "../../../type-def/data";
+import { I_TypeDef } from "../../../type-def/domain";
+import { I_RootDiagram } from "../../../root-diagram/domain";
 import { DraggableElement_DTO } from "../../../drag/data/draggable-element-dto";
 import { I_DraggableElement } from "../../../drag/domain/draggable-element";
-import { FieldType, HashTabletoArray, undefinedToNull } from "../../../general/domain";
+import { Zoom_DTO } from "../../../general/data/zoom_DTO";
+import { FieldType, HashTabletoArray, I_Zoom } from "../../../general/domain";
+import { Zoom } from "../../../general/presenter";
 import { ElementsRelationship_DTO } from "../../../relationships/data";
+import { I_ElementsRelationship } from "../../../relationships/domain";
 import { I_DtoFactory } from "../domain";
 
 export class DtoFactory implements I_DtoFactory {
@@ -36,9 +39,7 @@ export class DtoFactory implements I_DtoFactory {
 			HashTabletoArray<I_Element>(rd.elementsStore.elements)
 				.map(e => this.createElementDto(e)),
 			rd.relationshipsStore.relationships.map<ElementsRelationship_DTO>(r =>
-				new ElementsRelationship_DTO(r.sourceKey, r.targetKey,
-					r.sourceElementKey, r.targetElementKey, r.tag,
-					r.relationshipType, r.sourceMultiplicity, r.targetMultiplicity, r.key))
+				this.createElementRelationshipDto(r))
 		)
 		return r
 	}
@@ -54,8 +55,21 @@ export class DtoFactory implements I_DtoFactory {
 		const elements = elementsArray.map(e => {
 			return this.createDraggableElementDto(e)
 		})
+		// const relationships = d.relationships.map<ElementsRelationship_DTO>(r => {
+		// 	return this.createElementRelationshipDto(r)
+		// })
 
-		return new Diagram_DTO(d.key, d.name, d.diagramType, d.visible, elements, d.viewBox, d.viewPort)
+		const zoom = this.createZoomDto(d.zoom)
+		// return new Diagram_DTO(d.key, d.name, d.diagramType, d.visible, elements, relationships, d.viewBox, d.viewPort, zoom)
+		return new Diagram_DTO(d.key, d.name, d.diagramType, d.visible, elements, d.viewBox, d.viewPort, zoom)
+	}
+
+	createZoomDto(e: I_Zoom): Zoom_DTO {
+		return new Zoom_DTO(e.factor, e.minFactor, e.maxFactor)
+	}
+
+	createElementRelationshipDto(r: I_ElementsRelationship): ElementsRelationship_DTO {
+		return new ElementsRelationship_DTO(r.sourceKey, r.targetKey, r.sourceKey, r.targetKey, r.tag, r.relationshipType, r.sourceMultiplicity, r.targetMultiplicity, r.key)
 	}
 
 	createElementDto(e: I_Element): Element_DTO {

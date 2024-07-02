@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, reactive } from 'vue';
-import DiagramUI from './diagrams/DiagramUI.vue';
 import TabsStrip from './TabsStrip.vue';
+import DiagramUI from './diagrams/DiagramUI.vue';
 //custom types
 import { AvalancheApp } from '../core/avalanche-app/application';
 import { I_AvalancheApp } from '../core/avalanche-app/domain';
+import { Diagram } from '../core/diagram/application';
 import SaveButton from './controls/buttons/SaveButton.vue';
 import { RootDiagramPresenter } from "./root-diagram-presenter";
-import { I_Diagram } from '../core/avalanche-app/root-diagram/diagram/domain';
 
 // Create object model reference (OMR)
 const avalancheApp = reactive<I_AvalancheApp>(inject("avalanche-app") as AvalancheApp)
@@ -51,8 +51,8 @@ onUnmounted(() => {
 						@delete:diagram="rootDiagramPresenter.eventsHandler.handleDeleteDiagram" />
 				</div>
 				<div class="root-diagram_tab-main"
-					v-if="rootDiagramPresenter.rootDiagramProxy.diagrams.length > 0 && rootDiagramPresenter.selectedDiagram!=null">
-					<DiagramUI v-model="rootDiagramPresenter.selectedDiagram"
+					v-if="rootDiagramPresenter.rootDiagramProxy.diagrams.length > 0 && rootDiagramPresenter.selectedDiagram != null">
+					<DiagramUI v-model="rootDiagramPresenter.selectedDiagram as Diagram"
 						:key="rootDiagramPresenter.selectedDiagramIndex"
 						@delete:diagram="rootDiagramPresenter.eventsHandler.handleDeleteDiagram" />
 				</div>

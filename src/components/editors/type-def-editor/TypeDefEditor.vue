@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { I_TypeDef } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/type-def/domain";
 import { AppFactory } from "../../../core/factories/app-factory/application";
 import { DataType } from "../../../core/general/domain";
+import { I_TypeDef } from "../../../core/type-def/domain";
 import RefTypeSelector from "../../controls/RefTypeSelector.vue";
 import ValTypeSelector from "../../controls/ValTypeSelector.vue";
 
@@ -36,10 +36,12 @@ const fallbackDataType = computed<DataType>({
 			<tbody>
 				<tr class="details-row">
 					<td class="details-cell">
-						fallback: <ValTypeSelector :id="`val-type-${typeDef.key}`" v-model="fallbackDataType" />
+						fallback:
+						<ValTypeSelector :id="`val-type-${typeDef.key}`" v-model="fallbackDataType" />
 					</td>
 					<td class="details-cell">
-						ref?: <RefTypeSelector :id="`reg-type-${typeDef.key}`" v-model="typeDef.refElement" />
+						ref?:
+						<RefTypeSelector :id="`reg-type-${typeDef.key}`" v-model="typeDef.refElement" />
 					</td>
 				</tr>
 			</tbody>
@@ -47,4 +49,3 @@ const fallbackDataType = computed<DataType>({
 
 	</div>
 </template>
-

@@ -2,8 +2,8 @@ import { AppFactory } from "../../factories/app-factory/application";
 import { GlobalKey } from "../../general/domain";
 import { I_HttpInPort, I_Repository } from "../../repository/domain";
 import { I_AppConfigAmbient, I_AvalancheApp } from "../domain";
-import { I_RootDiagram } from "../root-diagram/domain";
-import { I_RootDiagramRepo } from "../root-diagram/domain/root-domain-repo";
+import { I_RootDiagram } from "../../root-diagram/domain";
+import { I_RootDiagramRepo } from "../../root-diagram/domain/root-domain-repo";
 
 export class AvalancheApp implements I_AvalancheApp {
 	_rootDiagram: I_RootDiagram

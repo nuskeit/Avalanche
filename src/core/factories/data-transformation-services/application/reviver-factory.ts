@@ -1,16 +1,18 @@
-import { RootDiagram_DTO } from "../../../avalanche-app/root-diagram/data";
-import { Diagram } from "../../../avalanche-app/root-diagram/diagram/application";
-import { Diagram_DTO } from "../../../avalanche-app/root-diagram/diagram/data";
-import { Element_DTO } from "../../../avalanche-app/root-diagram/diagram/element/data";
-import { I_Element, I_ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/domain";
-import { EventField, MethodField, Parameter, PropertyField } from "../../../avalanche-app/root-diagram/diagram/element/field/application";
-import { Field_DTO, Parameter_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/data";
-import { I_Field } from "../../../avalanche-app/root-diagram/diagram/element/field/domain";
-import { TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/application";
-import { TypeDef_DTO } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/data";
-import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain";
-import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain";
+import { RootDiagram_DTO } from "../../../root-diagram/data";
+import { Diagram } from "../../../diagram/application";
+import { Diagram_DTO } from "../../../diagram/data";
+import { Element_DTO } from "../../../element/data";
+import { I_Element, I_ElementsStore } from "../../../element/domain";
+import { EventField, MethodField, Parameter, PropertyField } from "../../../field/application";
+import { Field_DTO, Parameter_DTO } from "../../../field/data";
+import { I_Field } from "../../../field/domain";
+import { TypeDef } from "../../../type-def/application";
+import { TypeDef_DTO } from "../../../type-def/data";
+import { I_TypeDef } from "../../../type-def/domain";
+import { I_RootDiagram } from "../../../root-diagram/domain";
+import { Zoom_DTO } from "../../../general/data/zoom_DTO";
 import { defaultValue, FieldType, isUndefOrNull, undefOrNullDefault } from "../../../general/domain";
+import { Zoom } from "../../../general/presenter";
 import { I_RelationshipsStore } from "../../../relationships/domain";
 import { AppFactory } from "../../app-factory/application";
 
@@ -28,7 +30,7 @@ export class Reviver {
 		// fisrt add all elements to store
 		for (const elementDto of rootDiagDto.elementsStore) {
 			const elem = this.createEntity(elementDto, rootDiagram.elementsStore, rootDiagram.relationshipsStore)
-			elem.name=elementDto.name
+			elem.name = elementDto.name
 			rootDiagram.elementsStore.addElement(elementDto.key, elem);
 		}
 		// after adding all elements to store, add fields to the elements
@@ -55,17 +57,47 @@ export class Reviver {
 
 		// Diagrams
 		for (const diagDto of rootDiagDto.diagrams as Diagram_DTO[]) {
-			const newDiagram = AppFactory.getSingleton().createDiagram(diagDto.name, diagDto.diagramType, diagDto.viewBox, diagDto.viewPort, diagDto.key)
+			const newDiagram = AppFactory.getSingleton().createDiagram(diagDto.name, diagDto.diagramType, diagDto.viewBox,
+				diagDto.viewPort, this.createZoom(diagDto.zoom), diagDto.key)
 			for (const elemDto of diagDto.elements) {
 				const el = rootDiagram.elementsStore.elements[elemDto.element]
 				newDiagram.addElement(rootDiagram.elementsStore.elements[el.key],
 					elemDto.location.x, elemDto.location.y, elemDto.size)
 			}
-			newDiagram.detectRelationshipsChanges()
+
+			// rootDiagram.relationshipsStore.relationships.forEach(r => {
+			// 	newDiagram.relationships.push(r)
+			// })
+
+			// newDiagram.detectRelationshipsChanges()
+			// newDiagram.relationships.forEach(r => {
+			// 	rootDiagram.relationshipsStore.addRelationship(r)
+			// })
+
+			// // Relationships store
+			// for (let rel of diagDto.relationships) {
+			// 	newDiagram.relationships.push(AppFactory.getSingleton().createElementsRelationship(
+			// 		rel.sourceKey,
+			// 		rel.targetKey,
+			// 		rel.sourceElementKey,
+			// 		rel.targetElementKey,
+			// 		rel.tag,
+			// 		rel.relationshipType,
+			// 		rel.sourceMultiplicity,
+			// 		rel.targetMultiplicity,
+			// 		rel.key
+			// 	));
+			// }
+
+
 			rootDiagram.addDiagram(newDiagram)
 		}
 
 		return rootDiagram
+	}
+
+	createZoom(zoom: Zoom_DTO) {
+		return new Zoom(zoom.factor, zoom.minFactor, zoom.maxFactor)
 	}
 
 	createField(elementsStore: I_ElementsStore, fieldDTO: Field_DTO): I_Field {

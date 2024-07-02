@@ -1,6 +1,6 @@
 import * as repo from "../../repository"
 import { AvalancheApp } from "../application"
-import * as rootDiag from "../root-diagram"
+import * as rootDiag from "../../root-diagram"
 
 export interface I_AvalancheApp {
 	/**

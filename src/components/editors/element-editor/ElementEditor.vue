@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, reactive, ref, watchEffect } from "vue";
-import { I_Element } from "../../../core/avalanche-app/root-diagram/diagram/element/domain";
+import { I_Element } from "../../../core/element/domain";
 import TextBox from '../../controls/TextBox.vue';
 import { ElementEditorPresenter } from "./element-editor-presenter";
 import FieldEditor from "../field-editor/FieldEditor.vue";

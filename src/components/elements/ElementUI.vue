@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue';
-import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
 import { I_Draggable } from '../../core/drag/domain';
-import { ElementType } from '../../core/general/domain';
-import { elementWidth, rowHeight } from '../../core/general/domain/constants';
+import { I_DraggableElement } from '../../core/drag/domain/draggable-element';
+import { I_Element } from '../../core/element/domain';
 import ElementTemplate from './ElementTemplate.vue';
 import Field from './Field.vue';
-import EnumField from './EnumField.vue';
 import { ElementPresenter } from './element-presenter';
-import { I_DraggableElement } from '../../core/drag/domain/draggable-element';
 
 const props = defineProps<{
 	modelValue: I_DraggableElement,
@@ -51,10 +48,8 @@ const presenter: ElementPresenter = reactive<ElementPresenter>(
 			v-for="(x, i) in draggableElement.element.fields" :key="Math.random()"
 			:showInPort="true" :showOutPort="true" :field="x" /> -->
 
-		<Field :index="i" :width="draggableElement.size.width"
-			v-for="(x, i) in draggableElement.element.fields" :key="Math.random()"
-			:showInPort="(props.modelValue.element.elementType != ElementType.Enum) && true" 
-			:showOutPort="(props.modelValue.element.elementType != ElementType.Enum) && true" :field="x" />
+		<Field :index="i" :width="draggableElement.size.width" v-for="(x, i) in draggableElement.element.fields"
+			:key="Math.random()" :field="x" />
 
 	</ElementTemplate>
 </template>

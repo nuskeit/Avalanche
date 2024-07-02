@@ -1,4 +1,4 @@
-import { I_Diagram } from "../../../core/avalanche-app/root-diagram/diagram/domain";
+import { I_Diagram } from "../../../core/diagram/domain";
 import { Nullable } from "../../../core/general/domain";
 import { I_Presenter } from "../../../core/general/presenter";
 

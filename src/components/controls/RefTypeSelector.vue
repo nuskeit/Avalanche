@@ -1,7 +1,7 @@
 <script lang="ts" setup >
 
 import { computed, inject } from 'vue';
-import { I_Element, I_ElementsStore } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
+import { I_Element, I_ElementsStore } from '../../core/element/domain';
 import { Nullable, undefinedToNull } from '../../core/general/domain';
 
 const props = defineProps<{

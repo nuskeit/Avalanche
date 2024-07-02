@@ -1,7 +1,7 @@
 <script lang="ts" setup >
 import { provide, reactive } from 'vue';
 import RootDiagramUI from './components/RootDiagramUI.vue';
-import { I_ElementsStore } from './core/avalanche-app/root-diagram/diagram/element/domain';
+import { I_ElementsStore } from './core/element/domain';
 import { AppFactory } from './core/factories/app-factory/application';
 import { I_RelationshipsStore } from './core/relationships/domain';
 

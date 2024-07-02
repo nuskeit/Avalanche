@@ -1,4 +1,7 @@
 .origin-pointer {
+	stroke: #fff4;
+	fill: #fff;
+
 	.arrow-shake {
 		animation: shake 5s normal;
 		animation-iteration-count: infinite;
@@ -9,10 +12,11 @@
 	@keyframes shake {
 		0% {
 			transform: translateX(0px);
+			fill: #0002;
 		}
 
 		84% {
-			fill: #5053;
+			fill: #0002;
 		}
 
 		85% {
@@ -20,8 +24,8 @@
 		}
 
 		87% {
-			fill: #5056;
 			transform: translateX(-30px);
+			fill: #fff4;
 		}
 
 		89% {
@@ -37,16 +41,16 @@
 		}
 
 		95% {
-			fill: #5056;
 			transform: translateX(-30px);
 		}
 
 		97% {
 			transform: translateX(0px);
+			fill: #fff4;
 		}
 
 		100% {
-			fill: #5053;
+			fill: #0002;
 		}
 	}
 }

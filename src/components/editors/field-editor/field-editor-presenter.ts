@@ -1,4 +1,4 @@
-import { I_Field } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { I_Field } from "../../../core/field/domain";
 import { I_Presenter } from "../../../core/general/presenter";
 
 export class FieldEditorPresenter implements I_Presenter<I_Field> {

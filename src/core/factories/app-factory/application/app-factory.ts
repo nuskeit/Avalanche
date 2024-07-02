@@ -1,23 +1,23 @@
 import { AppConfigAmbient, AvalancheApp } from "../../../avalanche-app/application"
 import { I_AppConfig, I_AppConfigAmbient, I_AvalancheApp } from "../../../avalanche-app/domain"
-import { RootDiagram } from "../../../avalanche-app/root-diagram/application"
-import { RootDiagramRepo } from "../../../avalanche-app/root-diagram/data"
-import { Diagram } from "../../../avalanche-app/root-diagram/diagram/application"
-import { I_Diagram } from "../../../avalanche-app/root-diagram/diagram/domain"
+import { RootDiagram } from "../../../root-diagram/application"
+import { RootDiagramRepo } from "../../../root-diagram/data"
+import { Diagram } from "../../../diagram/application"
+import { I_Diagram } from "../../../diagram/domain"
 import {
-	BlockEntity, ClassEntity, EnumEntity, ExternalDependencyEntity,
+	ClassEntity, ComponentEntity, EnumEntity, ExternalDependencyEntity,
 	GenericEntity, InterfaceEntity
-} from "../../../avalanche-app/root-diagram/diagram/element/application"
-import { ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/data"
-import { I_Element, I_ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/domain"
+} from "../../../element/application"
+import { ElementsStore } from "../../../element/data"
+import { I_Element, I_ElementsStore } from "../../../element/domain"
 import {
 	EventField, MethodField, Parameter, PropertyField
-} from "../../../avalanche-app/root-diagram/diagram/element/field/application"
-import { I_Field, I_Parameter } from "../../../avalanche-app/root-diagram/diagram/element/field/domain"
-import { TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/application"
-import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain"
-import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain"
-import { I_RootDiagramRepo } from "../../../avalanche-app/root-diagram/domain/root-domain-repo"
+} from "../../../field/application"
+import { I_Field, I_Parameter } from "../../../field/domain"
+import { TypeDef } from "../../../type-def/application"
+import { I_TypeDef } from "../../../type-def/domain"
+import { I_RootDiagram } from "../../../root-diagram/domain"
+import { I_RootDiagramRepo } from "../../../root-diagram/domain/root-domain-repo"
 import { Draggable } from "../../../drag/application"
 import { DraggableElement } from "../../../drag/application/draggable-element"
 import { I_Draggable } from "../../../drag/domain"
@@ -29,8 +29,9 @@ import {
 	I_KeyValuePair,
 	I_NumericRange,
 	I_SystemData,
-	I_Vector, I_ViewBox, I_ViewPort, Nullable, NumericRange, ParamDirection, ParamValRef, RelationshipType, Scope, Size, undefinedToNull, Vector
+	I_Vector, I_ViewBox, I_ViewPort, I_Zoom, Nullable, NumericRange, ParamDirection, ParamValRef, RelationshipType, Scope, Size, undefinedToNull, Vector
 } from "../../../general/domain"
+import { Zoom } from "../../../general/presenter"
 import { ElementsRelationship } from "../../../relationships/application"
 import { RelationshipsStore } from "../../../relationships/data"
 import { I_RelationshipsStore } from "../../../relationships/domain"
@@ -76,22 +77,22 @@ export class AppFactory implements I_AppFactory {
 	}
 
 
-	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, key?: string): I_Diagram {
-		return new Diagram(name, diagramType, viewBox, viewPort, key)
+	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, zoom: I_Zoom, key?: string): I_Diagram {
+		return new Diagram(name, diagramType, viewBox, viewPort, zoom, key)
 	}
 
 	createElement(elementType: ElementType, elementsStore: I_ElementsStore, relationshipsStore: I_RelationshipsStore, key?: string): I_Element {
 		let el: I_Element
 		if (elementType == ElementType.Class)
 			el = new ClassEntity(relationshipsStore, key)
+		else if (elementType == ElementType.Component)
+			el = new ComponentEntity(relationshipsStore, key)
 		else if (elementType == ElementType.Interface)
 			el = new InterfaceEntity(relationshipsStore, key)
 		else if (elementType == ElementType.Enum)
 			el = new EnumEntity(relationshipsStore, key)
 		else if (elementType == ElementType.ExternalDependency)
 			el = new ExternalDependencyEntity(relationshipsStore, key)
-		else if (elementType == ElementType.Block)
-			el = new BlockEntity(relationshipsStore, key)
 		else
 			el = new GenericEntity(relationshipsStore, key)
 

@@ -24,13 +24,26 @@
 		}
 	}
 
-	.listing {
+	.zoom {
+		flex: 0 0 100%;
+		display: flex;
+		flex-direction: row;
+		font-size: 1.5rem;
 
-		.listing-item {
+		.zoom-label {
+			flex: 1 1 33%;
+		}
+
+		.zoom-btn {
+			background-color: #fff1;
+			flex: 1 1 20%;
+			height: 100%;
 			cursor: pointer;
+			&:active {
+				background-color: #555;
+			}
 		}
 	}
-
 
 	.element-editor_row {
 		display: flex;

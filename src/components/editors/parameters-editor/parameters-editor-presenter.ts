@@ -1,5 +1,5 @@
 export { }
-import { I_Parameter } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { I_Parameter } from "../../../core/field/domain";
 import { AppFactory } from "../../../core/factories/app-factory/application";
 import { DataType, ParamDirection, ParamValRef } from "../../../core/general/domain";
 import { I_Presenter } from "../../../core/general/presenter";

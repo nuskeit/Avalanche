@@ -1,16 +1,21 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { I_Element } from '../../core/avalanche-app/root-diagram/diagram/element/domain';
-import { I_Draggable } from '../../core/drag/domain';
+import { I_DraggableElement } from '../../core/drag/domain/draggable-element';
+import { I_Element } from '../../core/element/domain';
 import { AppFactory } from '../../core/factories/app-factory/application';
-import { elementWidth, I_Vector, rowHeight, Vector } from '../../core/general/domain';
+import { I_Vector, rowHeight } from '../../core/general/domain';
 import { I_ElementsRelationship } from '../../core/relationships/domain';
 import { useDebugPoints } from "./useDebugPoints";
 
-const { sourceElement, targetElement, rel } = defineProps<{
-	sourceElement: I_Draggable<I_Element>
-	targetElement: I_Draggable<I_Element>
+const props = defineProps<{
+	sourceElement: I_DraggableElement
+	targetElement: I_DraggableElement
 	rel: I_ElementsRelationship
+	selected: boolean
+}>()
+
+const emit = defineEmits<{
+	(e: "selectRelationship", key: string): void
 }>()
 
 const clearance = 10
@@ -18,35 +23,41 @@ const clearance = 10
 
 const { circles, addCircle, clearCircles } = useDebugPoints()
 
+let lateralShiftSource = 0
+let lateralShiftTarget = 0
+let startLocation: I_Vector = AppFactory.getSingleton().createVector(0, 0)
+let finishLocation: I_Vector = AppFactory.getSingleton().createVector(0, 0)
 
 const points = computed<string>(() => {
 	let path = ""
-	if (sourceElement != undefined && targetElement != undefined) {
+	if (props.sourceElement != undefined && props.targetElement != undefined) {
 
-
-		const b = targetElement.location.x - sourceElement.location.x
-		const h = targetElement.location.y - sourceElement.location.y
+		const b = (props.targetElement.location.x + props.targetElement.size.width / 2) - (props.sourceElement.location.x + props.sourceElement.size.width / 2)
+		const h = props.targetElement.location.y - props.sourceElement.location.y
 		const hip = Math.sqrt(h * h + b * b)
 		const lateralFactor = b / hip
 		const leanFactor = 3
 
-		let lateralShift = (elementWidth / 2 * lateralFactor)
-		let startX = sourceElement.location.x + elementWidth / 2 + lateralShift
-		let endX = targetElement.location.x + elementWidth / 2 - lateralShift
+		lateralShiftSource = (props.sourceElement.size.width / 2 * lateralFactor)
+		lateralShiftTarget = (props.targetElement.size.width / 2 * lateralFactor)
+		let startX = props.sourceElement.location.x + props.sourceElement.size.width / 2 + lateralShiftSource
+		let endX = props.targetElement.location.x + props.targetElement.size.width / 2 - lateralShiftTarget
 		startX = Math.floor(startX)
 		endX = Math.floor(endX)
 		var midX = (endX + startX) / 2
 
 		let startY1Y2 = sourceStartLineAtTopOrBottom()
 		let start = AppFactory.getSingleton().createVector(startX, startY1Y2[0])
+		startLocation = start
 		let startCurve = AppFactory.getSingleton().createVector(startX, startY1Y2[1])
 
 		let endY1Y2 = targetFinishLineAtTopOrBottom()
 		let endCurve = AppFactory.getSingleton().createVector(endX, endY1Y2[0])
 		let end = AppFactory.getSingleton().createVector(endX, endY1Y2[1])
+		finishLocation = end
 
-		if ((sourceElement.location.y < targetElement.location.y + elementHeight(targetElement.element) + clearance * 2
-			&& sourceElement.location.y + elementHeight(sourceElement.element) > targetElement.location.y - clearance * 2)) {
+		if ((props.sourceElement.location.y < props.targetElement.location.y + elementHeight(props.targetElement.element) + clearance * 2
+			&& props.sourceElement.location.y + elementHeight(props.sourceElement.element) > props.targetElement.location.y - clearance * 2)) {
 			path = `M${start.x},${start.y}`
 			path += ` V${startCurve.y}`
 			path += ` L${start.x + (end.x - start.x) / 2},${startCurve.y}`
@@ -88,11 +99,13 @@ const points = computed<string>(() => {
 })
 
 let tag = computed<I_Vector>(() => {
-	if (sourceElement != undefined && targetElement != undefined) {
+	if (props.sourceElement != undefined && props.targetElement != undefined) {
 		const ys1 = sourceStartLineAtTopOrBottom()
 		const ys2 = targetFinishLineAtTopOrBottom()
-		return AppFactory.getSingleton().createVector((sourceElement.location.x + elementWidth / 2 + targetElement.location.x + elementWidth / 2) / 2,
+		return AppFactory.getSingleton().createVector((finishLocation.x + startLocation.x) / 2,
 			(ys1[1] + ys2[1]) / 2)
+		// return AppFactory.getSingleton().createVector(((props.sourceElement.location.x + lateralShiftSource) / 2 + props.targetElement.location.x + lateralShiftTarget / 2) / 2,
+		// 	(ys1[1] + ys2[1]) / 2)
 	}
 	return AppFactory.getSingleton().createVector(0, 0)
 })
@@ -103,9 +116,9 @@ function elementHeight(elem: I_Element): number {
 }
 
 function sourceStartLineAtTopOrBottom(): [number, number] {
-	const y1 = sourceElement.location.y
-	const y2 = targetElement.location.y
-	const elemHeight = elementHeight(sourceElement.element)
+	const y1 = props.sourceElement.location.y
+	const y2 = props.targetElement.location.y
+	const elemHeight = elementHeight(props.sourceElement.element)
 
 	if (y1 + elemHeight / 2 < y2)
 		return [y1 + elemHeight, y1 + elemHeight + clearance]
@@ -114,14 +127,18 @@ function sourceStartLineAtTopOrBottom(): [number, number] {
 }
 
 function targetFinishLineAtTopOrBottom(): [number, number] {
-	const y1 = sourceElement.location.y
-	const y2 = targetElement.location.y
-	const elemHeight = elementHeight(targetElement.element)
+	const y1 = props.sourceElement.location.y
+	const y2 = props.targetElement.location.y
+	const elemHeight = elementHeight(props.targetElement.element)
 
 	if (y1 < y2 + elemHeight / 2)
 		return [y2 - clearance, y2 - 9]
 	else
 		return [y2 + elemHeight + clearance, y2 + elemHeight + 9]
+}
+
+function selectHandler(key: string) {
+	emit("selectRelationship", key)
 }
 
 </script>
@@ -181,11 +198,18 @@ function targetFinishLineAtTopOrBottom(): [number, number] {
         stroke="#555" stroke-width="40" /> -->
 
 	<!-- :points="`${props.start.x},${props.y1} ${props.start.x},${props.y1 > props.y2 ? props.y1 - 15 : props.y1 + 15} ${props.x2},${props.y1 > props.y2 ? props.y2 - 15 : props.y2 + 15} ${props.x2},${props.y2}`" -->
+	<!-- <text>{{ rel.relationshipType }}</text> -->
+	<path :class="`${rel.relationshipType.toLowerCase()} connector-highlight ${props.selected ? ' selected' : ''}`" :d="points" fill="none" closed="false"
+		stroke="#555" stroke-width="3" />
 
-	<path :class="rel.relationshipType.toLowerCase()" :d="points" fill="none" closed="false" stroke="#555"
-		stroke-width="40" />
+	<path :class="`connector ${rel.relationshipType.toLowerCase()}`" :d="points" fill="none" closed="false"
+		stroke="#555" stroke-width="40" />
 
-	<g :style="{ transform: `translate(${tag.x}px, ${tag.y}px)` }">
+	<path class="connector-area hand" :d="points" fill="none" closed="false" stroke="#555" stroke-width="3"
+		@pointerdown.stop="selectHandler(rel.key)" />
+
+	<g class="hand" :style="{ transform: `translate(${tag.x}px, ${tag.y}px)` }"
+		@pointerdown.stop="selectHandler(rel.key)">
 		<text x="0" y="0" text-anchor="middle" class="tag">{{ rel.tag }}</text>
 		<text x="0" :dy="rowHeight / 1.2" text-anchor="middle" class="type">{{ rel.relationshipType }}</text>
 	</g>
@@ -205,6 +229,34 @@ function targetFinishLineAtTopOrBottom(): [number, number] {
 	stroke-width: .1em;
 }
 
+.connector {
+	//	filter: drop-shadow(0 0 1px #0f0) drop-shadow(0 0 3px 	0)
+	// transition-property: opacity;
+	// transition-duration: .1s;
+}
+
+.connector-area {
+	opacity: 0;
+	stroke: #fff;
+	stroke-width: 6;
+	// transition-property: opacity;
+	// transition-duration: .1s;
+}
+
+.connector-highlight {
+	opacity: 0;
+	stroke-width: .3rem;
+	pointer-events: none;
+	// transition-property: opacity;
+	// transition-duration: .1s;
+}
+
+.selected {
+	opacity: 1;
+	stroke: #0f0;
+	filter: blur(.05rem)
+}
+
 .association {
 	@extend .all;
 	stroke: #555;
@@ -215,12 +267,14 @@ function targetFinishLineAtTopOrBottom(): [number, number] {
 	@extend .all;
 	stroke: #f4a; //#747
 	marker-end: url(#directed-association-endcap);
+	//filter: drop-shadow(0 0 1px #f4a) drop-shadow(0 0 3px #f4a)
 }
 
 .aggregation {
 	@extend .all;
 	stroke: orange;
 	marker-end: url(#aggregation-endcap);
+	//(0 0 1px orange) drop-shadow(0 0 3px orange)
 }
 
 .composition {
@@ -231,7 +285,7 @@ function targetFinishLineAtTopOrBottom(): [number, number] {
 
 .inheritance {
 	@extend .all;
-	stroke: #172; //#559
+	stroke: #1a2; //#559
 	stroke-dasharray: 4 2;
 	marker-end: url(#inheritance-endcap);
 }

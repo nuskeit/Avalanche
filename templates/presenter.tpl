@@ -30,13 +30,13 @@
 import { I_Diagram } from "../../core/avalanche-app/root-diagram/diagram/domain";
 import { I_Presenter } from "../../core/general/presenter";
 
-export class DiagramToolboxPresenter implements I_Presenter<{}>{
+export class AddNewElementPresenter implements I_Presenter<{}>{
 
 	constructor(proxies: Proxies) {
 		this.proxies = proxies
 	}
 
-	get presenterProxy(): DiagramToolboxPresenter { return this.proxies.presenterProxy() }
+	get presenterProxy(): AddNewElementPresenter { return this.proxies.presenterProxy() }
 	get diagramProxy(): I_Diagram { return this.proxies.diagramProxy() }
 
 	proxies: Proxies;
@@ -47,5 +47,5 @@ export class DiagramToolboxPresenter implements I_Presenter<{}>{
 
 type Proxies = {
 	diagramProxy(): I_Diagram
-	presenterProxy(): DiagramToolboxPresenter
+	presenterProxy(): AddNewElementPresenter
 }

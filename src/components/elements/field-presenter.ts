@@ -1,4 +1,4 @@
-import { I_Field } from "../../core/avalanche-app/root-diagram/diagram/element/field/domain";
+import { I_Field } from "../../core/field/domain";
 import { FieldType } from "../../core/general/domain";
 import { I_Presenter } from "../../core/general/presenter";
 

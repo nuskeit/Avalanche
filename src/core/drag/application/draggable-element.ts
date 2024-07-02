@@ -1,4 +1,4 @@
-import { I_Element } from "../../avalanche-app/root-diagram/diagram/element/domain"
+import { I_Element } from "../../element/domain"
 import { I_Vector, Size } from "../../general/domain"
 import { I_DraggableElement } from "../domain/draggable-element"
 import * as constantsNS from '../../../core/general/domain/constants';

@@ -1,15 +1,11 @@
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
-import { MethodField } from "../../core/avalanche-app/root-diagram/diagram/element/field/application";
-import { I_Field } from "../../core/avalanche-app/root-diagram/diagram/element/field/domain";
 import { FieldType } from "../../core/general/domain";
-import InboundPort from "./InboundPort.vue";
-import OutboundPort from "./OutboundPort.vue";
 import { useConnectingPaths } from "./useConnectingPaths";
+import { I_Field } from "../../core/field/domain";
+import { MethodField } from "../../core/field/application";
 
 const props = defineProps<{
-	showInPort: boolean
-	showOutPort: boolean
 	x?: number
 	y?: number
 	dx?: number
@@ -42,10 +38,10 @@ const dataTypeDef = computed<string>(() => {
 <template>
 	<g :transform="`translate(${x} ${y})`">
 		<rect x="19" y="0" :width="props.width ? props.width - 37 : 0" height="16"
-			:class="`element-bg ${props.field.valid? '': 'invalid'}`" rx="0" ry="0" />
+			:class="`element-bg ${props.field.valid ? '' : 'invalid'}`" rx="0" ry="0" />
 		<text x="20" y="13" :width="props.width ? props.width - 38 : 0" height="100" class="element-row-text"
-			:style="{clipPath: `polygon(0px 0px, ${props.width ? props.width - 38 : 0}px 0px, ${props.width ? props.width - 38 : 0}px 20px, 0px 20px)`}">
-			<tspan class="field-name">{{`${field.scopeSymbol} ${field.name}`}}
+			:style="{ clipPath: `polygon(0px 0px, ${props.width ? props.width - 38 : 0}px 0px, ${props.width ? props.width - 38 : 0}px 20px, 0px 20px)` }">
+			<tspan class="field-name">{{ `${field.scopeSymbol} ${field.name}` }}
 				<tspan class="field-param" v-if="field.fieldType == FieldType.Method">
 					(<template v-for="(p, i) in (field as MethodField).parameters" :key="Math.random()">
 						{{ i > 0 ? ", " : "" }}{{ p.name }}

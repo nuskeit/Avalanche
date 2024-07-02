@@ -1,15 +1,15 @@
 import { I_AppConfig, I_AppConfigAmbient, I_AvalancheApp } from "../../../avalanche-app/domain";
-import { I_Diagram } from "../../../avalanche-app/root-diagram/diagram/domain";
-import { I_Element, I_ElementsStore } from "../../../avalanche-app/root-diagram/diagram/element/domain";
-import { I_Field, I_Parameter } from "../../../avalanche-app/root-diagram/diagram/element/field/domain";
-import { I_TypeDef } from "../../../avalanche-app/root-diagram/diagram/element/field/type-def/domain";
-import { I_RootDiagram } from "../../../avalanche-app/root-diagram/domain";
-import { I_RootDiagramRepo } from "../../../avalanche-app/root-diagram/domain/root-domain-repo";
+import { I_Diagram } from "../../../diagram/domain";
+import { I_Element, I_ElementsStore } from "../../../element/domain";
+import { I_Field, I_Parameter } from "../../../field/domain";
+import { I_TypeDef } from "../../../type-def/domain";
+import { I_RootDiagram } from "../../../root-diagram/domain";
+import { I_RootDiagramRepo } from "../../../root-diagram/domain/root-domain-repo";
 import { I_Draggable } from "../../../drag/domain";
 import { I_DraggableElement } from "../../../drag/domain/draggable-element";
 import {
 	DataType, DiagramType, ElementType, FieldType,
-	I_KeyValuePair, I_SystemData, I_Vector, I_ViewBox, I_ViewPort, Nullable, Scope
+	I_KeyValuePair, I_SystemData, I_Vector, I_ViewBox, I_ViewPort, I_Zoom, Nullable, Scope
 } from "../../../general/domain";
 import { I_RelationshipsStore } from "../../../relationships/domain";
 import { I_HttpInPort } from "../../../repository/domain";
@@ -20,7 +20,7 @@ export interface I_AppFactory {
 
 	createRootDiagram(repo: I_RootDiagramRepo, key?: string): I_RootDiagram
 
-	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, key?: string): I_Diagram
+	createDiagram(name: string, diagramType: DiagramType, viewBox: I_ViewBox, viewPort: I_ViewPort, zoom: I_Zoom, key?: string): I_Diagram
 
 	createElement(elementType: ElementType, elementsStore: I_ElementsStore, relationshipsStore: I_RelationshipsStore, key?: string): I_Element
 

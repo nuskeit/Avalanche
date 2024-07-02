@@ -1,7 +1,6 @@
 import { AppFactory } from "../../factories/app-factory/application"
 import { Repository } from "../../repository/application"
 import { I_HttpInPort, I_Repository } from "../../repository/domain"
-import { KeyValuePair, SystemData } from "../application"
 import { FieldType, I_KeyValuePair, I_SystemData } from "../domain"
 
 export class SysyemDataRepo extends Repository implements I_Repository<I_SystemData> {

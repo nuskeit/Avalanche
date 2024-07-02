@@ -1,5 +1,5 @@
-import { I_Element } from "../../../core/avalanche-app/root-diagram/diagram/element/domain";
-import { I_Field } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { I_Element } from "../../../core/element/domain";
+import { I_Field } from "../../../core/field/domain";
 import { AppFactory } from "../../../core/factories/app-factory/application";
 import { DataType, FieldType, Nullable, Scope } from "../../../core/general/domain";
 import { I_Presenter } from "../../../core/general/presenter";
@@ -41,22 +41,16 @@ export class ElementEditorPresenter implements I_Presenter<I_Element> {
 		},
 
 		handleAddNewProperyField: async () => {
-			// if (this.newPropertyField.name.trim() == "" || this.findDuplicate(this.newPropertyField.name)) return
-			// this.newPropertyField = AppFactory.getSingleton().createField("New Prop", FieldType.Property, AppFactory.getSingleton().createTypeDef(DataType.string, null), null, undefined)
 			this.selectedField = AppFactory.getSingleton().createField("[new]", "", Scope.Public, FieldType.Property, AppFactory.getSingleton().createTypeDef(DataType.string, null), null, undefined)
 			this.elementProxy.addField(this.selectedField)
 		},
 
 		handleAddNewMethodField: async () => {
-			// if (this.newMethodField.name.trim() == "") return
-			// this.newMethodField = AppFactory.getSingleton().createField("", FieldType.Method, AppFactory.getSingleton().createTypeDef(DataType.string, null), null, undefined)
 			this.selectedField = AppFactory.getSingleton().createField("[new]", "", Scope.Public, FieldType.Method, AppFactory.getSingleton().createTypeDef(DataType.string, null), null, undefined)
 			this.elementProxy.addField(this.selectedField)
 		},
 
 		handleAddNewEventField: async () => {
-			// if (this.newEventField.name.trim() == "") return
-			// this.newEventField = AppFactory.getSingleton().createField("", FieldType.Event, AppFactory.getSingleton().createTypeDef(DataType.string, null), null, undefined)
 			this.selectedField = AppFactory.getSingleton().createField("[new]", "", Scope.Public, FieldType.Event, AppFactory.getSingleton().createTypeDef(DataType.string, null), null, undefined)
 			this.elementProxy.addField(this.selectedField)
 		},
@@ -64,7 +58,6 @@ export class ElementEditorPresenter implements I_Presenter<I_Element> {
 		handleDeleteField: async (f: I_Field) => {
 			this.presenterProxy.selectedField = null
 			this.elementProxy.removeField(f)
-			// this.elementProxy.addField(this.selectedField)
 		}
 
 	}

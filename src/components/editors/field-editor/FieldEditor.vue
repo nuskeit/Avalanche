@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { MethodField } from "../../../core/avalanche-app/root-diagram/diagram/element/field/application";
-import { I_Field } from "../../../core/avalanche-app/root-diagram/diagram/element/Field/domain";
+import { MethodField } from "../../../core/field/application";
+import { I_Field } from "../../../core/field/domain";
 import { FieldType } from "../../../core/general/domain";
 import TextBox from '../../controls/TextBox.vue';
-import { FieldEditorPresenter } from "./field-editor-presenter";
+import DeleteButton from "../../controls/buttons/DeleteButton.vue";
 import ParametersEditor from "../parameters-editor/ParametersEditor.vue";
 import TypeDefEditor from "../type-def-editor/TypeDefEditor.vue";
-import DeleteButton from "../../controls/buttons/DeleteButton.vue";
+import { FieldEditorPresenter } from "./field-editor-presenter";
 
 const props = defineProps<{ modelValue: I_Field }>()
 
@@ -32,7 +32,7 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 
 			<div class="col">
 				<TextBox :id="field.key" v-model="field.name"
-					:className="`shy-input ${field.validProp['name'] ? '' :'invalid'} `" />
+					:className="`shy-input ${field.validProp['name'] ? '' : 'invalid'} `" />
 			</div>
 
 			<div class="field-type">
@@ -61,7 +61,7 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 		</div>
 
 
-		<template v-if="field.fieldType == FieldType.Method || field.fieldType == FieldType.Event ">
+		<template v-if="field.fieldType == FieldType.Method || field.fieldType == FieldType.Event">
 			<div class="row division-title">
 				Parameters:
 			</div>
@@ -70,4 +70,3 @@ const presenter: FieldEditorPresenter = reactive<FieldEditorPresenter>(new Field
 	</div>
 
 </template>
-

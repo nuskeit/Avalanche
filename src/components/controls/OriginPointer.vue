@@ -15,13 +15,13 @@ const direction = computed<number>(() => {
 	return (adj < 0 ? 180 : 0) + ang
 })
 
-const visible = computed<boolean>(() => {
-	if (props.originX > 0 || props.originX < -1280 ||
-		props.originY > 0 || props.originY < -720)
-		return true
-	else
-		return false
-})
+// const visible = computed<boolean>(() => {
+// 	if (props.originX > 0 || props.originX < -1280 ||
+// 		props.originY > 0 || props.originY < -720)
+// 		return true
+// 	else
+// 		return false
+// })
 
 </script>
 <template>

@@ -1,8 +1,8 @@
-import { I_Diagram } from "../core/avalanche-app/root-diagram/diagram/domain";
-import { I_RootDiagram } from "../core/avalanche-app/root-diagram/domain";
+import { I_Diagram } from "../core/diagram/domain";
+import { I_RootDiagram } from "../core/root-diagram/domain";
 import { AppFactory } from "../core/factories/app-factory/application";
 import { DiagramType, Nullable } from "../core/general/domain";
-import { I_Presenter } from "../core/general/presenter";
+import { I_Presenter, Zoom } from "../core/general/presenter";
 
 export class RootDiagramPresenter implements I_Presenter<I_RootDiagram>{
 
@@ -45,7 +45,7 @@ export class RootDiagramPresenter implements I_Presenter<I_RootDiagram>{
 
 		handleAddNewDiagram: (name: string, diagramType: DiagramType) => {
 			const viewBox = { x: -640, y: -360, width: 1280, height: 720 }
-			this.rootDiagramProxy.addDiagram(AppFactory.getSingleton().createDiagram(name, diagramType, viewBox, { x: 0, y: 0, width: 0, height: 0 }))
+			this.rootDiagramProxy.addDiagram(AppFactory.getSingleton().createDiagram(name, diagramType, viewBox, { x: 0, y: 0, width: 0, height: 0 }, new Zoom()))
 		},
 
 		handleDeleteDiagram: (diagramKey: string) => {
