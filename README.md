@@ -1,6 +1,6 @@
 # Avalanche
 
-Avalanche is a consolidated documentation app, to integrate the different diagramas nd the technical docs, all in one synchronized document, to prevent the small snowballs to become a documentation killer avalanche.
+Avalanche is a "Consolidated Documentation App", to integrate the different diagramas and the technical docs, all in one synchronized document, to prevent the small snowballs to become a documentation killer avalanche.
 
 ## Author: Adrian Nuske
 
